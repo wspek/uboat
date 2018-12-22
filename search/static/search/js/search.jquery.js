@@ -1,53 +1,54 @@
 $(document).ready(function(){
-//    $("#search-config-form").submit(function( event ) {
-//        var allVals = [];
-//
-//        $('input[type="checkbox"]:checked').each(function () {
-//            allVals.push($(this).val());
-//        });
-//        $('input[type="radio"]:checked').each(function () {
-//            allVals.push($(this).val());
-//        });
-//        allVals.push($('#language-select').val());
-//
-//        alert(allVals);
-//
-//        event.preventDefault();
-//    });
+    $("#search-config-form").submit(function(event) {
+        event.preventDefault();
 
-    function processForm(e){
-        e.preventDefault();
+        console.log(movieFiles)
 
+        var searchData = {
+            "languages": null,
+            "subtitle_formats": [],
+            "search_method": null,
+            "movie_files": [],
+        };
+
+        // Store form data
+        searchData["languages"] = $('#language-select').val();
+
+        $('input[type="checkbox"]:checked').each(function () {
+            searchData["subtitle_formats"].push($(this).val());
+        });
+
+        $('input[type="radio"]:checked').each(function () {
+            searchData["search_method"] = $(this).val();
+        });
+
+        searchData["movie_files"] = movieFiles
+
+        search(searchData);
+    });
+
+    function search(searchData){
         var csrftoken = $.cookie('csrftoken');
 
-        console.log('COOKIE: ' + csrftoken)
-
-//        var csrftoken = Cookies.get('csrftoken');
-//
-//        $.ajaxSetup({
-//            beforeSend: function(xhr, settings) {
-//                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-//                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-//                    xhr.setRequestHeader("content-type", "application/json");
-//                }
-//            }
-//        });
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        });
 
         $.ajax({
             type: 'post',
             url: '',    // search
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify( { "first-name": "Waldo", "last-name": "Spek" } ),
+            data: JSON.stringify(searchData),
             success: function(data, textStatus, jQxhr){
-                console.log('SUCCESS!')
             },
-            error: function(jqXhr, textStatus, errorThrown){
+            error: function(jQxhr, textStatus, errorThrown){
                 console.log(errorThrown);
             }
         });
     }
-    $('#search-config-form').submit(processForm);
 
     $('#language-select').multiSelect({
         afterSelect: function(values){
