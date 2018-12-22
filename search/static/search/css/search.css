@@ -1,0 +1,112 @@
+body {
+    /*background-color: #669999;*/
+}
+.container {
+    /*background-color: #0E566C;*/
+}
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    cursor: inherit;
+    display: block;
+}
+#log {
+    min-width: 100%;
+    min-height: 100%;
+    background: #ffd;
+    border: 1px solid orange;
+    padding: 1em;
+    margin: 0 auto;
+    display: inline-block;
+    text-align: left;
+    line-height: 1.25;
+}
+.tooltip-inner {
+    max-width: 350px;
+}
+.fa-info-circle:hover {
+    color: red;
+}
+.jumbotron {
+    padding-top: 1em;
+    padding-right: inherit;
+    padding-left: inherit;
+    padding-bottom: 1em;
+}
+/*.tabulator-tableHolder {*/
+    /*background-color: #c5c5c5;*/
+    /*color: #666666;*/
+    /*font-style: italic;*/
+/*}*/
+.wrapper{
+    width:70%;
+}
+@media(max-width:992px){
+    .wrapper{
+        width:100%;
+    }
+}
+.panel-heading {
+    padding: 0;
+    border:0;
+}
+.panel-title>a, .panel-title>a:active{
+    display:block;
+    padding:10px;
+    color:#555;
+    background-color: #e9e9e9;
+    font-size:16px;
+    font-weight:bold;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    word-spacing:3px;
+    text-decoration:none;
+}
+.panel-heading  a:before {
+    font-family: 'Font Awesome 5 Free';
+    content: "\f107";
+    float: right;
+    transition: all 0.5s;
+}
+.panel-heading.active a:before {
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+.ms-container{
+    width: 100%;
+}
+.select-text{
+    font-size: 14px;
+}
+#collapseOne{
+    /*background-color: #343a40;*/
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+#tabulator-row{
+    padding-top: 50px;
+    padding-bottom: 10px;
+}
+#select-all{
+    text-align: left;
+}
+#deselect-all{
+    float: right;
+}
+#radio-hash{
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+}

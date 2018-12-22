@@ -1,562 +1,211 @@
 <!doctype html>
 <html lang="en">
-<head>
-    {% load static %}
+    <head>
+        <title>UBoat</title>
 
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- Required meta tags -->
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!--Font Awesome-->
-    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.5.0/css/all.css' integrity='sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU' crossorigin='anonymous'>
+        <!--Static content -->
 
-    <!--Tabulator-->
-    <link href="{% static '/search/js/tabulator-tables/dist/css/tabulator.css' %}" rel="stylesheet">
+        {% load static %}
 
-    <!--Multiple select-->
-    <link href="{% static '/search/js/multiselect/css/multi-select.css' %}" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.5.0/css/all.css' integrity='sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU' crossorigin='anonymous'>
+        <link href="{% static '/search/js/tabulator-tables/dist/css/tabulator.css' %}" rel="stylesheet">
+        <link href="{% static '/search/js/multiselect/css/multi-select.css' %}" rel="stylesheet" type="text/css">
+        <link href="{% static '/search/css/search.css' %}" rel="stylesheet" type="text/css">
 
-    <title>UBoat</title>
-
-    <style>
-        body {
-            /*background-color: #669999;*/
-        }
-        .container {
-            /*background-color: #0E566C;*/
-        }
-        .btn-file {
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-file input[type=file] {
-            position: absolute;
-            top: 0;
-            right: 0;
-            min-width: 100%;
-            min-height: 100%;
-            font-size: 100px;
-            text-align: right;
-            filter: alpha(opacity=0);
-            opacity: 0;
-            outline: none;
-            cursor: inherit;
-            display: block;
-        }
-        #log {
-            min-width: 100%;
-            min-height: 100%;
-            background: #ffd;
-            border: 1px solid orange;
-            padding: 1em;
-            margin: 0 auto;
-            display: inline-block;
-            text-align: left;
-            line-height: 1.25;
-        }
-        .tooltip-inner {
-            max-width: 350px;
-        }
-        .fa-info-circle:hover {
-            color: red;
-        }
-        .jumbotron {
-            padding-top: 1em;
-            padding-right: inherit;
-            padding-left: inherit;
-            padding-bottom: 1em;
-        }
-        /*.tabulator-tableHolder {*/
-            /*background-color: #c5c5c5;*/
-            /*color: #666666;*/
-            /*font-style: italic;*/
-        /*}*/
-        .wrapper{
-            width:70%;
-        }
-        @media(max-width:992px){
-            .wrapper{
-                width:100%;
-            }
-        }
-        .panel-heading {
-            padding: 0;
-            border:0;
-        }
-        .panel-title>a, .panel-title>a:active{
-            display:block;
-            padding:10px;
-            color:#555;
-            background-color: #e9e9e9;
-            font-size:16px;
-            font-weight:bold;
-            text-transform:uppercase;
-            letter-spacing:1px;
-            word-spacing:3px;
-            text-decoration:none;
-        }
-        .panel-heading  a:before {
-            font-family: 'Font Awesome 5 Free';
-            content: "\f107";
-            float: right;
-            transition: all 0.5s;
-        }
-        .panel-heading.active a:before {
-            -webkit-transform: rotate(180deg);
-            -moz-transform: rotate(180deg);
-            transform: rotate(180deg);
-        }
-        .ms-container{
-            width: 100%;
-        }
-        .select-text{
-            font-size: 14px;
-        }
-        #collapseOne{
-            /*background-color: #343a40;*/
-            padding-top: 10px;
-            padding-bottom: 10px;
-        }
-        #tabulator-row{
-            padding-top: 50px;
-            padding-bottom: 10px;
-        }
-        #select-all{
-            text-align: left;
-        }
-        #deselect-all{
-            float: right;
-        }
-        #radio-hash{
-            padding-left: 1.5em;
-            padding-right: 1.5em;
-        }
-    </style>
-
-</head>
-<body>
-<div class="container">
-    <div class="jumbotron text-center">
-        <h3 class="display-3">UBoat</h3>
-        <h3>Subtitle retriever</h3>
-    </div>
-    <div id="title" class="row">
-    </div>
-    <div class="row align-middle">
-        <div class="col-md"></div>
-        <div class="col-md-8 pb-5 text-center">
-            <i class='fas fa-info-circle' style='font-size:16px' data-toggle="popover" tabindex="0"
-               data-trigger="focus" data-placement="left" title="Don't worry"
-               data-content="You will not be uploading any files to our servers. You will
-                             simply be selecting files so we can extract some info (client-side) to use to
-                             retrieve your subtitles."></i>
-            <span class="btn btn-primary btn-file">Choose files<input class="select" id="file" type="file" multiple></span>
-            <b>or</b>
-            <span class="btn btn-primary btn-file" data-toggle="tooltip" data-placement="top" title="Only works in some browsers">Choose folder<input class="select" type="file" webkitdirectory></span>
-        </div>
-        <div class="col-md"></div>
-    </div>
-    <div class="row">
-        <div class="col-md text-center">
-            <!--Format (dropdown), Languages, Search method (name, hash), #Most downloaded-->
-            <!--<div class="wrapper center-block">-->
-                <div class="panel-group text-left" id="accordion" role="tablist" aria-multiselectable="true">
-                    <div class="panel panel-default">
-                        <div class="panel-heading active" role="tab" id="headingOne">
-                            <h4 class="panel-title">
-                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                    Search configuration
-                                </a>
-                            </h4>
-                        </div>
-                        <div id="collapseOne" class="panel-collapse collapse show text-center bg-light" role="tabpanel" aria-labelledby="headingOne">
-                            <div class="panel-body">
-                                <div class="container">
-                                    <form id="search-config-form">
-                                        <div class="form-row">
-                                            <div class="col-md-4 text-center">
-                                                <!--pl-2 pr-5-->
-                                                <div class="text-left">
-                                                    <p class="font-weight-bold">Select languages</p>
-                                                    <div>
-                                                        <span><a href='#' class="select-text" id='select-all'>Select all</a><a href='#' class="select-text" id='deselect-all'>Deselect all</a></span>
-                                                        <div style="clear: both;"></div>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous" defer></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous" defer></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous" defer></script>
+        <script type="text/javascript" src="{% static 'search/js/multiselect/js/jquery.multi-select.js' %}" defer></script>
+        <script type="text/javascript" src="{% static 'search/js/tabulator-tables/dist/js/tabulator.min.js' %}" defer></script>
+        <script type="text/javascript" src="{% static 'search/js/search.js' %}" defer></script>
+        <script type="text/javascript" src="{% static 'search/js/jquery.search.js' %}" defer></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="jumbotron text-center">
+                <h3 class="display-3">UBoat</h3>
+                <h3>Subtitle retriever</h3>
+            </div>
+            <div id="title" class="row">
+            </div>
+            <div class="row align-middle">
+                <div class="col-md"></div>
+                <div class="col-md-8 pb-5 text-center">
+                    <i class='fas fa-info-circle' style='font-size:16px' data-toggle="popover" tabindex="0"
+                       data-trigger="focus" data-placement="left" title="Don't worry"
+                       data-content="You will not be uploading any files to our servers. You will
+                                     simply be selecting files so we can extract some info (client-side) to use to
+                                     retrieve your subtitles."></i>
+                    <span class="btn btn-primary btn-file">Choose files<input class="select" id="file" type="file" multiple></span>
+                    <b>or</b>
+                    <span class="btn btn-primary btn-file" data-toggle="tooltip" data-placement="top" title="Only works in some browsers">Choose folder<input class="select" type="file" webkitdirectory></span>
+                </div>
+                <div class="col-md"></div>
+            </div>
+            <div class="row">
+                <div class="col-md text-center">
+                    <div class="panel-group text-left" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-default">
+                            <div class="panel-heading active" role="tab" id="headingOne">
+                                <h4 class="panel-title">
+                                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                        Search configuration
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse show text-center bg-light" role="tabpanel" aria-labelledby="headingOne">
+                                <div class="panel-body">
+                                    <div class="container">
+                                        <form id="search-config-form">
+                                            <div class="form-row">
+                                                <div class="col-md-4 text-center">
+                                                    <div class="text-left">
+                                                        <p class="font-weight-bold">Select languages</p>
+                                                        <div>
+                                                            <span><a href='#' class="select-text" id='select-all'>Select all</a><a href='#' class="select-text" id='deselect-all'>Deselect all</a></span>
+                                                            <div style="clear: both;"></div>
+                                                        </div>
+                                                        <div class="text-center">
+                                                            <select id="language-select" multiple="multiple">
+                                                                <option value="en">English</option>
+                                                                <option value="spa">Spanish</option>
+                                                                <option value="nl">Dutch</option>
+                                                                <option value="4">Albanian</option>
+                                                                <option value="5">German</option>
+                                                                <option value="6">Klingon</option>
+                                                                <option value="7">7</option>
+                                                                <option value="8">8</option>
+                                                                <option value="9">9</option>
+                                                                <option value="10">10</option>
+                                                                <option value="11">11</option>
+                                                                <option value="12">12</option>
+                                                                <option value="13">13</option>
+                                                                <option value="14">14</option>
+                                                                <option value="15">15</option>
+                                                                <option value="16">16</option>
+                                                                <option value="17">17</option>
+                                                                <option value="18">18</option>
+                                                                <option value="19">19</option>
+                                                                <option value="20">20</option>
+                                                                <option value="21">21</option>
+                                                                <option value="22">22</option>
+                                                                <option value="23">23</option>
+                                                                <option value="24">24</option>
+                                                                <option value="25">25</option>
+                                                                <option value="26">26</option>
+                                                                <option value="27">27</option>
+                                                                <option value="28">28</option>
+                                                                <option value="29">29</option>
+                                                                <option value="30">30</option>
+                                                            </select>
+                                                        </div>
                                                     </div>
-                                                    <div class="text-center">
-                                                        <select id="language-select" multiple="multiple">
-                                                            <option value="en">English</option>
-                                                            <option value="spa">Spanish</option>
-                                                            <option value="nl">Dutch</option>
-                                                            <option value="4">Albanian</option>
-                                                            <option value="5">German</option>
-                                                            <option value="6">Klingon</option>
-                                                            <option value="7">7</option>
-                                                            <option value="8">8</option>
-                                                            <option value="9">9</option>
-                                                            <option value="10">10</option>
-                                                            <option value="11">11</option>
-                                                            <option value="12">12</option>
-                                                            <option value="13">13</option>
-                                                            <option value="14">14</option>
-                                                            <option value="15">15</option>
-                                                            <option value="16">16</option>
-                                                            <option value="17">17</option>
-                                                            <option value="18">18</option>
-                                                            <option value="19">19</option>
-                                                            <option value="20">20</option>
-                                                            <option value="21">21</option>
-                                                            <option value="22">22</option>
-                                                            <option value="23">23</option>
-                                                            <option value="24">24</option>
-                                                            <option value="25">25</option>
-                                                            <option value="26">26</option>
-                                                            <option value="27">27</option>
-                                                            <option value="28">28</option>
-                                                            <option value="29">29</option>
-                                                            <option value="30">30</option>
-                                                        </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div id="subtitle-formats-row-1" class="form-row">
+                                                        <div class="col-md-2"></div>
+                                                        <div class="col-md-8 text-left">
+                                                            <p class="font-weight-bold">Subtitle formats</p>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="checkbox" value="srt" id="checkboxSRT" checked>
+                                                                <label class="form-check-label" for="checkboxSRT">
+                                                                    SRT
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="checkbox" value="sub" id="checkboxSUB">
+                                                                <label class="form-check-label" for="checkboxSUB">
+                                                                    SUB
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="checkbox" value="smi" id="checkboxSMI">
+                                                                <label class="form-check-label" for="checkboxSMI">
+                                                                    SMI
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2"></div>
+                                                    </div>
+                                                    <div id="subtitle-formats-row-2" class="form-row">
+                                                        <div class="col-md-2"></div>
+                                                        <div class="col-md-8 text-left">
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="checkbox" value="txt" id="checkboxTXT">
+                                                                <label class="form-check-label" for="checkboxTXT">
+                                                                    TXT
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check  form-check-inline">
+                                                                <input class="form-check-input" type="checkbox" value="ssa" id="checkboxSSA">
+                                                                <label class="form-check-label" for="checkboxSSA">
+                                                                    SSA
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check  form-check-inline">
+                                                                <input class="form-check-input" type="checkbox" value="ass" id="checkboxASS">
+                                                                <label class="form-check-label" for="checkboxASS">
+                                                                    ASS
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" value="mpl" id="checkboxMPL">
+                                                                <label class="form-check-label" for="checkboxASS">
+                                                                    MPL
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2"></div>
+                                                    </div>
+                                                    <div id="search-method-row mt-5" class="form-row mt-5">
+                                                        <div class="col-md-2"></div>
+                                                        <div class="col-md-8 text-left">
+                                                            <p class="font-weight-bold">Search method</p>
+                                                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                                <label id="radio-hash" class="btn btn-primary btn-sm active">
+                                                                    <input type="radio" name="search-method" autocomplete="off" value="hash" checked> Hash
+                                                                </label>
+                                                                <label id="radio-file" class="btn btn-primary btn-sm">
+                                                                    <input type="radio" name="search-method" autocomplete="off" value="filename"> Filename
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 text-right">
+                                                    <div class="row h-100 align-items-end">
+                                                        <div class="col-md-12">
+                                                            <input class="btn btn-success" type="submit" value="Fetch subtitles">
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
-                                                <div id="subtitle-formats-row-1" class="form-row">
-                                                    <div class="col-md-2"></div>
-                                                    <div class="col-md-8 text-left">
-                                                        <p class="font-weight-bold">Subtitle formats</p>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="checkbox" value="srt" id="checkboxSRT" checked>
-                                                            <label class="form-check-label" for="checkboxSRT">
-                                                                SRT
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="checkbox" value="sub" id="checkboxSUB">
-                                                            <label class="form-check-label" for="checkboxSUB">
-                                                                SUB
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="checkbox" value="smi" id="checkboxSMI">
-                                                            <label class="form-check-label" for="checkboxSMI">
-                                                                SMI
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-2"></div>
-                                                </div>
-                                                <div id="subtitle-formats-row-2" class="form-row">
-                                                    <div class="col-md-2"></div>
-                                                    <div class="col-md-8 text-left">
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="checkbox" value="txt" id="checkboxTXT">
-                                                            <label class="form-check-label" for="checkboxTXT">
-                                                                TXT
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check  form-check-inline">
-                                                            <input class="form-check-input" type="checkbox" value="ssa" id="checkboxSSA">
-                                                            <label class="form-check-label" for="checkboxSSA">
-                                                                SSA
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check  form-check-inline">
-                                                            <input class="form-check-input" type="checkbox" value="ass" id="checkboxASS">
-                                                            <label class="form-check-label" for="checkboxASS">
-                                                                ASS
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" value="mpl" id="checkboxMPL">
-                                                            <label class="form-check-label" for="checkboxASS">
-                                                                MPL
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-2"></div>
-                                                </div>
-                                                <div id="search-method-row mt-5" class="form-row mt-5">
-                                                    <div class="col-md-2"></div>
-                                                    <div class="col-md-8 text-left">
-                                                        <p class="font-weight-bold">Search method</p>
-                                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                                            <label id="radio-hash" class="btn btn-primary btn-sm active">
-                                                                <input type="radio" name="search-method" autocomplete="off" value="hash" checked> Hash
-                                                            </label>
-                                                            <label id="radio-file" class="btn btn-primary btn-sm">
-                                                                <input type="radio" name="search-method" autocomplete="off" value="filename"> Filename
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-2"></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 text-right">
-                                                <div class="row h-100 align-items-end">
-                                                    <div class="col-md-12">
-                                                        <input class="btn btn-success" type="submit" value="Fetch subtitles">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            <!--</div>-->
+            </div>
         </div>
-    </div>
-</div>
-<div class="container-fluid">
-    <div id="tabulator-row" class="row">
-        <div class="col-md"></div>
-        <div class="col-md-10 text-center">
-            <div id="subtitle-table"></div>
-            <div id='logs'></div>
+        <div class="container-fluid">
+            <div id="tabulator-row" class="row">
+                <div class="col-md"></div>
+                <div class="col-md-10 text-center">
+                    <div id="subtitle-table"></div>
+                    <div id='logs'></div>
+                </div>
+                <div class="col-md"></div>
+            </div>
         </div>
-        <div class="col-md"></div>
-    </div>
-</div>
-<script type="text/javascript" src="{% static 'search/js/hash.js' %}"></script>
-<script>
-    var movieFiles = [];
-    var fileSelectClass = document.getElementsByClassName("select");
-    var calcHashes = function() {
-        var files = this.files;
-
-        function loadFiles(startId) {
-            for (i = 0; i < files.length; i++) {
-                var id = startId + i;
-                var file = files[i];
-
-                calcFileHash(file, callbackHash(id));
-            }
-        }
-
-        function callbackHash(id) {
-            function callback(file, hash) {
-                console.log(id);
-
-                var fileData = {
-                    'id': id,
-                    'file_name': file.name,
-                    'file_size': file.size.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ','),
-                    'hash': hash,
-                };
-                addFileData(fileData);
-            }
-            return callback;
-        }
-
-        function addFileData(fileData) {
-            movieFiles.push(fileData);
-            addTableData(fileData);
-        }
-        loadFiles(1);   // next id in queue
-    };
-
-    for (var i = 0; i < fileSelectClass.length; i++) {
-        fileSelectClass[i].addEventListener('change', calcHashes);
-    }
-</script>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-<!--<script type="text/javascript" src="../../static/search/js/tabulator-tables/dist/js/tabulator.js"></script>-->
-<script type="text/javascript" src="{% static 'search/js/tabulator-tables/dist/js/tabulator.min.js' %}"></script>
-<!--<script type="text/javascript" src="{% static 'search/js/tabulator.min.js' %}"></script>-->
-<script type="text/javascript" src="{% static 'search/js/multiselect/js/jquery.multi-select.js' %}"></script>
-<script>
-    var tabulator_table;
-
-    var statusMessages = {
-        'HASH_CALC': "Calculating hash",
-        'NULL': "",
-    };
-
-    function addTableData(table_data, statusMessage) {
-        var tableId = table_data.id;
-
-        var row = tabulator_table.getRow(tableId);
-        if (row) {
-
-            // status = table_data.status;
-            // statusMessage = statusMessages[status];
-            // tabulator_table.columnManager.columns["9"].definition.formatterParams.legend = statusMessage;
-
-            //     console.log("Found row");
-        //     var rowData = row.getData();
-            // var newData = rowData;
-            // jQuery.extend(rowData, table_data);
-
-            tabulator_table.updateData([table_data]);
-        } else {
-            tabulator_table.addRow({
-                id: tableId,
-                movie_name: table_data.movie_name,
-                file_name: table_data.file_name,
-                file_size: table_data.file_size,
-                hash: table_data.hash,
-                language: table_data.language,
-                format: table_data.format,
-                downloads: table_data.downloads,
-                progress: table_data.progress,
-                link: table_data.link
-            });
-        }
-        // tabulator_table.updateData([table_data]);
-    }
-
-    $(function () {
-        // var tableData = [
-        //     {
-        //         movie_name: "Better Call Saul",
-        //         file_name: "Better Call Saul s01e02.mkv",
-        //         file_size: "1423",
-        //         hash: "87f82e6b54f5015f544c35fb579e247d",
-        //         language: "SPA",
-        //         format: "SRT",
-        //         downloads: "51432",
-        //         progress: 40,
-        //         link: "Download"
-        //     },
-        //     {
-        //         movie_name: "Better Call Saul",
-        //         file_name: "Better Call Saul s01e03.mkv",
-        //         file_size: "1578",
-        //         hash: "854543b3c664f6b11af47ff7f0746111",
-        //         language: "SPA",
-        //         format: "SRT",
-        //         downloads: "48747",
-        //         progress: 10,
-        //         link: "Download"
-        //     },
-        // ];
-        // var emptyData = [
-        //     {id:"Empty", movie_name:"", file_name:"", file_size:"", hash:"", language:"", format:"", downloads:"", "progress": "", "link": ""},
-        // ]
-
-        tabulator_table = new Tabulator("#subtitle-table", {
-            placeholder:"No titles added yet",
-            layout:"fitColumns",
-            columns:[
-                {title:"#", field:"id", sorter:"string", width:"2%"},
-                {title:"File name", field:"file_name", sorter:"string"},
-                {title:"Size", field:"file_size", sorter:"string", width:"6%"},
-                // {title:"Hash", field:"hash", sorter:"string"},
-                {title:"Hash", field:"hash", sorter: "number", width:"10%"},
-                {title:"Language", field:"language", width:"7%"},
-                {title:"Format", field:"format", width:"6%"},
-                {title:"Downloads", field:"downloads", width:"8%", headerTooltip:"Number of downloads on OpenSubtitles.org"},
-                {title:"Link", field:"link", formatter:"link", width:"5%", formatterParams:{    // http://tabulator.info/docs/4.1/format
-                        url:"https://www.google.com.ar",
-                        target:"_blank",
-                    }
-                },
-                {title:"Progress", field:"progress", formatter:"progress", width:"15%", formatterParams:{
-                        color: "#709ae0",
-                        legendColor: "#000000",
-                        legendAlign: "center",
-                    }},
-                {title:"Status", field:"status", visible:false}
-            ],
-            // rowFormatter:function(row){
-            //     var element = row.getElement(),
-            //         data = row.getData(),
-            //         rowTable, cellContents;
-            //
-            //     element.style.backgroundColor = "#CCCCCC";
-            //     element.style.color = "#777777";
-            //     element.style.fontStyle = "italic";
-            //
-            //     // clear current row data
-            //     while(element.firstChild) element.removeChild(element.firstChild);
-            //
-            //     // define a table layout structure and set width of row
-            //     rowTable = document.createElement("table");
-            //     // rowTable.style.width = (width - 18) + "px";
-            //
-            //     rowTable.style.backgroundColor = "#CCCCCC";
-            //     rowTable.style.color = "#777777";
-            //     rowTable.style.fontStyle = "italic";
-            //
-            //     rowTabletr = document.createElement("tr");
-            //
-            //     //add image on left of row
-            //     // cellContents = "<td><img src='/sample_data/row_formatter/" + data.image + "'></td>";
-            //     // //
-            //     // add row data on right hand side
-            //     // // cellContents += "<td><div><strong>Type:</strong> " + data.type + "</div><div><strong>Age:</strong> " + data.age + "</div><div><strong>Rind:</strong> " + data.rind + "</div><div><strong>Colour:</strong> " + data.color + "</div></td>"
-            //     cellContents = "<td><div>Blablabla</div></td>";
-            //
-            //     rowTabletr.innerHTML = cellContents;
-            //
-            //     rowTable.appendChild(rowTabletr);
-            //
-            //     //append newly formatted contents to the row
-            //     element.append(rowTable);
-            // },
-        });
-
-        // tabulator_table.setData(tableData);
-        //Load Data
-        // $("#subtitle-table").tabulator("setData", emptyData);
-
-
-        // $(".tabulator-tableHolder").text("No titles added yet...");
-        $('[data-toggle="tooltip"]').tooltip();
-        $('[data-toggle="popover"]').popover();
-    });
-</script>
-<script>
-    $("#search-config-form").submit(function( event ) {
-        var allVals = [];
-
-        $('input[type="checkbox"]:checked').each(function () {
-            allVals.push($(this).val());
-        });
-        $('input[type="radio"]:checked').each(function () {
-            allVals.push($(this).val());
-        });
-        allVals.push($('#language-select').val());
-
-        alert(allVals);
-
-        event.preventDefault();
-    });
-
-    $('#language-select').multiSelect({
-        afterSelect: function(values){
-            var test = 0;
-            // alert("Select value: "+values);
-        },
-        afterDeselect: function(values){
-            var test = 0;
-            // alert("Deselect value: "+values);
-        }
-    });
-
-    $('#select-all').click(function(){
-        $('#language-select').multiSelect('select_all');
-        return false;
-    });
-    $('#deselect-all').click(function(){
-        $('#language-select').multiSelect('deselect_all');
-        return false;
-    });
-
-    $('.panel-collapse').on('show.bs.collapse', function () {
-        $(this).siblings('.panel-heading').addClass('active');
-    });
-
-    $('.panel-collapse').on('hide.bs.collapse', function () {
-        $(this).siblings('.panel-heading').removeClass('active');
-    });
-</script>
-</body>
+    </body>
 </html>
