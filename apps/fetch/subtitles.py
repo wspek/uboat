@@ -19,17 +19,20 @@ def test():
 
 
 def fetch_subtitles(movie_data):
-    # TODO: let the search query depend on using hash / file type
-
     # Convert the more extensive movie data to a more condensed and renamed format.
     request_data = []
     for entry in movie_data:
-        request_data.append({
-            'sublanguageid': entry['sublanguageid'],
-            'moviehash': entry['hash'],
-            'moviebytesize': entry['file_size'].replace(',', ''),
-            # 'query': entry['file_name'],
-        })
+        if entry['search_method'] == 'hash':
+            request_data.append({
+                'sublanguageid': entry['sublanguageid'],
+                'moviehash': entry['hash'],
+                'moviebytesize': entry['file_size'].replace(',', ''),
+            })
+        elif entry['search_method'] == 'filename':
+            request_data.append({
+                'sublanguageid': entry['sublanguageid'],
+                'query': entry['file_name'],
+            })
 
     opensubs = OpenSubtitles()
     opensubs.login(config.USER, config.PASSWD)
@@ -57,6 +60,7 @@ def fetch_subtitles(movie_data):
         subtitle.update(result["QueryParameters"])
         subtitle_data[i] = subtitle
 
+    # TEMP - for as long as we are not yet adding to the table.
     sorted_subs = sorted(subtitle_data.values(), key=lambda x: int(x['num_downloads']), reverse=True)
     for subtitle in sorted_subs:
         print(subtitle['filename'])

@@ -17,6 +17,8 @@ def fetch(request):
 
     # Handle POST request
     if request.method == 'POST':
+        import pdb
+
         data = json.loads(request.body)
 
         # Create a list of all combinations of movies, languages and formats.
@@ -29,7 +31,7 @@ def fetch(request):
         query_data = []
         for combo in combinations:
             flattened_combo = combo[1].copy()
-            flattened_combo.update({'sublanguageid': combo[0]})
+            flattened_combo.update({'sublanguageid': combo[0], 'search_method': data['search_method']})
             query_data.append(flattened_combo)
 
         response = subs.fetch_subtitles(query_data)
