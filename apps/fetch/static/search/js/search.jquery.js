@@ -2,8 +2,6 @@ $(document).ready(function(){
     $("#search-config-form").submit(function(event) {
         event.preventDefault();
 
-        console.log(movieFiles)
-
         var searchData = {
             "languages": null,
             "subtitle_formats": [],
@@ -38,11 +36,12 @@ $(document).ready(function(){
 
         $.ajax({
             type: 'post',
-            url: '',    // search
+            url: '',    // /fetch
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(searchData),
             success: function(data, textStatus, jQxhr){
+                console.log(data);
             },
             error: function(jQxhr, textStatus, errorThrown){
                 console.log(errorThrown);
