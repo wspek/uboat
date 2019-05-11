@@ -7,26 +7,41 @@ var movieFiles = [],
     tabulator_table = new Tabulator("#subtitle-table", {
         placeholder:"No titles added yet",
         layout:"fitColumns",
+        layoutColumnsOnNewData:true,
         columns:[
-            {title:"#", field:"id", sorter:"string", width:"2%"},
-            {title:"File name", field:"file_name", sorter:"string"},
-            {title:"Size", field:"file_size", sorter:"string", width:"6%"},
-            {title:"Hash", field:"hash", sorter: "number", width:"10%"},
-            {title:"Language", field:"language", width:"7%"},
-            {title:"Format", field:"format", width:"6%"},
-            {title:"Downloads", field:"downloads", width:"8%", headerTooltip:"Number of downloads on OpenSubtitles.org"},
-            {title:"Link", field:"link", formatter:"link", width:"5%", formatterParams:{    // http://tabulator.info/docs/4.1/format
-                    url:"https://www.google.com.ar",
+            {title:"Header", field:"header", visible:false},
+            {title:"Movie file", field:"movie_filename", visible:false},
+            {title:"Size", field:"file_size", visible:false},
+            {title:"Hash", field:"hash", visible:false},
+            {title:"#", field:"id", width: 1, sorter:"string"},
+            {title:"Subtitle file", field:"sub_filename", sorter:"string", widthGrow: 3},
+            {title:"S", field:"season", width: 1, sorter:"string"},
+            {title:"E", field:"episode", width: 1, sorter:"string"},
+            {title:"Language", field:"language_name", width: 100, sorter:"string"},
+            {title:"Format", field:"format", width: 83, sorter:"string"},
+            {title:"Encoding", field:"encoding", width: 100, sorter:"string"},
+            {title:"Date added", field:"add_date", width: 110},
+            {title:"Score", field:"score", width: 75, sorter:"number"},
+            {title:"Rating", field:"rating", width: 80, sorter:"number"},
+            {title:"Uploader rank", field:"rank", sorter:"string", widthGrow: 1},
+            {title:"#DL", field:"num_downloads", sorter:"number", width: 65, headerTooltip:"Number of downloads on OpenSubtitles.org"},
+            {title:"Link", field:"link_zip", formatter:"link", width: 80, formatterParams:{    // http://tabulator.info/docs/4.1/format
+                    label:"Download",
+                    urlField: "link_zip",
                     target:"_blank",
                 }
             },
-            {title:"Progress", field:"progress", formatter:"progress", width:"15%", formatterParams:{
-                    color: "#709ae0",
-                    legendColor: "#000000",
-                    legendAlign: "center",
-                }},
-            {title:"Status", field:"status", visible:false}
         ],
+        groupBy:"header",
+        groupToggleElement:"header",
+        groupStartOpen:function(value, count, data, group){
+            //value - the value all members of this group share
+            //count - the number of rows in this group
+            //data - an array of all the row data objects in this group
+            //group - the group component for the group
+
+            return data[0].id == 1; //all groups with more than three rows start open, any with three or less start closed
+        },
     });
 
 function calcFileHash (file, callback) {
@@ -108,7 +123,9 @@ var calcHashes = function() {
         function callback(file, hash) {
             var fileData = {
                 'id': id,
-                'file_name': file.name,
+                'header': file.name,
+                'movie_filename': file.name,
+                'sub_filename': 'Fetch subtitles to populate this table',
                 'file_size': file.size.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ','),
                 'hash': hash,
             };
@@ -131,18 +148,7 @@ function addTableData(table_data, statusMessage) {
     if (row) {
         tabulator_table.updateData([table_data]);
     } else {
-        tabulator_table.addRow({
-            id: tableId,
-            movie_name: table_data.movie_name,
-            file_name: table_data.file_name,
-            file_size: table_data.file_size,
-            hash: table_data.hash,
-            language: table_data.language,
-            format: table_data.format,
-            downloads: table_data.downloads,
-            progress: table_data.progress,
-            link: table_data.link
-        });
+        tabulator_table.addRow([table_data]);
     }
 }
 
@@ -150,5 +156,113 @@ function addTableData(table_data, statusMessage) {
 for (var i = 0; i < fileSelectClass.length; i++) {
     fileSelectClass[i].addEventListener('change', calcHashes);
 }
+
+$(document).ready(function(){
+    $("#search-config-form").submit(function(event) {
+        event.preventDefault();
+
+        var searchData = {
+            "languages": null,
+            "subtitle_formats": [],
+            "search_method": null,
+            "movie_files": [],
+        };
+
+        // Store form data
+        searchData["languages"] = $('#language-select').val();
+
+        $('input[type="checkbox"]:checked').each(function () {
+            searchData["subtitle_formats"].push($(this).val());
+        });
+
+        $('input[type="radio"]:checked').each(function () {
+            searchData["search_method"] = $(this).val();
+        });
+
+        searchData["movie_files"] = movieFiles
+
+        search(searchData);
+    });
+
+    function search(searchData){
+        var csrftoken = $.cookie('csrftoken');
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        });
+
+        $.ajax({
+            type: 'post',
+            url: '',    // /fetch
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(searchData),
+            success: function(data, textStatus, jQxhr){
+                console.log(data);
+
+                var rows = tabulator_table.getRows();
+                var numRows = tabulator_table.getDataCount();
+                for (var i = 1; i < numRows + 1; i++) {
+                    tabulator_table.getRow(i).delete();
+                }
+
+                var id = 1;
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i];
+                    var row_data = row.getData();
+
+                    var movie_name = row_data['movie_filename'];
+                    var result_data = data[movie_name];
+
+                    for (j in result_data) {
+                        result = result_data[j];
+                        result['id'] = id;
+                        result['header'] = movie_name;
+                        addTableData(result);
+                        id++;
+                    }
+                }
+
+                var groups = tabulator_table.getGroups();
+                for (i in groups) {
+                    groups[i].show();
+                }
+            },
+            error: function(jQxhr, textStatus, errorThrown){
+                console.log(errorThrown);
+            }
+        });
+    }
+
+    $('#language-select').multiSelect({
+        afterSelect: function(values){
+            var test = 0;
+            // alert("Select value: "+values);
+        },
+        afterDeselect: function(values){
+            var test = 0;
+            // alert("Deselect value: "+values);
+        }
+    });
+
+    $('#select-all').click(function(){
+        $('#language-select').multiSelect('select_all');
+        return false;
+    });
+    $('#deselect-all').click(function(){
+        $('#language-select').multiSelect('deselect_all');
+        return false;
+    });
+
+    $('.panel-collapse').on('show.bs.collapse', function () {
+        $(this).siblings('.panel-heading').addClass('active');
+    });
+
+    $('.panel-collapse').on('hide.bs.collapse', function () {
+        $(this).siblings('.panel-heading').removeClass('active');
+    });
+});
 
 

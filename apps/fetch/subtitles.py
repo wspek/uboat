@@ -19,55 +19,64 @@ def test():
 
 
 def fetch_subtitles(movie_data):
+    opensubs = OpenSubtitles()
+    opensubs.login(config.USER, config.PASSWD)
+
     # Convert the more extensive movie data to a more condensed and renamed format.
-    request_data = []
+    subtitle_data = {}
+    request_data = None
     for entry in movie_data:
         if entry['search_method'] == 'hash':
-            request_data.append({
+            request_data = {
                 'sublanguageid': entry['sublanguageid'],
                 'moviehash': entry['hash'],
                 'moviebytesize': entry['file_size'].replace(',', ''),
-            })
+            }
         elif entry['search_method'] == 'filename':
-            request_data.append({
+            request_data = {
                 'sublanguageid': entry['sublanguageid'],
-                'query': entry['file_name'],
-            })
+                'query': entry['movie_filename'],
+            }
 
-    opensubs = OpenSubtitles()
-    opensubs.login(config.USER, config.PASSWD)
-    results = opensubs.search_subtitles(request_data)
+        query_results = opensubs.search_subtitles([request_data])
+
+        for result in query_results:
+            movie_name = entry['movie_filename']
+
+            new_entry = {
+                'file_size': entry['file_size'],
+                'hash': entry['hash'],
+                'matched_by': result["MatchedBy"],
+                'sub_filename': result["SubFileName"],
+                'language_name': result["LanguageName"],
+                'season': result["SeriesSeason"],
+                'episode': result["SeriesEpisode"],
+                'format': result["SubFormat"],
+                'encoding': result["SubEncoding"],
+                'rank': result["UserRank"],
+                'add_date': result["SubAddDate"],
+                'num_downloads': result["SubDownloadsCnt"],
+                'rating': result["SubRating"],
+                'score': result["Score"],
+                'link_zip': result["ZipDownloadLink"],
+                'link_gz': result["SubDownloadLink"],
+            }
+
+            try:
+                subtitle_data[movie_name].append(new_entry)
+            except KeyError:
+                subtitle_data[movie_name] = [new_entry]
+
+    # # TEMP - for as long as we are not yet adding to the table.
+    # sorted_subs = sorted(subtitle_data.values(), key=lambda x: int(x['num_downloads']), reverse=True)
+    # for subtitle in sorted_subs:
+    #     print(subtitle['filename'])
+    #     print(subtitle['num_downloads'])
+    #     print(subtitle['rank'])
+    #     print(subtitle['link_zip'])
+    #     print('---------------')
+
     opensubs.logout()
-
-    subtitle_data = {}
-    for i, result in enumerate(results):
-        subtitle = {
-            'matched_by': result["MatchedBy"],
-            'filename': result["SubFileName"],
-            'language_name': result["LanguageName"],
-            'season': result["SeriesSeason"],
-            'episode': result["SeriesEpisode"],
-            'format': result["SubFormat"],
-            'encoding': result["SubEncoding"],
-            'rank': result["UserRank"],
-            'add_date': result["SubAddDate"],
-            'num_downloads': result["SubDownloadsCnt"],
-            'rating': result["SubRating"],
-            'score': result["Score"],
-            'link_zip': result["ZipDownloadLink"],
-            'link_gz': result["SubDownloadLink"],
-        }
-        subtitle.update(result["QueryParameters"])
-        subtitle_data[i] = subtitle
-
-    # TEMP - for as long as we are not yet adding to the table.
-    sorted_subs = sorted(subtitle_data.values(), key=lambda x: int(x['num_downloads']), reverse=True)
-    for subtitle in sorted_subs:
-        print(subtitle['filename'])
-        print(subtitle['num_downloads'])
-        print(subtitle['rank'])
-        print(subtitle['link_zip'])
-        print('---------------')
 
     return subtitle_data
 
