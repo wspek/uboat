@@ -163,17 +163,12 @@ $(document).ready(function(){
 
         var searchData = {
             "languages": null,
-            "subtitle_formats": [],
             "search_method": null,
             "movie_files": [],
         };
 
         // Store form data
         searchData["languages"] = $('#language-select').val();
-
-        $('input[type="checkbox"]:checked').each(function () {
-            searchData["subtitle_formats"].push($(this).val());
-        });
 
         $('input[type="radio"]:checked').each(function () {
             searchData["search_method"] = $(this).val();

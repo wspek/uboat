@@ -25,7 +25,6 @@ def fetch(request):
         # So if the number of selected languages is 2, the number of formats is 3 and the number of movies is 5, then
         # in total 2 * 3 * 5 = 30 subtitles will need to be retrieved.
         combinations = list(product(data['languages'], data['movie_files']))
-        # combinations = list(product(data['languages'], data['subtitle_formats'], data['movie_files']))
 
         # Flatten the result, so we end up with a list of dictionaries
         query_data = []
