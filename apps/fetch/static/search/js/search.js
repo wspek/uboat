@@ -195,8 +195,6 @@ $(document).ready(function(){
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(searchData),
             success: function(data, textStatus, jQxhr){
-                console.log(data);
-
                 var rows = tabulator_table.getRows();
                 var numRows = tabulator_table.getDataCount();
                 for (var i = 1; i < numRows + 1; i++) {
@@ -224,6 +222,8 @@ $(document).ready(function(){
                 for (i in groups) {
                     groups[i].show();
                 }
+
+                tabulator_table.redraw();
             },
             error: function(jQxhr, textStatus, errorThrown){
                 console.log(errorThrown);
