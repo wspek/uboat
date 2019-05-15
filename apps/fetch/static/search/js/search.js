@@ -11,21 +11,22 @@ var movieFiles = [],
         columns:[
             {title:"Header", field:"header", visible:false},
             {title:"Movie file", field:"movie_filename", visible:false},
-            {title:"Size", field:"file_size", visible:false},
-            {title:"Hash", field:"hash", visible:false},
-            {title:"#", field:"id", width: 1, sorter:"string"},
-            {title:"Subtitle file", field:"sub_filename", sorter:"string", widthGrow: 3},
-            {title:"S", field:"season", width: 1, sorter:"string"},
-            {title:"E", field:"episode", width: 1, sorter:"string"},
-            {title:"Language", field:"language_name", width: 100, sorter:"string"},
-            {title:"Format", field:"format", width: 83, sorter:"string"},
-            {title:"Encoding", field:"encoding", width: 100, sorter:"string"},
-            {title:"Date added", field:"add_date", width: 110},
-            {title:"Score", field:"score", width: 75, sorter:"number"},
-            {title:"Rating", field:"rating", width: 80, sorter:"number"},
-            {title:"Uploader rank", field:"rank", sorter:"string", widthGrow: 1},
-            {title:"#DL", field:"num_downloads", sorter:"number", width: 65, headerTooltip:"Number of downloads on OpenSubtitles.org"},
-            {title:"Link", field:"link_zip", formatter:"link", width: 80, formatterParams:{    // http://tabulator.info/docs/4.1/format
+            {title:"Added titles", field:"placeholder", formatter:"html", visible:true, widthGrow: 8},
+            {title:"Movie size (bytes)", field:"file_size", visible:true, widthGrow: 1},
+            {title:"Movie hash", field:"hash", visible:true, widthGrow: 1},
+            {title:"#", field:"id", width: 1, sorter:"string", visible:false},
+            {title:"Subtitle file", field:"sub_filename", sorter:"string", widthGrow: 3, visible:false},
+            {title:"S", field:"season", width: 1, sorter:"string", visible:false},
+            {title:"E", field:"episode", width: 1, sorter:"string", visible:false},
+            {title:"Language", field:"language_name", width: 100, sorter:"string", visible:false},
+            {title:"Format", field:"format", width: 83, sorter:"string", visible:false},
+            {title:"Encoding", field:"encoding", width: 100, sorter:"string", visible:false},
+            {title:"Date added", field:"add_date", width: 110, visible:false},
+            {title:"Score", field:"score", width: 75, sorter:"number", visible:false},
+            {title:"Rating", field:"rating", width: 80, sorter:"number", visible:false},
+            {title:"Uploader rank", field:"rank", sorter:"string", widthGrow: 1, visible:false},
+            {title:"#DL", field:"num_downloads", sorter:"number", width: 65, headerTooltip:"Number of downloads on OpenSubtitles.org", visible:false},
+            {title:"Link", field:"link_zip", formatter:"link", width: 80, visible:false, formatterParams:{    // http://tabulator.info/docs/4.1/format
                     label:"Download",
                     urlField: "link_zip",
                     target:"_blank",
@@ -125,7 +126,7 @@ var calcHashes = function() {
                 'id': id,
                 'header': file.name,
                 'movie_filename': file.name,
-                'sub_filename': 'Fetch subtitles to populate this table',
+                'placeholder': '<i>Fetch subtitles to display them in this table</i>',
                 'file_size': file.size.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ','),
                 'hash': hash,
             };
@@ -216,6 +217,13 @@ $(document).ready(function(){
                         addTableData(result);
                         id++;
                     }
+                }
+
+                // Reveal correct columns
+                var columns = tabulator_table.getColumns();
+                for (i = 2; i < columns.length; i++) {
+                    console.log(columns[i]);
+                    columns[i].toggle();
                 }
 
                 var groups = tabulator_table.getGroups();
