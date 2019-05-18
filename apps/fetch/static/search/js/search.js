@@ -21,17 +21,19 @@ var movieFiles = [],
             {title:"Language", field:"language_name", width: 100, sorter:"string", visible:false},
             {title:"Format", field:"format", width: 83, sorter:"string", visible:false},
             {title:"Encoding", field:"encoding", width: 100, sorter:"string", visible:false},
-            {title:"Date added", field:"add_date", width: 110, visible:false},
-            {title:"Score", field:"score", width: 75, sorter:"number", visible:false},
+            {title:"Date added", field:"add_date", width: 145, visible:false},
+            {title:"Score", field:"score", width: 76, sorter:"number", visible:false},
             {title:"Rating", field:"rating", width: 80, sorter:"number", visible:false},
             {title:"Uploader rank", field:"rank", sorter:"string", widthGrow: 1, visible:false},
             {title:"#DL", field:"num_downloads", sorter:"number", width: 65, headerTooltip:"Number of downloads on OpenSubtitles.org", visible:false},
-            {title:"Link", field:"link_zip", formatter:"link", width: 80, visible:false, formatterParams:{    // http://tabulator.info/docs/4.1/format
-                    label:"Download",
-                    urlField: "link_zip",
-                    target:"_blank",
-                }
-            },
+//            {title:"Download", field:"link_zip", formatter:"link", width: 110, visible:false, formatterParams:{    // http://tabulator.info/docs/4.1/format
+//                    label:"ZIP",
+//                    urlField: "link_zip",
+//                    target:"_blank",
+//                }
+//            },
+            {title:"Download", field:"download", formatter:"html", width: 110, visible:false},
+//            {title:"Actions", field:"actions", formatter:"html", width: 90, visible:false},
         ],
         groupBy:"header",
         groupToggleElement:"header",
@@ -158,6 +160,102 @@ for (var i = 0; i < fileSelectClass.length; i++) {
     fileSelectClass[i].addEventListener('change', calcHashes);
 }
 
+function onerror(message) {
+    console.log("ERROR: " + message);
+}
+
+var model = (function(obj) {
+    var URL = obj.webkitURL || obj.mozURL || obj.URL;
+
+    return {
+        getEntries : function(url, onend) {
+            zip.createReader(new zip.HttpReader(url), function(zipReader) {
+                zipReader.getEntries(onend);
+            }, onerror);
+        },
+        getEntryFile : function(entry, onend, onprogress) {
+            var writer, zipFileEntry;
+
+            function getData() {
+                entry.getData(writer, function(blob) {
+                    var blobURL = URL.createObjectURL(blob);
+                    onend(blobURL);
+                }, onprogress);
+            }
+
+            writer = new zip.BlobWriter();
+            getData();
+        }
+    };
+})(this);
+
+function download(entry, a) {
+    var unzipProgress = {
+        value: 0,
+        max: 0,
+    }
+
+    model.getEntryFile(entry, function(blobURL) {
+        var clickEvent = document.createEvent("MouseEvent");
+        unzipProgress.value = 0;
+        unzipProgress.max = 0;
+        clickEvent.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        a.href = blobURL;
+        a.download = entry.filename;
+        a.dispatchEvent(clickEvent);
+    }, function(current, total) {
+        unzipProgress.value = current;
+        unzipProgress.max = total;
+    });
+}
+
+function unzip(button) {
+    var zipUrl = button.getAttribute("zip");
+
+    zip.workerScriptsPath = '/static/search/js/zip/';
+
+    var node = document.createElement("i");
+    node.classList.add('fas');
+    node.classList.add('fa-circle-notch');
+    node.classList.add('fa-spin');
+
+    button.innerHTML = '';
+    button.classList.add('buttonload');
+    button.appendChild(node);
+
+    model.getEntries(zipUrl, function(entries) {
+        entries.forEach(function(entry) {
+            var ext = entry.filename.slice(-3);
+
+            if (ext.toUpperCase() == 'SRT') {
+                var row_id = button.parentNode.parentNode.querySelector('[tabulator-field="id"]').innerText;
+                var markup = tabulator_table.getRow(row_id).getData().download; //return row component with index of 1
+                var parser = new DOMParser();
+                var elements = parser.parseFromString(markup, "text/html");
+                var buttonElem = elements.getElementsByTagName("button")[0];
+                buttonElem.remove();
+
+                var aId = 'srt_' + row_id;
+                var newContent = elements.body.innerHTML + '<a href="#" id="' + aId + '">SRT</a>';
+                tabulator_table.updateData([{id:row_id, download: newContent}])
+                .then(function() { })
+                .catch(function () { console.log("Error updating table"); });
+
+//                tabulator_table.redraw();
+
+                var a = document.getElementById(aId);
+                a.addEventListener("click", function(event) {
+                    if (!a.download) {
+                        download(entry, a);
+                        event.preventDefault();
+                        return false;
+                    }
+                }, false);
+            }
+        });
+    });
+}
+
 $(document).ready(function(){
     $("#search-config-form").submit(function(event) {
         event.preventDefault();
@@ -214,6 +312,7 @@ $(document).ready(function(){
                         result = result_data[j];
                         result['id'] = id;
                         result['header'] = movie_name;
+                        result['download'] = "<a href='" + result['link_zip'] + "'>ZIP</a>&nbsp;&nbsp;<a href='" + result['link_gz'] + "'>GZ</a>&nbsp;&nbsp;<button class='btn-unzip' zip='" + result['link_zip'] + "' onclick='unzip(this)'>SRT</button>";
                         addTableData(result);
                         id++;
                     }
@@ -222,7 +321,6 @@ $(document).ready(function(){
                 // Reveal correct columns
                 var columns = tabulator_table.getColumns();
                 for (i = 2; i < columns.length; i++) {
-                    console.log(columns[i]);
                     columns[i].toggle();
                 }
 
