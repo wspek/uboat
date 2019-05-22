@@ -195,63 +195,81 @@ function download(entry, a) {
         max: 0,
     }
 
-    model.getEntryFile(entry, function(blobURL) {
-        var clickEvent = document.createEvent("MouseEvent");
-        unzipProgress.value = 0;
-        unzipProgress.max = 0;
-        clickEvent.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-        a.href = blobURL;
-        a.download = entry.filename;
-        a.dispatchEvent(clickEvent);
-    }, function(current, total) {
-        unzipProgress.value = current;
-        unzipProgress.max = total;
-    });
+    return new Promise(function(resolve, reject) {
+        model.getEntryFile(entry, function(blobURL) {
+            unzipProgress.value = 0;
+            unzipProgress.max = 0;
+            a.href = blobURL;
+            a.download = entry.filename;
+
+            // Uncomment this to immediately trigger the Download/File save dialog
+            // var clickEvent = document.createEvent("MouseEvent");
+            // clickEvent.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            // a.dispatchEvent(clickEvent);
+
+            resolve(a);
+        }, function(current, total) {
+            unzipProgress.value = current;
+            unzipProgress.max = total;
+        });
+    })
 }
 
 function unzip(button) {
     var zipUrl = button.getAttribute("zip");
 
+    // This is necessary for zip.js to work. See: https://gildas-lormeau.github.io/zip.js/
     zip.workerScriptsPath = '/static/search/js/zip/';
 
+    // Add markup to show spinner on button.
     var node = document.createElement("i");
     node.classList.add('fas');
     node.classList.add('fa-circle-notch');
     node.classList.add('fa-spin');
-
     button.innerHTML = '';
     button.classList.add('buttonload');
     button.appendChild(node);
 
+    // Get the content entries that are contained within the ZIP file to download.
     model.getEntries(zipUrl, function(entries) {
         entries.forEach(function(entry) {
-            var ext = entry.filename.slice(-3);
-
-            if (ext.toUpperCase() == 'SRT') {
+            if (button.parentNode) {
+                // Retrieve the file extension of the subtitle we are looking for.
                 var row_id = button.parentNode.parentNode.querySelector('[tabulator-field="id"]').innerText;
-                var markup = tabulator_table.getRow(row_id).getData().download; //return row component with index of 1
-                var parser = new DOMParser();
-                var elements = parser.parseFromString(markup, "text/html");
-                var buttonElem = elements.getElementsByTagName("button")[0];
-                buttonElem.remove();
+                var row = tabulator_table.getRow(row_id);
+                var row_data = row.getData();
+                var sub_extension = row_data.format;
 
-                var aId = 'srt_' + row_id;
-                var newContent = elements.body.innerHTML + '<a href="#" id="' + aId + '">SRT</a>';
-                tabulator_table.updateData([{id:row_id, download: newContent}])
-                .then(function() { })
-                .catch(function () { console.log("Error updating table"); });
+                // Retrieve the file extension of the entry.
+                var ext = entry.filename.slice(-3);
 
-                // TODO: Redraw causes previous links to become dead
-                tabulator_table.redraw();
+                if (ext.toUpperCase() == sub_extension.toUpperCase()) {
+                    // We have to retrieve the markup in the table cell, so we can easily remove the button and
+                    // replace it for a link.
+                    var markup = row_data.download; //return row component with index of 1
+                    var parser = new DOMParser();
+                    var elements = parser.parseFromString(markup, "text/html");
+                    var buttonElem = elements.getElementsByTagName("button")[0];
+                    buttonElem.remove();
 
-                var a = document.getElementById(aId);
-                a.addEventListener("click", function(event) {
-                    if (!a.download) {
-                        download(entry, a);
-                        event.preventDefault();
-                        return false;
-                    }
-                }, false);
+                    // Construct the new markup with the link and update the table cell. The button is replaced.
+                    var aId = sub_extension + '_' + row_id;
+                    var newContent = elements.body.innerHTML + '<a href="#" id="' + aId + '">' + sub_extension.toUpperCase() + '</a>';
+                    tabulator_table.updateData([{id:row_id, download: newContent}])
+
+                    // Get the DOM element belonging to the link and save the BLOB url. The table needs to be
+                    // updated with this information, otherwise a redraw will make the link invalid.
+                    var a = document.getElementById(aId);
+                    download(entry, a)
+                    .then(function() {
+                        newContent = elements.body.innerHTML + a.outerHTML;
+                        tabulator_table.updateData([{id:row_id, download: newContent}])
+                    });
+                    event.preventDefault();
+
+                    // Now there's a link instead of a button. Redraw the row to adjust its height.
+                    row.reformat();
+                }
             }
         });
     });
@@ -313,7 +331,10 @@ $(document).ready(function(){
                         result = result_data[j];
                         result['id'] = id;
                         result['header'] = movie_name;
-                        result['download'] = "<a href='" + result['link_zip'] + "'>ZIP</a>&nbsp;&nbsp;<a href='" + result['link_gz'] + "'>GZ</a>&nbsp;&nbsp;<button class='btn-unzip' zip='" + result['link_zip'] + "' onclick='unzip(this)'>SRT</button>";
+                        result['download'] = "<a href='" + result['link_zip'] + "'>ZIP</a>&nbsp;&nbsp;<a href='" + result['link_gz']
+                        + "'>GZ</a>&nbsp;&nbsp;<button class='btn-unzip' zip='" + result['link_zip']
+                        + "' onclick='unzip(this)'>" + result['format'].toUpperCase() + "</button>";
+
                         addTableData(result);
                         id++;
                     }
