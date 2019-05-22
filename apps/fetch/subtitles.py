@@ -51,7 +51,7 @@ def fetch_subtitles(movie_data):
                 'language_name': result["LanguageName"],
                 'season': result["SeriesSeason"],
                 'episode': result["SeriesEpisode"],
-                'format': result["SubFormat"],
+                'format': result["SubFileName"].split('.')[-1],
                 'encoding': result["SubEncoding"],
                 'rank': result["UserRank"],
                 'add_date': result["SubAddDate"],

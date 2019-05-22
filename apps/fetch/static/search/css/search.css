@@ -110,3 +110,18 @@ body {
     padding-left: 1.5em;
     padding-right: 1.5em;
 }
+.btn-unzip {
+    font-size: 12px;
+    text-align: center;
+    margin: auto;
+    width: 32px;
+    height: 19px;
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+}
