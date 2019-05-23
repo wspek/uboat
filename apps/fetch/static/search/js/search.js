@@ -379,6 +379,28 @@ $(document).ready(function(){
         return false;
     });
 
+    // Tabulator collapse
+    $('#expand-all').click(function(){
+        var groups = tabulator_table.getGroups();
+        for (i in groups) {
+            var visible = groups[i].getVisibility();
+
+            if (!visible) {
+                groups[i].show();
+            }
+        }
+    });
+    $('#collapse-all').click(function(){
+        var groups = tabulator_table.getGroups();
+        for (i in groups) {
+            var visible = groups[i].getVisibility();
+
+            if (visible) {
+                groups[i].hide();
+            }
+        }
+    });
+
     $('.panel-collapse').on('show.bs.collapse', function () {
         $(this).siblings('.panel-heading').addClass('active');
     });

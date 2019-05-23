@@ -96,8 +96,11 @@ body {
     padding-top: 10px;
     padding-bottom: 10px;
 }
-#tabulator-row{
+#tabulator-controls-row{
     padding-top: 50px;
+    padding-bottom: 10px;
+}
+#tabulator-row{
     padding-bottom: 10px;
 }
 #select-all{
@@ -124,4 +127,14 @@ body {
     border-right-width: 2px;
     border-bottom-width: 2px;
     border-left-width: 2px;
+}
+.card {
+    background: rgb(229, 229, 229);
+}
+.card-body {
+    text-align: left;
+    padding-top: 0.35rem;
+    padding-right: 0.35rem;
+    padding-bottom: 0.35rem;
+    padding-left: 0.35rem;
 }
