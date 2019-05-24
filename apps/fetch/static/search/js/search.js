@@ -45,7 +45,16 @@ var movieFiles = [],
 
             return data[0].id == 1; //all groups with more than three rows start open, any with three or less start closed
         },
+        groupVisibilityChanged:function(group, visible){
+            if (!visible) {
+                redrawTable();
+            }
+        },
     });
+
+function redrawTable() {
+    tabulator_table.redraw();
+}
 
 function calcFileHash (file, callback) {
     var HASH_CHUNK_SIZE = 65536, //64 * 1024
