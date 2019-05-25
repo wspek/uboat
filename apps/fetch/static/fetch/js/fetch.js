@@ -1,9 +1,5 @@
 var movieFiles = [],
     fileSelectClass = document.getElementsByClassName("select"),
-    statusMessages = {
-        'HASH_CALC': "Calculating hash",
-        'NULL': "",
-    },
     tabulatorTable = new Tabulator("#subtitle-table", {
         placeholder:"No titles added yet",
         layout:"fitColumns",
@@ -277,28 +273,70 @@ function unzip(button) {
     });
 }
 
+function fetchAndDisplaySubtitles() {
+    var searchData = {};
+
+    // Store form data
+    searchData["movie_files"] = movieFiles
+    searchData["languages"] = $('#language-select').val();
+    $('input[type="radio"]:checked').each(function () {
+        searchData["search_method"] = $(this).val();
+    });
+
+    // This function is called when we successfully retrieve the subtitle data
+    var onSuccess = function(subtitleData) {
+        var rows = tabulatorTable.getRows();
+        var numRows = tabulatorTable.getDataCount();
+        for (var i = 1; i < numRows + 1; i++) {
+            tabulatorTable.getRow(i).delete();
+        }
+
+        var id = 1;
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            var rowData = row.getData();
+
+            var movieName = rowData['movie_filename'];
+            var resultData = subtitleData[movieName];
+
+            for (j in resultData) {
+                result = resultData[j];
+                result['id'] = id;
+                result['header'] = movieName;
+                result['download'] = "<a href='" + result['link_zip'] + "'>ZIP</a>&nbsp;&nbsp;<a href='" + result['link_gz']
+                + "'>GZ</a>&nbsp;&nbsp;<button class='btn-unzip' zip='" + result['link_zip']
+                + "' onclick='unzip(this)'>" + result['format'].toUpperCase() + "</button>";
+
+                addTableData(result);
+                id++;
+            }
+        }
+
+        // Reveal correct columns
+        var columns = tabulatorTable.getColumns();
+        for (i = 2; i < columns.length; i++) {
+            columns[i].toggle();
+        }
+
+        var groups = tabulatorTable.getGroups();
+        for (i in groups) {
+            groups[i].show();
+        }
+
+        redrawTable()
+    }
+
+    searchSubtitles(searchData, onSuccess);
+}
+
+
 // jQuery
 $(document).ready(function(){
     // Triggered when 'Fetch subtitles' is pressed in search panel
     $("#search-config-form").submit(function(event) {
         event.preventDefault();
 
-        var searchData = {
-            "languages": null,
-            "search_method": null,
-            "movie_files": [],
-        };
-
-        // Store form data
-        searchData["languages"] = $('#language-select').val();
-
-        $('input[type="radio"]:checked').each(function () {
-            searchData["search_method"] = $(this).val();
-        });
-
-        searchData["movie_files"] = movieFiles
-
-        search(searchData);
+        fetchAndDisplaySubtitles()
     });
 
     // Search panel expand/collape
@@ -309,69 +347,6 @@ $(document).ready(function(){
     $('.panel-collapse').on('hide.bs.collapse', function () {
         $(this).siblings('.panel-heading').removeClass('active');
     });
-
-    // refactor: this should be in its own class
-    function search(searchData){
-        var csrftoken = $.cookie('csrftoken');
-
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        });
-
-        $.ajax({
-            type: 'post',
-            url: '',    // /fetch
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(searchData),
-            success: function(data, textStatus, jQxhr){
-                var rows = tabulator_table.getRows();
-                var numRows = tabulator_table.getDataCount();
-                for (var i = 1; i < numRows + 1; i++) {
-                    tabulator_table.getRow(i).delete();
-                }
-
-                var id = 1;
-                for (var i = 0; i < rows.length; i++) {
-                    var row = rows[i];
-                    var row_data = row.getData();
-
-                    var movie_name = row_data['movie_filename'];
-                    var result_data = data[movie_name];
-
-                    for (j in result_data) {
-                        result = result_data[j];
-                        result['id'] = id;
-                        result['header'] = movie_name;
-                        result['download'] = "<a href='" + result['link_zip'] + "'>ZIP</a>&nbsp;&nbsp;<a href='" + result['link_gz']
-                        + "'>GZ</a>&nbsp;&nbsp;<button class='btn-unzip' zip='" + result['link_zip']
-                        + "' onclick='unzip(this)'>" + result['format'].toUpperCase() + "</button>";
-
-                        addTableData(result);
-                        id++;
-                    }
-                }
-
-                // Reveal correct columns
-                var columns = tabulator_table.getColumns();
-                for (i = 2; i < columns.length; i++) {
-                    columns[i].toggle();
-                }
-
-                var groups = tabulator_table.getGroups();
-                for (i in groups) {
-                    groups[i].show();
-                }
-
-                tabulator_table.redraw();
-            },
-            error: function(jQxhr, textStatus, errorThrown){
-                console.log(errorThrown);
-            }
-        });
-    }
 
     // Logic belonging to selecting the languages
     $('#language-select').multiSelect({
