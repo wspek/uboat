@@ -5,12 +5,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 
 import apps.fetch.subtitles as subs
+import apps.fetch.config as config
 
-
-# # This function temporarily already processes the response and shows it in a webpage for easy downloading
-# def temp(response):
-#     pass
-#
 
 def fetch(request):
     """View function for home page of site."""
@@ -39,8 +35,10 @@ def fetch(request):
 
     # Handle GET request
     else:
-        print("IN GET")
+        languages = subs.load_languages(config.LANGUAGES_CSV)
 
-        # Render the HTML template index.html with the data in the context variable
-        return render(request, 'fetch/fetch.html')
+        context = {
+            'languages': languages,
+        }
 
+        return render(request, 'fetch/fetch.html', context)
