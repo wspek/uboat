@@ -4,7 +4,7 @@ var movieFiles = [],
         'HASH_CALC': "Calculating hash",
         'NULL': "",
     },
-    tabulator_table = new Tabulator("#subtitle-table", {
+    tabulatorTable = new Tabulator("#subtitle-table", {
         placeholder:"No titles added yet",
         layout:"fitColumns",
         layoutColumnsOnNewData:true,
@@ -26,14 +26,7 @@ var movieFiles = [],
             {title:"Rating", field:"rating", width: 80, widthShrink:1, sorter:"number", visible:false},
             {title:"Uploader rank", field:"rank", sorter:"string", widthGrow: 2, visible:false},
             {title:"#DL", field:"num_downloads", sorter:"number", width: 65, widthShrink:2, headerTooltip:"Number of downloads on OpenSubtitles.org", visible:false},
-//            {title:"Download", field:"link_zip", formatter:"link", width: 110, visible:false, formatterParams:{    // http://tabulator.info/docs/4.1/format
-//                    label:"ZIP",
-//                    urlField: "link_zip",
-//                    target:"_blank",
-//                }
-//            },
             {title:"Download", field:"download", formatter:"html", width: 110, widthShrink: 3, visible:false},
-//            {title:"Actions", field:"actions", formatter:"html", width: 90, visible:false},
         ],
         groupBy:"header",
         groupToggleElement:"header",
@@ -53,7 +46,7 @@ var movieFiles = [],
     });
 
 function redrawTable() {
-    tabulator_table.redraw();
+    tabulatorTable.redraw();
 }
 
 function calcFileHash (file, callback) {
@@ -156,11 +149,11 @@ var calcHashes = function() {
 function addTableData(table_data, statusMessage) {
     var tableId = table_data.id;
 
-    var row = tabulator_table.getRow(tableId);
+    var row = tabulatorTable.getRow(tableId);
     if (row) {
-        tabulator_table.updateData([table_data]);
+        tabulatorTable.updateData([table_data]);
     } else {
-        tabulator_table.addRow([table_data]);
+        tabulatorTable.addRow([table_data]);
     }
 }
 
@@ -228,7 +221,7 @@ function unzip(button) {
     var zipUrl = button.getAttribute("zip");
 
     // This is necessary for zip.js to work. See: https://gildas-lormeau.github.io/zip.js/
-    zip.workerScriptsPath = '/static/search/js/zip/';
+    zip.workerScriptsPath = '/static/fetch/js/zip/';
 
     // Add markup to show spinner on button.
     var node = document.createElement("i");
@@ -245,7 +238,7 @@ function unzip(button) {
             if (button.parentNode) {
                 // Retrieve the file extension of the subtitle we are looking for.
                 var row_id = button.parentNode.parentNode.querySelector('[tabulator-field="id"]').innerText;
-                var row = tabulator_table.getRow(row_id);
+                var row = tabulatorTable.getRow(row_id);
                 var row_data = row.getData();
                 var sub_extension = row_data.format;
 
@@ -264,7 +257,7 @@ function unzip(button) {
                     // Construct the new markup with the link and update the table cell. The button is replaced.
                     var aId = sub_extension + '_' + row_id;
                     var newContent = elements.body.innerHTML + '<a href="#" id="' + aId + '">' + sub_extension.toUpperCase() + '</a>';
-                    tabulator_table.updateData([{id:row_id, download: newContent}])
+                    tabulatorTable.updateData([{id:row_id, download: newContent}])
 
                     // Get the DOM element belonging to the link and save the BLOB url. The table needs to be
                     // updated with this information, otherwise a redraw will make the link invalid.
@@ -272,7 +265,7 @@ function unzip(button) {
                     download(entry, a)
                     .then(function() {
                         newContent = elements.body.innerHTML + a.outerHTML;
-                        tabulator_table.updateData([{id:row_id, download: newContent}])
+                        tabulatorTable.updateData([{id:row_id, download: newContent}])
                     });
                     event.preventDefault();
 
@@ -284,7 +277,9 @@ function unzip(button) {
     });
 }
 
+// jQuery
 $(document).ready(function(){
+    // Triggered when 'Fetch subtitles' is pressed in search panel
     $("#search-config-form").submit(function(event) {
         event.preventDefault();
 
@@ -306,6 +301,16 @@ $(document).ready(function(){
         search(searchData);
     });
 
+    // Search panel expand/collape
+    $('.panel-collapse').on('show.bs.collapse', function () {
+        $(this).siblings('.panel-heading').addClass('active');
+    });
+
+    $('.panel-collapse').on('hide.bs.collapse', function () {
+        $(this).siblings('.panel-heading').removeClass('active');
+    });
+
+    // refactor: this should be in its own class
     function search(searchData){
         var csrftoken = $.cookie('csrftoken');
 
@@ -368,29 +373,25 @@ $(document).ready(function(){
         });
     }
 
+    // Logic belonging to selecting the languages
     $('#language-select').multiSelect({
         afterSelect: function(values){
-            var test = 0;
-            // alert("Select value: "+values);
+            // Use this as a callback for when a new language is selected
         },
         afterDeselect: function(values){
-            var test = 0;
-            // alert("Deselect value: "+values);
+            // Use this as a callback for when a language is deselected
         }
     });
-
     $('#select-all').click(function(){
         $('#language-select').multiSelect('select_all');
-        return false;
     });
     $('#deselect-all').click(function(){
         $('#language-select').multiSelect('deselect_all');
-        return false;
     });
 
-    // Tabulator collapse
+    // Tabulator collapse/expand row groups
     $('#expand-all').click(function(){
-        var groups = tabulator_table.getGroups();
+        var groups = tabulatorTable.getGroups();
         for (i in groups) {
             var visible = groups[i].getVisibility();
 
@@ -400,7 +401,7 @@ $(document).ready(function(){
         }
     });
     $('#collapse-all').click(function(){
-        var groups = tabulator_table.getGroups();
+        var groups = tabulatorTable.getGroups();
         for (i in groups) {
             var visible = groups[i].getVisibility();
 
@@ -408,14 +409,6 @@ $(document).ready(function(){
                 groups[i].hide();
             }
         }
-    });
-
-    $('.panel-collapse').on('show.bs.collapse', function () {
-        $(this).siblings('.panel-heading').addClass('active');
-    });
-
-    $('.panel-collapse').on('hide.bs.collapse', function () {
-        $(this).siblings('.panel-heading').removeClass('active');
     });
 });
 
