@@ -1,21 +1,10 @@
-import json
-import pdb
-from itertools import product
-
+import csv
+from collections import OrderedDict
 
 from pythonopensubtitles.opensubtitles import OpenSubtitles
-from pythonopensubtitles.utils import File
 
 import apps.fetch.config as config
-# import config
-
-
-def test():
-    f = File('/home/wspek/Development/python/django_projects/uboat/test/input/test.mkv')
-    hash = f.get_hash()
-    print(hash)
-
-    print(f.size)
+# import config     # For debugging
 
 
 def fetch_subtitles(movie_data):
@@ -67,22 +56,28 @@ def fetch_subtitles(movie_data):
             except KeyError:
                 subtitle_data[movie_name] = [new_entry]
 
-    # # TEMP - for as long as we are not yet adding to the table.
-    # sorted_subs = sorted(subtitle_data.values(), key=lambda x: int(x['num_downloads']), reverse=True)
-    # for subtitle in sorted_subs:
-    #     print(subtitle['filename'])
-    #     print(subtitle['num_downloads'])
-    #     print(subtitle['rank'])
-    #     print(subtitle['link_zip'])
-    #     print('---------------')
-
     opensubs.logout()
 
     return subtitle_data
 
 
-if __name__ == '__main__':
-    data = [{'id': 1, 'file_name': 'The.Man.in.the.High.Castle.S01E02.Sunrise.720p.WEBRip.x264-[MULVAcoded].mkv', 'file_size': '304,108,172', 'hash': 'bef3700e9584487a', 'sublanguageid': 'spa'}]
+def download_languages():
+    pass
 
-    fetch_subtitles(data)
-    # test()
+
+def load_languages(filename):
+    languages = OrderedDict()
+
+    with open(filename) as f:
+        reader = csv.DictReader(f)
+
+        for row in reader:
+            languages[row['IdSubLanguage']] = (row['LanguageName'], row['Preselected'])
+
+    return languages
+
+
+if __name__ == '__main__':
+    # Useful for debugging
+    pass
+
