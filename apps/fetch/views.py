@@ -13,21 +13,13 @@ def fetch(request):
 
     # Handle POST request
     if request.method == 'POST':
-        import pdb
-
         data = json.loads(request.body)
-
-        # Create a list of all combinations of movies, languages and formats.
-        # So if the number of selected languages is 2, the number of formats is 3 and the number of movies is 5, then
-        # in total 2 * 3 * 5 = 30 subtitles will need to be retrieved.
-        combinations = list(product(data['languages'], data['movie_files']))
 
         # Flatten the result, so we end up with a list of dictionaries
         query_data = []
-        for combo in combinations:
-            flattened_combo = combo[1].copy()
-            flattened_combo.update({'sublanguageid': combo[0], 'search_method': data['search_method']})
-            query_data.append(flattened_combo)
+        for movie in data['movie_files']:
+            movie.update({'sublanguageid': ','.join(data['languages']), 'search_method': data['search_method']})
+            query_data.append(movie)
 
         response = subs.fetch_subtitles(query_data)
 
