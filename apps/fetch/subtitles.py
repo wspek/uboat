@@ -29,7 +29,10 @@ def fetch_subtitles(movie_data):
 
         query_results = opensubs.search_subtitles([request_data])
 
-        for result in query_results:
+        # Sort the results by language
+        ordered_query_results = sorted(query_results, key=lambda i: i["LanguageName"])
+
+        for result in ordered_query_results:
             movie_name = entry['movie_filename']
 
             new_entry = {

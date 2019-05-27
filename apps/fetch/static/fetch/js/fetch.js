@@ -97,7 +97,15 @@ function fetchAndDisplaySubtitles() {
 
     // Store form data
     searchData["movie_files"] = movieFiles
-    searchData["languages"] = $('#language-select').val();
+
+    langSelectElement = $('#language-select');
+    if (langSelectElement[0].selectedOptions.length == langSelectElement[0].length) {   // All languages are selected
+        searchData["languages"] = ['all'];
+    }
+    else {
+        searchData["languages"] = $('#language-select').val();
+    }
+
     $('input[type="radio"]:checked').each(function () {
         searchData["search_method"] = $(this).val();
     });
