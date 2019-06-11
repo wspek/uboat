@@ -41,6 +41,7 @@ def fetch_subtitles(movie_data):
                 'matched_by': result["MatchedBy"],
                 'sub_filename': result["SubFileName"],
                 'language_name': result["LanguageName"],
+                'language_id': result["SubLanguageID"],
                 'season': result["SeriesSeason"],
                 'episode': result["SeriesEpisode"],
                 'format': result["SubFileName"].split('.')[-1],
@@ -59,6 +60,32 @@ def fetch_subtitles(movie_data):
             except KeyError:
                 subtitle_data[movie_name] = [new_entry]
 
+        # Finally we need add an empty entry for all languages that did not have a result
+        movie_name = entry['movie_filename']
+
+        if entry['sublanguageid'] == 'all':
+            searched_languages = set([language_id for language_id in get_languages().keys()])
+        else:
+            searched_languages = set(entry['sublanguageid'].split(','))
+
+        try:
+            found_languages = set([result['language_id'] for result in subtitle_data[movie_name]])
+        except KeyError:
+            # Empty subtitle results, so empty found languages set
+            found_languages = set()
+
+        missing_languages = searched_languages - found_languages
+
+        for lang in missing_languages:
+            new_entry = {
+                'sub_filename': None,
+                'language_id': lang,
+            }
+            try:
+                subtitle_data[movie_name].append(new_entry)
+            except KeyError:
+                subtitle_data[movie_name] = [new_entry]
+
     opensubs.logout()
 
     return subtitle_data
@@ -68,10 +95,10 @@ def download_languages():
     pass
 
 
-def load_languages(filename):
+def get_languages():
     languages = OrderedDict()
 
-    with open(filename) as f:
+    with open(config.LANGUAGES_CSV) as f:
         reader = csv.DictReader(f)
 
         for row in reader:

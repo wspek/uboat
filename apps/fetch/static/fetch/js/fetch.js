@@ -8,9 +8,12 @@ var movieFiles = [],
         layout:"fitColumns",
         layoutColumnsOnNewData:true,
         columns:[
+            // If you add a column before the break, do not forget to increment the value of i in line 163
+            {title:"Enabled", field:"enabled", visible:false},
             {title:"Header", field:"header", visible:false},
             {title:"Movie file", field:"movie_filename", visible:false},
             {title:"Added titles", field:"placeholder", formatter:"html", visible:true},
+            // Break
             {title:"Movie size (bytes)", field:"file_size", width: 160, widthShrink:1, visible:true},
             {title:"Movie hash", field:"hash", width: 160, widthShrink:1, visible:true},
             {title:"#", field:"id", width: 1, widthShrink:1, sorter:"string", visible:false},
@@ -27,6 +30,14 @@ var movieFiles = [],
             {title:"#DL", field:"num_downloads", sorter:"number", width: 65, widthShrink:2, headerTooltip:"Number of downloads on OpenSubtitles.org", visible:false},
             {title:"Download", field:"download", formatter:"html", width: 110, widthShrink: 3, visible:false},
         ],
+        rowFormatter:function(row){
+            var data = row.getData();
+
+            if(data['enabled'] == false){
+                row.getElement().style.backgroundColor = '#ffffe5';
+                row.getElement().style.fontStyle = 'italic';
+            }
+        },
         groupBy:"header",
         groupToggleElement:"header",
         groupStartOpen:function(value, count, data, group){
@@ -50,11 +61,14 @@ function addTableData(tableData, statusMessage) {
     var tableId = tableData.id;
 
     var row = tabulatorTable.getRow(tableId);
+
     if (row) {
         tabulatorTable.updateData([tableData]);
     } else {
         tabulatorTable.addRow([tableData]);
     }
+
+//    row.reformat();
 }
 
 var addMovieFilesToTable = function() {
@@ -93,11 +107,12 @@ var addMovieFilesToTable = function() {
 };
 
 function fetchAndDisplaySubtitles() {
-    var searchData = {};
+    // Store form data retrieved from frontend
+    var searchData = {
+        "movie_files": movieFiles
+    };
 
-    // Store form data
-    searchData["movie_files"] = movieFiles
-
+    // Get selected languages
     langSelectElement = $('#language-select');
     if (langSelectElement[0].selectedOptions.length == langSelectElement[0].length) {   // All languages are selected
         searchData["languages"] = ['all'];
@@ -106,9 +121,15 @@ function fetchAndDisplaySubtitles() {
         searchData["languages"] = $('#language-select').val();
     }
 
+    // Get the search method; either hash or filename
     $('input[type="radio"]:checked').each(function () {
         searchData["search_method"] = $(this).val();
     });
+
+    var availableLanguages = {};
+    getAvailableLanguages(function(languages) {
+        this.availableLanguages = languages;
+    })
 
     // This function is called when we successfully retrieve the subtitle data
     var onSuccess = function(subtitleData) {
@@ -130,9 +151,17 @@ function fetchAndDisplaySubtitles() {
                 result = resultData[j];
                 result['id'] = id;
                 result['header'] = movieName;
-                result['download'] = "<a href='" + result['link_zip'] + "'>ZIP</a>&nbsp;&nbsp;<a href='" + result['link_gz']
-                + "'>GZ</a>&nbsp;&nbsp;<button class='btn-unzip' zip='" + result['link_zip']
-                + "' onclick='unzipAndLink(this)'>" + result['format'].toUpperCase() + "</button>";
+
+                if (result['sub_filename']) {
+                    result['download'] = "<a href='" + result['link_zip'] + "'>ZIP</a>&nbsp;&nbsp;<a href='" + result['link_gz']
+                    + "'>GZ</a>&nbsp;&nbsp;<button class='btn-unzip' zip='" + result['link_zip']
+                    + "' onclick='unzipAndLink(this)'>" + result['format'].toUpperCase() + "</button>";
+                }
+                else {
+                    result['sub_filename'] = 'Language not found for this title';
+                    result['language_name'] = this.availableLanguages[result['language_id']][0];
+                    result['enabled'] = false;
+                }
 
                 addTableData(result);
                 id++;
@@ -142,7 +171,7 @@ function fetchAndDisplaySubtitles() {
         // Reveal correct columns
         // TODO: This is obscure code. We should do this differently.
         var columns = tabulatorTable.getColumns();
-        for (i = 2; i < columns.length; i++) {
+        for (i = 3; i < columns.length; i++) {
             columns[i].toggle();
         }
 
@@ -154,7 +183,7 @@ function fetchAndDisplaySubtitles() {
         redrawTable()
     }
 
-    searchSubtitles(searchData, onSuccess);
+    searchSubtitles(searchData, onSuccess); // subtitles.js
 }
 
 function unzipAndLink(button) {
