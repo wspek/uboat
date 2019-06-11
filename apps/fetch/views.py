@@ -1,5 +1,4 @@
 import json
-from itertools import product
 
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -9,7 +8,7 @@ import apps.fetch.config as config
 
 
 def fetch(request):
-    """View function for home page of site."""
+    langs = subs.get_languages()
 
     # Handle POST request
     if request.method == 'POST':
@@ -27,10 +26,16 @@ def fetch(request):
 
     # Handle GET request
     else:
-        languages = subs.load_languages(config.LANGUAGES_CSV)
-
         context = {
-            'languages': languages,
+            'languages': langs,
         }
 
         return render(request, 'fetch/fetch.html', context)
+
+
+def languages(request):
+    # Handle POST request
+    if request.method == 'GET':
+        response = subs.get_languages()
+
+        return JsonResponse(response)

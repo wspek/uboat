@@ -49,3 +49,24 @@ function searchSubtitles(searchData, onSuccess, onError){
         }
     });
 }
+
+function getAvailableLanguages(onSuccess) {
+    var csrftoken = $.cookie('csrftoken');
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    });
+
+    $.ajax({
+        type: 'get',
+        url: 'languages',    // /fetch/languages
+        success: function(languageData, textStatus, jQxhr) {
+            onSuccess(languageData);
+        },
+        error: function(jQxhr, textStatus, errorThrown){
+            console.log(errorThrown);
+        }
+    });
+}
