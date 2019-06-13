@@ -128,7 +128,7 @@ function fetchAndDisplaySubtitles() {
 
     var availableLanguages = {};
     getAvailableLanguages(function(languages) {
-        this.availableLanguages = languages;
+        availableLanguages = languages;
     })
 
     // This function is called when we successfully retrieve the subtitle data
