@@ -4,6 +4,14 @@ body {
 .container {
     /*background-color: #0E566C;*/
 }
+#toolbar {
+    width: 100%;
+    text-align: right;
+}
+#health {
+    display: inline-block;
+    margin-right: 65px;
+}
 .btn-file {
     position: relative;
     overflow: hidden;

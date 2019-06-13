@@ -70,3 +70,26 @@ function getAvailableLanguages(onSuccess) {
         }
     });
 }
+
+function pollServerHealth(url, status, maxRetries, success, failure) {
+    var count = 0;
+    var restartCheck = setInterval(function() {
+        count++;
+        if (maxRetries == 0 || count <= maxRetries) {
+            $.ajax({
+                url: url,
+                type: "POST",
+                success: function (data, textStatus, jqXHR) {
+                    if (jqXHR.status == status) {
+                        success();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    failure()
+                }
+            });
+        } else {
+            clearInterval(restartCheck);
+        }
+    }, 1000);
+}

@@ -252,6 +252,14 @@ for (var i = 0; i < fileSelectClass.length; i++) {
 // jQoery //
 ////////////
 $(document).ready(function(){
+    // Define any icon actions before calling the toolbar
+    $('#health').toolbar({
+        content: '#toolbar-options',
+        position: 'bottom',
+        style: 'success'
+    });
+    $('#os-option').on('click','a', function() { console.log('click'); }); //window.location = this;
+
     // Triggered when 'Fetch subtitles' is pressed in search panel
     $("#search-config-form").submit(function(event) {
         event.preventDefault();
@@ -305,6 +313,18 @@ $(document).ready(function(){
             }
         }
     });
+
+    pollServerHealth('http://api.opensubtitles.org/xml-rpc', 200, 0,
+    function () {
+        console.log("Success polling server.");
+        $('#health').removeClass('btn-toolbar-danger');
+        $('#health').addClass('btn-toolbar-success');
+    },
+    function () {
+        console.log("Error polling server.");
+        $('#health').removeClass('btn-toolbar-success');
+        $('#health').addClass('btn-toolbar-danger');
+    })
 });
 
 
