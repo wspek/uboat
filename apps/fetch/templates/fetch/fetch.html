@@ -23,16 +23,15 @@
         {% load static %}
 
         <link rel="stylesheet" type="text/css" href="{% static '/fetch/css/fetch.css' %}" >
+        <link rel="stylesheet" type="text/css" href="{% static '/fetch/css/led/led.css' %}" >
         <link rel="stylesheet" type="text/css" href="{% static '/fetch/js/tabulator-tables/dist/css/tabulator.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static '/fetch/js/jquery/multiselect/css/multi-select.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static '/fetch/js/jquery/toolbar/jquery.toolbar.css' %}" >
 
         <script type="text/javascript" src="{% static 'fetch/js/jquery/multiselect/js/jquery.multi-select.js' %}" defer></script>
         <script type="text/javascript" src="{% static 'fetch/js/jquery/jquery.cookie.js' %}" defer></script>
         <script type="text/javascript" src="{% static 'fetch/js/tabulator-tables/dist/js/tabulator.min.js' %}" defer></script>
         <script type="text/javascript" src="{% static 'fetch/js/zip/zip.js' %}" defer></script>
         <script type="text/javascript" src="{% static 'fetch/js/zip/zip-ext.js' %}" defer></script>
-        <script type="text/javascript" src="{% static 'fetch/js/jquery/toolbar/jquery.toolbar.js' %}" defer></script>
 
         <script type="text/javascript" src="{% static 'fetch/js/fetch.js' %}" defer></script>
         <script type="text/javascript" src="{% static 'fetch/js/subtitles.js' %}" defer></script>
@@ -40,13 +39,14 @@
         <script type="text/javascript" src="{% static 'fetch/js/unzip.js' %}" defer></script>
     </head>
     <body>
-        <div id="toolbar">
-            <div class="btn-toolbar btn-toolbar-success" id="health">
-                <i class="fa fa-heart"></i>
+        <div class="container-fluid">
+            <div class=”row”>
+                <div class=”col-md-12”>
+                    <div class="led-box">
+                        <div id="os-health" class="led-green"></div><div class="led-text"><a href="https://downforeveryoneorjustme.com/opensubtitles.org" target="_blank">OpenSubtitles.org</a></div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div id="toolbar-options" class="hidden">
-            <a href="https://www.opensubtitles.org" target="_blank"><i class="fa fa-heart"></i></a>
         </div>
         <div class="container">
             <div class="jumbotron text-center">

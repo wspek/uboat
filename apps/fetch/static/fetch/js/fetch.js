@@ -248,18 +248,115 @@ for (var i = 0; i < fileSelectClass.length; i++) {
     fileSelectClass[i].addEventListener('change', addMovieFilesToTable);
 }
 
+function getHealthStatus(successStatus, maxRetries, onSuccess, onError) {
+    var urls = [
+        'http://api.opensubtitles.org/xml-rpc',
+        'server_health'
+    ];
+
+    var count = 0;
+    var restartCheck = setInterval(function() {
+        count++;
+        if (maxRetries == 0 || count <= maxRetries) {
+            $.when.apply($, urls.map(function(url) {
+                return $.ajax({
+                    url: url,
+                });
+            }))
+            .done(function() {
+                onSuccess()
+            })
+            .fail(function() {
+                onError()
+            });
+
+//            for (i in servers) {
+//                var server = servers[i];
+//
+//                $.ajax({
+//                    url: server.url,
+//                    type: "GET",
+//                    success: function (data, textStatus, jqXHR) {
+//
+//                        if (jqXHR.status == successStatus) {
+//                            console.log("Success" + ', url: ' + server.url);
+//
+//                            server.health = true;
+//                        }
+//                        else {
+//                            console.log("Error" + ', url: ' + server.url);
+//
+//                            server.health = false;
+//                        }
+//                    },
+//                    error: function (jqXHR, textStatus, errorThrown) {
+//                        console.log("Error" + ', url: ' + server.url);
+//
+//                        server.health = false;
+//                    },
+//                    complete: function (jqXHR, textStatus) {
+//                        server.requestCompleted = true;
+//
+//                        console.log("Complete: server.requestCompleted = " + server.requestCompleted + ', url: ' + server.url);
+//                    },
+//                });
+//            }
+
+            // Every 5 seconds we iterate through all servers to see if their requests completed.
+            // If one of them did not, we immediately break and wait another 5 seconds.
+            // The 'allHealthy' variable will be the flag indicating if all servers are healthy.
+            // When all requests completed (i.e. no break occurred), this flag will be true if all servers are
+            // healthy and false if at least one is not healthy.
+//            var allRequestsCompleted = false;
+
+//            var restartCompletedCheck = setInterval(function () {
+//                if (allRequestsCompleted == false) {
+//                    var allHealthy = true;
+//
+//                    for (i in servers) {
+//                        var server = servers[i];
+//
+////                        console.log("restartCompleteCheck: " + server.url);
+////                        console.log("restartCompleteCheck: server.requestCompleted = " + server.requestCompleted);
+//
+//                        if (server.requestCompleted == false) {
+////                            console.log("request not completed, breaking: " + server);
+//
+//                            break;
+//                        }
+//
+//                        // If we end up here, all requests completed.
+//
+//                        // As soon as one server fails, allHealthy will be false (true && false == false)
+//                        allHealthy = allHealthy && server.health;
+//
+//                        if (allHealthy == true) {
+//                            console.log("All healthy #" + count);
+//                            onSuccess();
+//                        }
+//                        else {
+//                            console.log("One sick #" + count);
+//                            onError();
+//                        }
+//
+//                        allRequestsCompleted = true;
+//                    }
+//                }
+//                else {
+//                    clearInterval(restartCompletedCheck);
+//                }
+//            }, 10000);
+        } else {
+            clearInterval(restartCheck);
+        }
+    }, 10000);
+}
+
+
 ////////////
-// jQoery //
+// jQuery //
 ////////////
 $(document).ready(function(){
-    // Define any icon actions before calling the toolbar
-    $('#health').toolbar({
-        content: '#toolbar-options',
-        position: 'bottom',
-        style: 'success'
-    });
-    $('#os-option').on('click','a', function() { console.log('click'); }); //window.location = this;
-
     // Triggered when 'Fetch subtitles' is pressed in search panel
     $("#search-config-form").submit(function(event) {
         event.preventDefault();
@@ -314,16 +411,14 @@ $(document).ready(function(){
         }
     });
 
-    pollServerHealth('http://api.opensubtitles.org/xml-rpc', 200, 0,
+    getHealthStatus(200, 0,
     function () {
-        console.log("Success polling server.");
-        $('#health').removeClass('btn-toolbar-danger');
-        $('#health').addClass('btn-toolbar-success');
+        $('#os-health').removeClass('led-red');
+        $('#os-health').addClass('led-green');
     },
     function () {
-        console.log("Error polling server.");
-        $('#health').removeClass('btn-toolbar-success');
-        $('#health').addClass('btn-toolbar-danger');
+        $('#os-health').removeClass('led-green');
+        $('#os-health').addClass('led-red');
     })
 });
 

@@ -1,7 +1,8 @@
+import requests
 import json
 
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 import apps.fetch.subtitles as subs
 import apps.fetch.config as config
@@ -34,8 +35,14 @@ def fetch(request):
 
 
 def languages(request):
-    # Handle POST request
     if request.method == 'GET':
         response = subs.get_languages()
 
         return JsonResponse(response)
+
+
+def server_health(request):
+    if request.method == 'GET':
+        response = requests.get(config.API_URL)
+
+        return HttpResponse(status=response.status_code)
