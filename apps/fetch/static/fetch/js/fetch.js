@@ -338,10 +338,12 @@ $(document).ready(function(){
     function () {
         $('#os-health').removeClass('led-red');
         $('#os-health').addClass('led-green');
+        $(".callout").animate({right: '-400px'});
     },
     function () {
         $('#os-health').removeClass('led-green');
         $('#os-health').addClass('led-red');
+        $(".callout").animate({right: '0px'});
     })
 });
 
