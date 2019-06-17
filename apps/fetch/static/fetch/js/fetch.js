@@ -250,8 +250,8 @@ for (var i = 0; i < fileSelectClass.length; i++) {
 
 function getHealthStatus(successStatus, maxRetries, onSuccess, onError) {
     var urls = [
+        'server_health',
         'http://api.opensubtitles.org/xml-rpc',
-        'server_health'
     ];
 
     var count = 0;
@@ -261,6 +261,12 @@ function getHealthStatus(successStatus, maxRetries, onSuccess, onError) {
             $.when.apply($, urls.map(function(url) {
                 return $.ajax({
                     url: url,
+                    // If we don't do this, we get a preflight check and a CORS error due to the response of OS.org.
+                    beforeSend: function (jqXHR, settings) {
+                        if ($.ajaxSettings.headers) {
+                            delete $.ajaxSettings.headers["x-csrftoken"];
+                        }
+                    }
                 });
             }))
             .done(function() {

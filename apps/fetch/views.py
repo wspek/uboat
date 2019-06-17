@@ -23,7 +23,10 @@ def fetch(request):
 
         response = subs.fetch_subtitles(query_data)
 
-        return JsonResponse(response)
+        json_response = JsonResponse(response)
+        json_response['Access-Control-Allow-Headers'] = 'x-csrftoken'
+
+        return json_response
 
     # Handle GET request
     else:
@@ -31,7 +34,11 @@ def fetch(request):
             'languages': langs,
         }
 
-        return render(request, 'fetch/fetch.html', context)
+        response = render(request, 'fetch/fetch.html', context)
+        response['Access-Control-Allow-Origin'] = '*'
+        response['Access-Control-Allow-Headers'] = 'x-csrftoken'
+
+        return response
 
 
 def languages(request):
