@@ -106,7 +106,7 @@ var addMovieFilesToTable = function() {
     loadFiles(1);   // next id in queue
 };
 
-function fetchAndDisplaySubtitles() {
+function fetchAndDisplaySubtitles(onFinish) {
     // Store form data retrieved from frontend
     var searchData = {
         "movie_files": movieFiles
@@ -180,7 +180,8 @@ function fetchAndDisplaySubtitles() {
             groups[i].show();
         }
 
-        redrawTable()
+        redrawTable();
+        onFinish();
     }
 
     searchSubtitles(searchData, onSuccess); // subtitles.js
@@ -290,7 +291,11 @@ $(document).ready(function(){
     $("#search-config-form").submit(function(event) {
         event.preventDefault();
 
-        fetchAndDisplaySubtitles()
+        $("#seek_status").prop('hidden', false);
+
+        fetchAndDisplaySubtitles(function () {
+            $("#seek_status").prop('hidden', true);
+        })
     });
 
     // Search panel expand/collape

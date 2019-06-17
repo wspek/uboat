@@ -137,14 +137,22 @@ body {
     border-left-width: 2px;
 }
 .card {
+    height: 40px;
     background: rgb(229, 229, 229);
 }
 .card-body {
-    text-align: left;
+    display: flex;
     padding-top: 0.35rem;
     padding-right: 0.35rem;
     padding-bottom: 0.35rem;
     padding-left: 0.35rem;
+}
+#collapse-expand {
+    text-align: left;
+    flex: 1;
+}
+#status {
+    flex: 1;
 }
 
  /* Callout box - fixed position at the bottom of the page */
@@ -192,4 +200,25 @@ body {
 /* Change color on mouse-over */
 .closebtn:hover {
   color: lightgrey;
+}
+
+@keyframes diving-rotate {
+	0% {
+         transform:rotate(0deg);
+	}
+    50% {
+         transform:rotate(24deg);
+	}
+    75% {
+        transform:rotate(-8deg);
+	}
+    100% {
+        transform:rotate(0deg);
+	}
+}
+
+#submarine_img {
+  width: 40px;
+  height: auto;
+  animation: diving 1.5s ease-in-out infinite, diving-rotate 1.5s ease-in-out infinite;
 }
