@@ -5,6 +5,9 @@ var movieFiles = [],
     fileSelectClass = document.getElementsByClassName("select"),
     tabulatorTable = new Tabulator("#subtitle-table", {
         placeholder:"No titles added yet",
+        pagination:"local",
+        paginationSize: 25,
+        paginationSizeSelector:[10, 25, 50, 100, 500],
         layout:"fitColumns",
         layoutColumnsOnNewData:true,
         columns:[
