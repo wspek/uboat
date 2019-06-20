@@ -1,4 +1,4 @@
-/* Tabulator v4.1.2 (c) Oliver Folkerd */
+/* Tabulator v4.2.7 (c) Oliver Folkerd */
 
 var ResizeColumns = function ResizeColumns(table) {
 	this.table = table; //hold Tabulator object
@@ -32,19 +32,24 @@ ResizeColumns.prototype.initializeColumn = function (type, column, element) {
 			e.stopPropagation();
 		});
 
-		handle.addEventListener("mousedown", function (e) {
+		var handleDown = function handleDown(e) {
 			var nearestColumn = column.getLastColumn();
 
 			if (nearestColumn && self._checkResizability(nearestColumn)) {
 				self.startColumn = column;
-				self._mouseDown(e, nearestColumn);
+				self._mouseDown(e, nearestColumn, handle);
 			}
-		});
+		};
+
+		handle.addEventListener("mousedown", handleDown);
+		handle.addEventListener("touchstart", handleDown);
 
 		//reszie column on  double click
 		handle.addEventListener("dblclick", function (e) {
-			if (self._checkResizability(column)) {
-				column.reinitializeWidth(true);
+			var col = column.getLastColumn();
+
+			if (col && self._checkResizability(col)) {
+				col.reinitializeWidth(true);
 			}
 		});
 
@@ -52,7 +57,7 @@ ResizeColumns.prototype.initializeColumn = function (type, column, element) {
 			e.stopPropagation();
 		});
 
-		prevHandle.addEventListener("mousedown", function (e) {
+		var prevHandleDown = function prevHandleDown(e) {
 			var nearestColumn, colIndex, prevColumn;
 
 			nearestColumn = column.getFirstColumn();
@@ -63,10 +68,13 @@ ResizeColumns.prototype.initializeColumn = function (type, column, element) {
 
 				if (prevColumn && self._checkResizability(prevColumn)) {
 					self.startColumn = column;
-					self._mouseDown(e, prevColumn);
+					self._mouseDown(e, prevColumn, prevHandle);
 				}
 			}
-		});
+		};
+
+		prevHandle.addEventListener("mousedown", prevHandleDown);
+		prevHandle.addEventListener("touchstart", prevHandleDown);
 
 		//resize column on double click
 		prevHandle.addEventListener("dblclick", function (e) {
@@ -93,13 +101,15 @@ ResizeColumns.prototype._checkResizability = function (column) {
 	return typeof column.definition.resizable != "undefined" ? column.definition.resizable : this.table.options.resizableColumns;
 };
 
-ResizeColumns.prototype._mouseDown = function (e, column) {
+ResizeColumns.prototype._mouseDown = function (e, column, handle) {
 	var self = this;
 
 	self.table.element.classList.add("tabulator-block-select");
 
 	function mouseMove(e) {
-		column.setWidth(self.startWidth + (e.screenX - self.startX));
+		// self.table.columnManager.tempScrollBlock();
+
+		column.setWidth(self.startWidth + ((typeof e.screenX === "undefined" ? e.touches[0].screenX : e.screenX) - self.startX));
 
 		if (!self.table.browserSlow && column.modules.resize && column.modules.resize.variableHeight) {
 			column.checkCellHeights();
@@ -120,13 +130,16 @@ ResizeColumns.prototype._mouseDown = function (e, column) {
 		document.body.removeEventListener("mouseup", mouseUp);
 		document.body.removeEventListener("mousemove", mouseMove);
 
+		handle.removeEventListener("touchmove", mouseMove);
+		handle.removeEventListener("touchend", mouseUp);
+
 		self.table.element.classList.remove("tabulator-block-select");
 
 		if (self.table.options.persistentLayout && self.table.modExists("persistence", true)) {
 			self.table.modules.persistence.save("columns");
 		}
 
-		self.table.options.columnResized.call(self.table, self.startColumn.getComponent());
+		self.table.options.columnResized.call(self.table, column.getComponent());
 	}
 
 	e.stopPropagation(); //prevent resize from interfereing with movable columns
@@ -136,11 +149,13 @@ ResizeColumns.prototype._mouseDown = function (e, column) {
 		self.startColumn.modules.edit.blocked = true;
 	}
 
-	self.startX = e.screenX;
+	self.startX = typeof e.screenX === "undefined" ? e.touches[0].screenX : e.screenX;
 	self.startWidth = column.getWidth();
 
 	document.body.addEventListener("mousemove", mouseMove);
 	document.body.addEventListener("mouseup", mouseUp);
+	handle.addEventListener("touchmove", mouseMove);
+	handle.addEventListener("touchend", mouseUp);
 };
 
 Tabulator.prototype.registerModule("resizeColumns", ResizeColumns);

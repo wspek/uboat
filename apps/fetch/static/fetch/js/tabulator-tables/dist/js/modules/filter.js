@@ -1,6 +1,6 @@
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-/* Tabulator v4.1.2 (c) Oliver Folkerd */
+/* Tabulator v4.2.7 (c) Oliver Folkerd */
 
 var Filter = function Filter(table) {
 
@@ -39,7 +39,12 @@ Filter.prototype.initializeColumn = function (column, value) {
 						if (self.filters[column.definition.headerFilterFunc]) {
 							type = column.definition.headerFilterFunc;
 							filterFunc = function filterFunc(data) {
-								return self.filters[column.definition.headerFilterFunc](value, column.getFieldValue(data));
+								var params = column.definition.headerFilterFuncParams || {};
+								var fieldVal = column.getFieldValue(data);
+
+								params = typeof params === "function" ? params(value, fieldVal, data) : params;
+
+								return self.filters[column.definition.headerFilterFunc](value, fieldVal, data, params);
 							};
 						} else {
 							console.warn("Header Filter Error - Matching filter function not found: ", column.definition.headerFilterFunc);
@@ -64,7 +69,13 @@ Filter.prototype.initializeColumn = function (column, value) {
 					switch (filterType) {
 						case "partial":
 							filterFunc = function filterFunc(data) {
-								return String(column.getFieldValue(data)).toLowerCase().indexOf(String(value).toLowerCase()) > -1;
+								var colVal = column.getFieldValue(data);
+
+								if (typeof colVal !== 'undefined' && colVal !== null) {
+									return String(colVal).toLowerCase().indexOf(String(value).toLowerCase()) > -1;
+								} else {
+									return false;
+								}
 							};
 							type = "like";
 							break;
@@ -99,6 +110,8 @@ Filter.prototype.initializeColumn = function (column, value) {
 };
 
 Filter.prototype.generateHeaderFilterElement = function (column, initialValue) {
+	var _this = this;
+
 	var self = this,
 	    success = column.modules.filter.success,
 	    field = column.getField(),
@@ -114,7 +127,18 @@ Filter.prototype.generateHeaderFilterElement = function (column, initialValue) {
 	function cancel() {}
 
 	if (column.modules.filter.headerElement && column.modules.filter.headerElement.parentNode) {
-		column.modules.filter.headerElement.parentNode.removeChild(column.modules.filter.headerElement);
+		var oldFilterElement = column.modules.filter.headerElement.parentNode;
+		var oldFilterElementIndex = self.headerFilterElements.indexOf(oldFilterElement);
+		if (oldFilterElementIndex >= 0) {
+			self.headerFilterElements.splice(oldFilterElementIndex, 1);
+		}
+
+		var oldColumnIndex = self.headerFilterColumns.indexOf(oldColumnIndex);
+		if (oldColumnIndex >= 0) {
+			self.headerFilterColumns.splice(oldColumnIndex, 1);
+		}
+
+		column.contentElement.removeChild(oldFilterElement);
 	}
 
 	if (field) {
@@ -221,6 +245,15 @@ Filter.prototype.generateHeaderFilterElement = function (column, initialValue) {
 				editorElement.focus();
 			});
 
+			editorElement.addEventListener("focus", function (e) {
+				var left = _this.table.columnManager.element.scrollLeft;
+
+				if (left !== _this.table.rowManager.element.scrollLeft) {
+					_this.table.rowManager.scrollHorizontal(left);
+					_this.table.columnManager.scrollHorizontal(left);
+				}
+			});
+
 			//live update filters as user types
 			typingTimer = false;
 
@@ -240,7 +273,7 @@ Filter.prototype.generateHeaderFilterElement = function (column, initialValue) {
 
 			if (column.definition.headerFilterLiveFilter !== false) {
 
-				if (!(column.definition.headerFilter === "autocomplete" || column.definition.editor === "autocomplete" && column.definition.headerFilter === true)) {
+				if (!(column.definition.headerFilter === 'autocomplete' || column.definition.headerFilter === 'tickCross' || (column.definition.editor === 'autocomplete' || column.definition.editor === 'tickCross') && column.definition.headerFilter === true)) {
 					editorElement.addEventListener("keyup", searchTrigger);
 					editorElement.addEventListener("search", searchTrigger);
 
@@ -630,36 +663,36 @@ Filter.prototype.filterRecurse = function (filter, data) {
 Filter.prototype.filters = {
 
 	//equal to
-	"=": function _(filterVal, rowVal) {
+	"=": function _(filterVal, rowVal, rowData, filterParams) {
 		return rowVal == filterVal ? true : false;
 	},
 
 	//less than
-	"<": function _(filterVal, rowVal) {
+	"<": function _(filterVal, rowVal, rowData, filterParams) {
 		return rowVal < filterVal ? true : false;
 	},
 
 	//less than or equal to
-	"<=": function _(filterVal, rowVal) {
+	"<=": function _(filterVal, rowVal, rowData, filterParams) {
 		return rowVal <= filterVal ? true : false;
 	},
 
 	//greater than
-	">": function _(filterVal, rowVal) {
+	">": function _(filterVal, rowVal, rowData, filterParams) {
 		return rowVal > filterVal ? true : false;
 	},
 
 	//greater than or equal to
-	">=": function _(filterVal, rowVal) {
+	">=": function _(filterVal, rowVal, rowData, filterParams) {
 		return rowVal >= filterVal ? true : false;
 	},
 
 	//not equal to
-	"!=": function _(filterVal, rowVal) {
+	"!=": function _(filterVal, rowVal, rowData, filterParams) {
 		return rowVal != filterVal ? true : false;
 	},
 
-	"regex": function regex(filterVal, rowVal) {
+	"regex": function regex(filterVal, rowVal, rowData, filterParams) {
 
 		if (typeof filterVal == "string") {
 			filterVal = new RegExp(filterVal);
@@ -669,12 +702,12 @@ Filter.prototype.filters = {
 	},
 
 	//contains the string
-	"like": function like(filterVal, rowVal) {
+	"like": function like(filterVal, rowVal, rowData, filterParams) {
 		if (filterVal === null || typeof filterVal === "undefined") {
 			return rowVal === filterVal ? true : false;
 		} else {
 			if (typeof rowVal !== 'undefined' && rowVal !== null) {
-				return String(rowVal).toLowerCase().indexOf(filterVal.toLowerCase()) > -1 ? true : false;
+				return String(rowVal).toLowerCase().indexOf(filterVal.toLowerCase()) > -1;
 			} else {
 				return false;
 			}
@@ -682,7 +715,7 @@ Filter.prototype.filters = {
 	},
 
 	//in array
-	"in": function _in(filterVal, rowVal) {
+	"in": function _in(filterVal, rowVal, rowData, filterParams) {
 		if (Array.isArray(filterVal)) {
 			return filterVal.indexOf(rowVal) > -1;
 		} else {

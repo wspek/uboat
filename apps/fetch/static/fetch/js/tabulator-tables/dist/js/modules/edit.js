@@ -1,6 +1,6 @@
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-/* Tabulator v4.1.2 (c) Oliver Folkerd */
+/* Tabulator v4.2.7 (c) Oliver Folkerd */
 
 var Edit = function Edit(table) {
 	this.table = table; //hold Tabulator object
@@ -133,7 +133,9 @@ Edit.prototype.bindEditor = function (cell) {
 
 Edit.prototype.focusCellNoEvent = function (cell) {
 	this.recursionBlock = true;
-	cell.getElement().focus();
+	if (this.table.browser !== "ie") {
+		cell.getElement().focus();
+	}
 	this.recursionBlock = false;
 };
 
@@ -345,7 +347,7 @@ Edit.prototype.editors = {
 	textarea: function textarea(cell, onRendered, success, cancel, editorParams) {
 		var self = this,
 		    cellValue = cell.getValue(),
-		    value = String(typeof cellValue == "null" || typeof cellValue == "undefined" ? "" : cellValue),
+		    value = String(cellValue !== null && cellValue !== "undefined" ? cellValue : ""),
 		    count = (value.match(/(?:\r\n|\r|\n)/g) || []).length + 1,
 		    input = document.createElement("textarea"),
 		    scrollHeight = 0;
@@ -432,9 +434,19 @@ Edit.prototype.editors = {
 
 		input.value = cellValue;
 
+		var blurFunc = function blurFunc(e) {
+			onChange();
+		};
+
 		onRendered(function () {
+			//submit new value on blur
+			input.removeEventListener("blur", blurFunc);
+
 			input.focus();
 			input.style.height = "100%";
+
+			//submit new value on blur
+			input.addEventListener("blur", blurFunc);
 		});
 
 		function onChange() {
@@ -450,11 +462,6 @@ Edit.prototype.editors = {
 				cancel();
 			}
 		}
-
-		//submit new value on blur
-		input.addEventListener("blur", function (e) {
-			onChange();
-		});
 
 		//submit new value on enter
 		input.addEventListener("keydown", function (e) {
@@ -571,7 +578,17 @@ Edit.prototype.editors = {
 				}
 			});
 
-			return Object.keys(output);
+			if (editorParams.sortValuesList) {
+				if (editorParams.sortValuesList == "asc") {
+					output = Object.keys(output).sort();
+				} else {
+					output = Object.keys(output).sort().reverse();
+				}
+			} else {
+				output = Object.keys(output);
+			}
+
+			return output;
 		}
 
 		function parseItems(inputValues, curentValue) {
@@ -585,7 +602,7 @@ Edit.prototype.editors = {
 					element: false
 				};
 
-				if (item.value === curentValue) {
+				if (item.value === curentValue || !isNaN(parseFloat(item.value)) && !isNaN(parseFloat(item.value)) && parseFloat(item.value) === parseFloat(curentValue)) {
 					setCurrentItem(item);
 				}
 
@@ -621,13 +638,14 @@ Edit.prototype.editors = {
 							processComplexListItem(value);
 						}
 					} else {
+
 						item = {
 							label: editorParams.listItemFormatter ? editorParams.listItemFormatter(value, value) : value,
 							value: value,
 							element: false
 						};
 
-						if (item.value === curentValue) {
+						if (item.value === curentValue || !isNaN(parseFloat(item.value)) && !isNaN(parseFloat(item.value)) && parseFloat(item.value) === parseFloat(curentValue)) {
 							setCurrentItem(item);
 						}
 
@@ -643,7 +661,7 @@ Edit.prototype.editors = {
 						element: false
 					};
 
-					if (item.value === curentValue) {
+					if (item.value === curentValue || !isNaN(parseFloat(item.value)) && !isNaN(parseFloat(item.value)) && parseFloat(item.value) === parseFloat(curentValue)) {
 						setCurrentItem(item);
 					}
 
@@ -763,7 +781,15 @@ Edit.prototype.editors = {
 		input.style.padding = "4px";
 		input.style.width = "100%";
 		input.style.boxSizing = "border-box";
-		input.readonly = true;
+		input.readOnly = true;
+
+		input.value = typeof initialValue !== "undefined" || initialValue === null ? initialValue : "";
+
+		if (editorParams.values === true) {
+			parseItems(getUniqueColumnValues(), initialValue);
+		} else {
+			parseItems(editorParams.values || [], initialValue);
+		}
 
 		//allow key based navigation
 		input.addEventListener("keydown", function (e) {
@@ -774,6 +800,7 @@ Edit.prototype.editors = {
 					//up arrow
 					e.stopImmediatePropagation();
 					e.stopPropagation();
+					e.preventDefault();
 
 					index = dataItems.indexOf(currentItem);
 
@@ -786,6 +813,7 @@ Edit.prototype.editors = {
 					//down arrow
 					e.stopImmediatePropagation();
 					e.stopPropagation();
+					e.preventDefault();
 
 					index = dataItems.indexOf(currentItem);
 
@@ -796,6 +824,14 @@ Edit.prototype.editors = {
 							setCurrentItem(dataItems[index + 1]);
 						}
 					}
+					break;
+
+				case 37: //left arrow
+				case 39:
+					//right arrow
+					e.stopImmediatePropagation();
+					e.stopPropagation();
+					e.preventDefault();
 					break;
 
 				case 13:
@@ -841,6 +877,7 @@ Edit.prototype.editors = {
 		    listEl = document.createElement("div"),
 		    allItems = [],
 		    displayItems = [],
+		    values = [],
 		    currentItem = {},
 		    blurable = true;
 
@@ -857,7 +894,17 @@ Edit.prototype.editors = {
 				}
 			});
 
-			return Object.keys(output);
+			if (editorParams.sortValuesList) {
+				if (editorParams.sortValuesList == "asc") {
+					output = Object.keys(output).sort();
+				} else {
+					output = Object.keys(output).sort().reverse();
+				}
+			} else {
+				output = Object.keys(output);
+			}
+
+			return output;
 		}
 
 		function parseItems(inputValues, curentValue) {
@@ -871,7 +918,7 @@ Edit.prototype.editors = {
 						element: false
 					};
 
-					if (item.value === curentValue) {
+					if (item.value === curentValue || !isNaN(parseFloat(item.value)) && !isNaN(parseFloat(item.value)) && parseFloat(item.value) === parseFloat(curentValue)) {
 						setCurrentItem(item);
 					}
 
@@ -885,7 +932,7 @@ Edit.prototype.editors = {
 						element: false
 					};
 
-					if (item.value === curentValue) {
+					if (item.value === curentValue || !isNaN(parseFloat(item.value)) && !isNaN(parseFloat(item.value)) && parseFloat(item.value) === parseFloat(curentValue)) {
 						setCurrentItem(item);
 					}
 
@@ -893,14 +940,40 @@ Edit.prototype.editors = {
 				}
 			}
 
+			if (editorParams.searchFunc) {
+				itemList.forEach(function (item) {
+					item.search = {
+						title: item.title,
+						value: item.value
+					};
+				});
+			}
+
 			allItems = itemList;
 		}
 
-		function filterList(term) {
-			var matches = [];
+		function filterList(term, intialLoad) {
+			var matches = [],
+			    searchObjs = [],
+			    searchResults = [];
 
 			if (editorParams.searchFunc) {
-				matches = editorParams.searchFunc(term, values);
+
+				allItems.forEach(function (item) {
+					searchObjs.push(item.search);
+				});
+
+				searchResults = editorParams.searchFunc(term, searchObjs);
+
+				searchResults.forEach(function (result) {
+					var match = allItems.find(function (item) {
+						return item.search === result;
+					});
+
+					if (match) {
+						matches.push(match);
+					}
+				});
 			} else {
 				if (term === "") {
 
@@ -913,7 +986,7 @@ Edit.prototype.editors = {
 					allItems.forEach(function (item) {
 
 						if (item.value !== null || typeof item.value !== "undefined") {
-							if (String(item.value).toLowerCase().indexOf(String(term).toLowerCase()) > -1) {
+							if (String(item.value).toLowerCase().indexOf(String(term).toLowerCase()) > -1 || String(item.title).toLowerCase().indexOf(String(term).toLowerCase()) > -1) {
 								matches.push(item);
 							}
 						}
@@ -923,10 +996,10 @@ Edit.prototype.editors = {
 
 			displayItems = matches;
 
-			fillList();
+			fillList(intialLoad);
 		}
 
-		function fillList() {
+		function fillList(intialLoad) {
 			var current = false;
 
 			while (listEl.firstChild) {
@@ -954,6 +1027,12 @@ Edit.prototype.editors = {
 					});
 
 					item.element = el;
+
+					if (intialLoad && item.value == initialValue) {
+						input.value = item.title;
+						item.element.classList.add("active");
+						current = true;
+					}
 
 					if (item === currentItem) {
 						item.element.classList.add("active");
@@ -987,8 +1066,8 @@ Edit.prototype.editors = {
 			if (currentItem) {
 				if (initialValue !== currentItem.value) {
 					initialValue = currentItem.value;
-					input.value = currentItem.value;
-					success(input.value);
+					input.value = currentItem.title;
+					success(currentItem.value);
 				} else {
 					cancel();
 				}
@@ -1017,10 +1096,12 @@ Edit.prototype.editors = {
 				while (listEl.firstChild) {
 					listEl.removeChild(listEl.firstChild);
 				}if (editorParams.values === true) {
-					parseItems(getUniqueColumnValues(), initialValue);
+					values = getUniqueColumnValues();
 				} else {
-					parseItems(editorParams.values || [], initialValue);
+					values = editorParams.values || [];
 				}
+
+				parseItems(values, initialValue);
 
 				var offset = Tabulator.prototype.helpers.elOffset(cellEl);
 
@@ -1039,7 +1120,7 @@ Edit.prototype.editors = {
 		}
 
 		//style input
-		input.setAttribute("type", "text");
+		input.setAttribute("type", "search");
 
 		input.style.padding = "4px";
 		input.style.width = "100%";
@@ -1054,6 +1135,7 @@ Edit.prototype.editors = {
 					//up arrow
 					e.stopImmediatePropagation();
 					e.stopPropagation();
+					e.preventDefault();
 
 					index = displayItems.indexOf(currentItem);
 
@@ -1068,6 +1150,7 @@ Edit.prototype.editors = {
 					//down arrow
 					e.stopImmediatePropagation();
 					e.stopPropagation();
+					e.preventDefault();
 
 					index = displayItems.indexOf(currentItem);
 
@@ -1080,6 +1163,14 @@ Edit.prototype.editors = {
 					}
 					break;
 
+				case 37: //left arrow
+				case 39:
+					//right arrow
+					e.stopImmediatePropagation();
+					e.stopPropagation();
+					e.preventDefault();
+					break;
+
 				case 13:
 					//enter
 					chooseItem();
@@ -1088,6 +1179,13 @@ Edit.prototype.editors = {
 				case 27:
 					//escape
 					cancelItem();
+					break;
+
+				case 36: //home
+				case 35:
+					//end
+					//prevent table navigation while using input element
+					e.stopImmediatePropagation();
 					break;
 			}
 		});
@@ -1109,6 +1207,10 @@ Edit.prototype.editors = {
 			}
 		});
 
+		input.addEventListener("search", function (e) {
+			filterList(input.value);
+		});
+
 		input.addEventListener("blur", function (e) {
 			if (blurable) {
 				chooseItem();
@@ -1116,9 +1218,10 @@ Edit.prototype.editors = {
 		});
 
 		input.addEventListener("focus", function (e) {
+			var value = typeof initialValue !== "undefined" || initialValue === null ? initialValue : "";
 			showList();
-			input.value = initialValue;
-			filterList(initialValue);
+			input.value = value;
+			filterList(value, true);
 		});
 
 		//style list element
@@ -1169,21 +1272,31 @@ Edit.prototype.editors = {
 
 		//build stars
 		function buildStar(i) {
+
+			var starHolder = document.createElement("span");
 			var nextStar = star.cloneNode(true);
 
 			stars.push(nextStar);
 
-			nextStar.addEventListener("mouseover", function (e) {
+			starHolder.addEventListener("mouseenter", function (e) {
 				e.stopPropagation();
+				e.stopImmediatePropagation();
 				starChange(i);
 			});
 
-			nextStar.addEventListener("click", function (e) {
+			starHolder.addEventListener("mousemove", function (e) {
 				e.stopPropagation();
+				e.stopImmediatePropagation();
+			});
+
+			starHolder.addEventListener("click", function (e) {
+				e.stopPropagation();
+				e.stopImmediatePropagation();
 				success(i);
 			});
 
-			starsHolder.appendChild(nextStar);
+			starHolder.appendChild(nextStar);
+			starsHolder.appendChild(starHolder);
 		}
 
 		//handle keyboard navigation value change
@@ -1220,7 +1333,7 @@ Edit.prototype.editors = {
 		// set initial styling of stars
 		starChange(value);
 
-		starsHolder.addEventListener("mouseover", function (e) {
+		starsHolder.addEventListener("mousemove", function (e) {
 			starChange(0);
 		});
 
@@ -1290,25 +1403,27 @@ Edit.prototype.editors = {
 
 		//style bar
 		bar.style.display = "inline-block";
-		bar.style.position = "absolute";
-		bar.style.top = "8px";
-		bar.style.bottom = "8px";
-		bar.style.left = "4px";
-		bar.style.marginRight = "4px";
+		bar.style.position = "relative";
+		// bar.style.top = "8px";
+		// bar.style.bottom = "8px";
+		// bar.style.left = "4px";
+		// bar.style.marginRight = "4px";
+		bar.style.height = "100%";
 		bar.style.backgroundColor = "#488CE9";
 		bar.style.maxWidth = "100%";
 		bar.style.minWidth = "0%";
 
 		//style cell
-		element.style.padding = "0 4px";
+		element.style.padding = "4px 4px";
 
 		//make sure value is in range
 		value = Math.min(parseFloat(value), max);
 		value = Math.max(parseFloat(value), min);
 
 		//workout percentage
-		value = 100 - Math.round((value - min) / percent);
-		bar.style.right = value + "%";
+		value = Math.round((value - min) / percent);
+		// bar.style.right = value + "%";
+		bar.style.width = value + "%";
 
 		element.setAttribute("aria-valuemin", min);
 		element.setAttribute("aria-valuemax", max);

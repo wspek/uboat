@@ -1,6 +1,6 @@
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-/* Tabulator v4.1.2 (c) Oliver Folkerd */
+/* Tabulator v4.2.7 (c) Oliver Folkerd */
 
 var Format = function Format(table) {
 	this.table = table; //hold Tabulator object
@@ -167,7 +167,7 @@ Format.prototype.formatters = {
 
 	//clickable anchor tag
 	link: function link(cell, formatterParams, onRendered) {
-		var value = this.sanitizeHTML(cell.getValue()),
+		var value = cell.getValue(),
 		    urlPrefix = formatterParams.urlPrefix || "",
 		    label = this.emptyToSpace(value),
 		    el = document.createElement("a"),
@@ -213,7 +213,7 @@ Format.prototype.formatters = {
 			el.setAttribute("target", formatterParams.target);
 		}
 
-		el.innerHTML = this.emptyToSpace(label);
+		el.innerHTML = this.emptyToSpace(this.sanitizeHTML(label));
 
 		return el;
 	},
@@ -225,21 +225,21 @@ Format.prototype.formatters = {
 
 		switch (_typeof(formatterParams.height)) {
 			case "number":
-				element.style.height = formatterParams.height + "px";
+				el.style.height = formatterParams.height + "px";
 				break;
 
 			case "string":
-				element.style.height = formatterParams.height;
+				el.style.height = formatterParams.height;
 				break;
 		}
 
 		switch (_typeof(formatterParams.width)) {
 			case "number":
-				element.style.width = formatterParams.width + "px";
+				el.style.width = formatterParams.width + "px";
 				break;
 
 			case "string":
-				element.style.width = formatterParams.width;
+				el.style.width = formatterParams.width;
 				break;
 		}
 
@@ -374,6 +374,55 @@ Format.prototype.formatters = {
 		return stars;
 	},
 
+	traffic: function traffic(cell, formatterParams, onRendered) {
+		var value = this.sanitizeHTML(cell.getValue()) || 0,
+		    el = document.createElement("span"),
+		    max = formatterParams && formatterParams.max ? formatterParams.max : 100,
+		    min = formatterParams && formatterParams.min ? formatterParams.min : 0,
+		    colors = formatterParams && typeof formatterParams.color !== "undefined" ? formatterParams.color : ["red", "orange", "green"],
+		    color = "#666666",
+		    percent,
+		    percentValue;
+
+		if (isNaN(value) || typeof cell.getValue() === "undefined") {
+			return;
+		}
+
+		el.classList.add("tabulator-traffic-light");
+
+		//make sure value is in range
+		percentValue = parseFloat(value) <= max ? parseFloat(value) : max;
+		percentValue = parseFloat(percentValue) >= min ? parseFloat(percentValue) : min;
+
+		//workout percentage
+		percent = (max - min) / 100;
+		percentValue = Math.round((percentValue - min) / percent);
+
+		//set color
+		switch (typeof colors === "undefined" ? "undefined" : _typeof(colors)) {
+			case "string":
+				color = colors;
+				break;
+			case "function":
+				color = colors(value);
+				break;
+			case "object":
+				if (Array.isArray(colors)) {
+					var unit = 100 / colors.length;
+					var index = Math.floor(percentValue / unit);
+
+					index = Math.min(index, colors.length - 1);
+					index = Math.max(index, 0);
+					color = colors[index];
+					break;
+				}
+		}
+
+		el.style.backgroundColor = color;
+
+		return el;
+	},
+
 	//progress bar
 	progress: function progress(cell, formatterParams, onRendered) {
 		//progress bar
@@ -464,7 +513,7 @@ Format.prototype.formatters = {
 
 		element.setAttribute("aria-label", percentValue);
 
-		return "<div style='position:absolute; top:8px; bottom:8px; left:4px; right:4px;'  data-max='" + max + "' data-min='" + min + "'><div style='position:relative; height:100%; width:calc(" + percentValue + "%); background-color:" + color + "; display:inline-block;'></div></div>" + (legend ? "<div style='position:absolute; top:4px; left:0; text-align:" + legendAlign + "; width:100%; color:" + legendColor + ";'>" + legend + "</div>" : "");
+		return "<div style='position:realtive; height:100%;'  data-max='" + max + "' data-min='" + min + "'><div style='position:relative; height:100%; width:calc(" + percentValue + "%); background-color:" + color + "; display:inline-block;'></div></div>" + (legend ? "<div style='position:absolute; top:4px; left:0; text-align:" + legendAlign + "; width:100%; color:" + legendColor + ";'>" + legend + "</div>" : "");
 	},
 
 	//background color
@@ -526,7 +575,8 @@ Format.prototype.formatters = {
 			open = true;
 		}
 
-		el.addEventListener("click", function () {
+		el.addEventListener("click", function (e) {
+			e.stopImmediatePropagation();
 			toggleList(!open);
 		});
 

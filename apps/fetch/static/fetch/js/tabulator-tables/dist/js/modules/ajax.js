@@ -1,6 +1,6 @@
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-/* Tabulator v4.1.2 (c) Oliver Folkerd */
+/* Tabulator v4.2.7 (c) Oliver Folkerd */
 
 var Ajax = function Ajax(table) {
 
@@ -24,10 +24,18 @@ var Ajax = function Ajax(table) {
 
 //initialize setup options
 Ajax.prototype.initialize = function () {
+	var template;
+
 	this.loaderElement.appendChild(this.msgElement);
 
 	if (this.table.options.ajaxLoaderLoading) {
-		this.loadingElement = this.table.options.ajaxLoaderLoading;
+		if (typeof this.table.options.ajaxLoaderLoading == "string") {
+			template = document.createElement('template');
+			template.innerHTML = this.table.options.ajaxLoaderLoading.trim();
+			this.loadingElement = template.content.firstChild;
+		} else {
+			this.loadingElement = this.table.options.ajaxLoaderLoading;
+		}
 	}
 
 	this.loaderPromise = this.table.options.ajaxRequestFunc || this.defaultLoaderPromise;
@@ -35,7 +43,13 @@ Ajax.prototype.initialize = function () {
 	this.urlGenerator = this.table.options.ajaxURLGenerator || this.defaultURLGenerator;
 
 	if (this.table.options.ajaxLoaderError) {
-		this.errorElement = this.table.options.ajaxLoaderError;
+		if (typeof this.table.options.ajaxLoaderError == "string") {
+			template = document.createElement('template');
+			template.innerHTML = this.table.options.ajaxLoaderError.trim();
+			this.errorElement = template.content.firstChild;
+		} else {
+			this.errorElement = this.table.options.ajaxLoaderError;
+		}
 	}
 
 	if (this.table.options.ajaxParams) {
@@ -172,10 +186,13 @@ Ajax.prototype._loadDataStandard = function (inPosition) {
 
 	return new Promise(function (resolve, reject) {
 		_this.sendRequest(inPosition).then(function (data) {
-			_this.table.rowManager.setData(data, inPosition);
-			resolve();
+			_this.table.rowManager.setData(data, inPosition).then(function () {
+				resolve();
+			}).catch(function (e) {
+				reject(e);
+			});
 		}).catch(function (e) {
-			reject();
+			reject(e);
 		});
 	});
 };
@@ -320,10 +337,13 @@ Ajax.prototype.defaultConfig = {
 };
 
 Ajax.prototype.defaultURLGenerator = function (url, config, params) {
-	if (params && Object.keys(params).length) {
-		if (!config.method || config.method.toLowerCase() == "get") {
-			config.method = "get";
-			url += "?" + this.serializeParams(params);
+
+	if (url) {
+		if (params && Object.keys(params).length) {
+			if (!config.method || config.method.toLowerCase() == "get") {
+				config.method = "get";
+				url += "?" + this.serializeParams(params);
+			}
 		}
 	}
 
@@ -340,7 +360,7 @@ Ajax.prototype.defaultLoaderPromise = function (url, config, params) {
 		url = self.urlGenerator(url, config, params);
 
 		//set body content if not GET request
-		if (config.method != "get") {
+		if (config.method.toUpperCase() != "GET") {
 			contentType = _typeof(self.table.options.ajaxContentType) === "object" ? self.table.options.ajaxContentType : self.contentTypeFormatters[self.table.options.ajaxContentType];
 			if (contentType) {
 
@@ -363,10 +383,6 @@ Ajax.prototype.defaultLoaderPromise = function (url, config, params) {
 		if (url) {
 
 			//configure headers
-			if (typeof config.credentials === "undefined") {
-				config.credentials = 'include';
-			}
-
 			if (typeof config.headers === "undefined") {
 				config.headers = {};
 			}
@@ -377,6 +393,25 @@ Ajax.prototype.defaultLoaderPromise = function (url, config, params) {
 
 			if (typeof config.headers["X-Requested-With"] === "undefined") {
 				config.headers["X-Requested-With"] = "XMLHttpRequest";
+			}
+
+			if (typeof config.mode === "undefined") {
+				config.mode = "cors";
+			}
+
+			if (config.mode == "cors") {
+
+				if (typeof config.headers["Access-Control-Allow-Origin"] === "undefined") {
+					config.headers["Access-Control-Allow-Origin"] = window.location.origin;
+				}
+
+				if (typeof config.credentials === "undefined") {
+					config.credentials = 'same-origin';
+				}
+			} else {
+				if (typeof config.credentials === "undefined") {
+					config.credentials = 'include';
+				}
 			}
 
 			//send request
@@ -397,7 +432,8 @@ Ajax.prototype.defaultLoaderPromise = function (url, config, params) {
 				reject(error);
 			});
 		} else {
-			reject("No URL Set");
+			console.warn("Ajax Load Error - No URL Set");
+			resolve([]);
 		}
 	});
 };

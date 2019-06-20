@@ -1,4 +1,4 @@
-/* Tabulator v4.1.2 (c) Oliver Folkerd */
+/* Tabulator v4.2.7 (c) Oliver Folkerd */
 
 var ResponsiveLayout = function ResponsiveLayout(table) {
 	this.table = table; //hold Tabulator object
@@ -178,7 +178,6 @@ ResponsiveLayout.prototype.generateCollapsedRowContent = function (row) {
 		while (el.firstChild) {
 			el.removeChild(el.firstChild);
 		}contents = this.collapseFormatter(this.generateCollapsedRowData(row));
-
 		if (contents) {
 			el.appendChild(contents);
 		}
@@ -188,7 +187,7 @@ ResponsiveLayout.prototype.generateCollapsedRowContent = function (row) {
 ResponsiveLayout.prototype.generateCollapsedRowData = function (row) {
 	var self = this,
 	    data = row.getData(),
-	    output = {},
+	    output = [],
 	    mockCellComponent;
 
 	this.hiddenColumns.forEach(function (column) {
@@ -217,9 +216,15 @@ ResponsiveLayout.prototype.generateCollapsedRowData = function (row) {
 					}
 				};
 
-				output[column.definition.title] = column.modules.format.formatter.call(self.table.modules.format, mockCellComponent, column.modules.format.params);
+				output.push({
+					title: column.definition.title,
+					value: column.modules.format.formatter.call(self.table.modules.format, mockCellComponent, column.modules.format.params)
+				});
 			} else {
-				output[column.definition.title] = value;
+				output.push({
+					title: column.definition.title,
+					value: value
+				});
 			}
 		}
 	});
@@ -231,9 +236,16 @@ ResponsiveLayout.prototype.formatCollapsedData = function (data) {
 	var list = document.createElement("table"),
 	    listContents = "";
 
-	for (var key in data) {
-		listContents += "<tr><td><strong>" + key + "</strong></td><td>" + data[key] + "</td></tr>";
-	}
+	data.forEach(function (item) {
+		var div = document.createElement("div");
+
+		if (item.value instanceof Node) {
+			div.appendChild(item.value);
+			item.value = div.innerHTML;
+		}
+
+		listContents += "<tr><td><strong>" + item.title + "</strong></td><td>" + item.value + "</td></tr>";
+	});
 
 	list.innerHTML = listContents;
 

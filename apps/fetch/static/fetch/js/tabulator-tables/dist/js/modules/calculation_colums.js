@@ -1,6 +1,6 @@
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-/* Tabulator v4.1.2 (c) Oliver Folkerd */
+/* Tabulator v4.2.7 (c) Oliver Folkerd */
 
 var ColumnCalcs = function ColumnCalcs(table) {
 	this.table = table; //hold Tabulator object
@@ -242,31 +242,36 @@ ColumnCalcs.prototype.generateRow = function (pos, data) {
 
 		self.table.columnManager.columnsByIndex.forEach(function (column) {
 
-			if (column.visible) {
-				//set field name of mock column
-				self.genColumn.setField(column.getField());
-				self.genColumn.hozAlign = column.hozAlign;
+			//set field name of mock column
+			self.genColumn.setField(column.getField());
+			self.genColumn.hozAlign = column.hozAlign;
 
-				if (column.definition[pos + "CalcFormatter"] && self.table.modExists("format")) {
+			if (column.definition[pos + "CalcFormatter"] && self.table.modExists("format")) {
 
-					self.genColumn.modules.format = {
-						formatter: self.table.modules.format.getFormatter(column.definition[pos + "CalcFormatter"]),
-						params: column.definition[pos + "CalcFormatterParams"]
-					};
-				} else {
-					self.genColumn.modules.format = {
-						formatter: self.table.modules.format.getFormatter("plaintext"),
-						params: {}
-					};
-				}
+				self.genColumn.modules.format = {
+					formatter: self.table.modules.format.getFormatter(column.definition[pos + "CalcFormatter"]),
+					params: column.definition[pos + "CalcFormatterParams"]
+				};
+			} else {
+				self.genColumn.modules.format = {
+					formatter: self.table.modules.format.getFormatter("plaintext"),
+					params: {}
+				};
+			}
 
-				//generate cell and assign to correct column
-				var cell = new Cell(self.genColumn, row);
-				cell.column = column;
-				cell.setWidth(column.width);
+			//ensure css class defintion is replicated to calculation cell
+			self.genColumn.definition.cssClass = column.definition.cssClass;
 
-				column.cells.push(cell);
-				cells.push(cell);
+			//generate cell and assign to correct column
+			var cell = new Cell(self.genColumn, row);
+			cell.column = column;
+			cell.setWidth();
+
+			column.cells.push(cell);
+			cells.push(cell);
+
+			if (!column.visible) {
+				cell.hide();
 			}
 		});
 

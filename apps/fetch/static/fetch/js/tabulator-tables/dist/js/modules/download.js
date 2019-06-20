@@ -1,6 +1,6 @@
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-/* Tabulator v4.1.2 (c) Oliver Folkerd */
+/* Tabulator v4.2.7 (c) Oliver Folkerd */
 
 var Download = function Download(table) {
 	this.table = table; //hold Tabulator object
@@ -18,7 +18,11 @@ Download.prototype.download = function (type, filename, options, interceptCallba
 
 	function buildLink(data, mime) {
 		if (interceptCallback) {
-			interceptCallback(data);
+			if (interceptCallback === true) {
+				self.triggerDownload(data, mime, type, filename, true);
+			} else {
+				interceptCallback(data);
+			}
 		} else {
 			self.triggerDownload(data, mime, type, filename);
 		}
@@ -44,7 +48,8 @@ Download.prototype.download = function (type, filename, options, interceptCallba
 Download.prototype.processConfig = function () {
 	var config = { //download config
 		columnGroups: true,
-		rowGroups: true
+		rowGroups: true,
+		columnCalcs: true
 	};
 
 	if (this.table.options.downloadConfig) {
@@ -60,6 +65,10 @@ Download.prototype.processConfig = function () {
 	if (config.columnGroups && this.table.columnManager.columns.length != this.table.columnManager.columnsByIndex.length) {
 		this.config.columnGroups = true;
 	}
+
+	if (config.columnCalcs && this.table.modExists("columnCalcs")) {
+		this.config.columnCalcs = true;
+	}
 };
 
 Download.prototype.processColumns = function () {
@@ -70,7 +79,7 @@ Download.prototype.processColumns = function () {
 
 	self.table.columnManager.columnsByIndex.forEach(function (column) {
 
-		if (column.field && column.visible && column.definition.download !== false) {
+		if (column.field && column.definition.download !== false && (column.visible || !column.visible && column.definition.download)) {
 			self.columnsByIndex.push(column);
 			self.columnsByField[column.field] = column;
 		}
@@ -104,11 +113,13 @@ Download.prototype.processDefinitions = function () {
 Download.prototype.processColumnGroup = function (column) {
 	var _this = this;
 
-	var subGroups = column.columns;
+	var subGroups = column.columns,
+	    maxDepth = 0;
 
 	var groupData = {
 		type: "group",
-		title: column.definition.title
+		title: column.definition.title,
+		depth: 1
 	};
 
 	if (subGroups.length) {
@@ -118,17 +129,23 @@ Download.prototype.processColumnGroup = function (column) {
 		subGroups.forEach(function (subGroup) {
 			var subGroupData = _this.processColumnGroup(subGroup);
 
+			if (subGroupData.depth > maxDepth) {
+				maxDepth = subGroupData.depth;
+			}
+
 			if (subGroupData) {
 				groupData.width += subGroupData.width;
 				groupData.subGroups.push(subGroupData);
 			}
 		});
 
+		groupData.depth += maxDepth;
+
 		if (!groupData.width) {
 			return false;
 		}
 	} else {
-		if (column.field && column.visible && column.definition.download !== false) {
+		if (column.field && column.definition.download !== false && (column.visible || !column.visible && column.definition.download)) {
 			groupData.width = 1;
 			groupData.definition = this.processDefinition(column);
 		} else {
@@ -158,7 +175,8 @@ Download.prototype.processData = function () {
 
 	var self = this,
 	    data = [],
-	    groups = [];
+	    groups = [],
+	    calcs = {};
 
 	if (this.config.rowGroups) {
 		groups = this.table.modules.groupRows.getGroups();
@@ -168,6 +186,15 @@ Download.prototype.processData = function () {
 		});
 	} else {
 		data = self.table.rowManager.getData(true, "download");
+	}
+
+	if (this.config.columnCalcs) {
+		calcs = this.table.getCalcResults();
+
+		data = {
+			calcs: calcs,
+			data: data
+		};
 	}
 
 	//bulk data processing
@@ -201,7 +228,7 @@ Download.prototype.processGroupData = function (group) {
 	return groupData;
 };
 
-Download.prototype.triggerDownload = function (data, mime, type, filename) {
+Download.prototype.triggerDownload = function (data, mime, type, filename, newTab) {
 	var element = document.createElement('a'),
 	    blob = new Blob([data], { type: mime }),
 	    filename = filename || "Tabulator." + (typeof type === "function" ? "txt" : type);
@@ -210,21 +237,25 @@ Download.prototype.triggerDownload = function (data, mime, type, filename) {
 
 	if (blob) {
 
-		if (navigator.msSaveOrOpenBlob) {
-			navigator.msSaveOrOpenBlob(blob, filename);
+		if (newTab) {
+			window.open(window.URL.createObjectURL(blob));
 		} else {
-			element.setAttribute('href', window.URL.createObjectURL(blob));
+			if (navigator.msSaveOrOpenBlob) {
+				navigator.msSaveOrOpenBlob(blob, filename);
+			} else {
+				element.setAttribute('href', window.URL.createObjectURL(blob));
 
-			//set file title
-			element.setAttribute('download', filename);
+				//set file title
+				element.setAttribute('download', filename);
 
-			//trigger download
-			element.style.display = 'none';
-			document.body.appendChild(element);
-			element.click();
+				//trigger download
+				element.style.display = 'none';
+				document.body.appendChild(element);
+				element.click();
 
-			//remove temporary link element
-			document.body.removeChild(element);
+				//remove temporary link element
+				document.body.removeChild(element);
+			}
 		}
 
 		if (this.table.options.downloadComplete) {
@@ -259,7 +290,8 @@ Download.prototype.downloaders = {
 		    titles = [],
 		    fields = [],
 		    delimiter = options && options.delimiter ? options.delimiter : ",",
-		    fileContents;
+		    fileContents,
+		    output;
 
 		//build column headers
 		function parseSimpleTitles() {
@@ -333,6 +365,11 @@ Download.prototype.downloaders = {
 			}
 		}
 
+		if (config.columnCalcs) {
+			console.warn("Download Warning - CSV downloader cannot process column calculations");
+			data = data.data;
+		}
+
 		if (config.rowGroups) {
 			console.warn("Download Warning - CSV downloader cannot process row groups");
 
@@ -343,11 +380,24 @@ Download.prototype.downloaders = {
 			parseRows(data);
 		}
 
-		setFileContents(fileContents.join("\n"), "text/csv");
+		output = fileContents.join("\n");
+
+		if (options.bom) {
+			output = "\uFEFF" + output;
+		}
+
+		setFileContents(output, "text/csv");
 	},
 
 	json: function json(columns, data, options, setFileContents, config) {
-		var fileContents = JSON.stringify(data, null, '\t');
+		var fileContents;
+
+		if (config.columnCalcs) {
+			console.warn("Download Warning - CSV downloader cannot process column calculations");
+			data = data.data;
+		}
+
+		fileContents = JSON.stringify(data, null, '\t');
 
 		setFileContents(fileContents, "application/json");
 	},
@@ -357,12 +407,29 @@ Download.prototype.downloaders = {
 		    fields = [],
 		    header = [],
 		    body = [],
+		    calcs = {},
+		    headerDepth = 1,
 		    table = "",
-		    groupRowIndexs = [],
 		    autoTableParams = {},
-		    rowGroupStyles = {},
+		    rowGroupStyles = options.rowGroupStyles || {
+			fontStyle: "bold",
+			fontSize: 12,
+			cellPadding: 6,
+			fillColor: 220
+		},
+		    rowCalcStyles = options.rowCalcStyles || {
+			fontStyle: "bold",
+			fontSize: 10,
+			cellPadding: 4,
+			fillColor: 232
+		},
 		    jsPDFParams = options.jsPDF || {},
 		    title = options && options.title ? options.title : "";
+
+		if (config.columnCalcs) {
+			calcs = data.calcs;
+			data = data.data;
+		}
 
 		if (!jsPDFParams.orientation) {
 			jsPDFParams.orientation = options.orientation || "landscape";
@@ -380,21 +447,55 @@ Download.prototype.downloaders = {
 					fields.push(column.field);
 				}
 			});
+
+			header = [header];
 		}
 
 		function parseColumnGroup(column, level) {
+			var colSpan = column.width,
+			    rowSpan = 1,
+			    col = {
+				content: column.title || ""
+			};
+
 			if (column.subGroups) {
 				column.subGroups.forEach(function (subGroup) {
 					parseColumnGroup(subGroup, level + 1);
 				});
+				rowSpan = 1;
 			} else {
-				header.push(column.title || "");
 				fields.push(column.definition.field);
+				rowSpan = headerDepth - level;
+			}
+
+			col.rowSpan = rowSpan;
+			// col.colSpan = colSpan;
+
+			header[level].push(col);
+
+			colSpan--;
+
+			if (rowSpan > 1) {
+				for (var i = level + 1; i < headerDepth; i++) {
+					header[i].push("");
+				}
+			}
+
+			for (var i = 0; i < colSpan; i++) {
+				header[level].push("");
 			}
 		}
 
 		if (config.columnGroups) {
-			console.warn("Download Warning - PDF downloader cannot process column groups");
+			columns.forEach(function (column) {
+				if (column.depth > headerDepth) {
+					headerDepth = column.depth;
+				}
+			});
+
+			for (var i = 0; i < headerDepth; i++) {
+				header.push([]);
+			}
 
 			columns.forEach(function (column) {
 				parseColumnGroup(column, 0);
@@ -424,41 +525,83 @@ Download.prototype.downloaders = {
 		function parseRows(data) {
 			//build table rows
 			data.forEach(function (row) {
-				var rowData = [];
-
-				fields.forEach(function (field) {
-					var value = self.getFieldValue(field, row);
-					rowData.push(parseValue(value));
-				});
-
-				body.push(rowData);
+				body.push(parseRow(row));
 			});
 		}
 
-		function parseGroup(group) {
+		function parseRow(row, styles) {
+			var rowData = [];
+
+			fields.forEach(function (field) {
+				var value = self.getFieldValue(field, row);
+				value = parseValue(value);
+
+				if (styles) {
+					rowData.push({
+						content: value,
+						styles: styles
+					});
+				} else {
+					rowData.push(value);
+				}
+			});
+
+			return rowData;
+		}
+
+		function parseGroup(group, calcObj) {
 			var groupData = [];
 
-			groupData.push(parseValue(group.key));
-
-			groupRowIndexs.push(body.length);
+			groupData.push({ content: parseValue(group.key), colSpan: fields.length, styles: rowGroupStyles });
 
 			body.push(groupData);
 
 			if (group.subGroups) {
 				group.subGroups.forEach(function (subGroup) {
-					parseGroup(subGroup);
+					parseGroup(subGroup, calcObj[group.key] ? calcObj[group.key].groups || {} : {});
 				});
 			} else {
+
+				if (config.columnCalcs) {
+					addCalcRow(calcObj, group.key, "top");
+				}
+
 				parseRows(group.rows);
+
+				if (config.columnCalcs) {
+					addCalcRow(calcObj, group.key, "bottom");
+				}
+			}
+		}
+
+		function addCalcRow(calcs, selector, pos) {
+			var calcData = calcs[selector];
+
+			if (calcData) {
+				if (pos) {
+					calcData = calcData[pos];
+				}
+
+				if (Object.keys(calcData).length) {
+					body.push(parseRow(calcData, rowCalcStyles));
+				}
 			}
 		}
 
 		if (config.rowGroups) {
 			data.forEach(function (group) {
-				parseGroup(group);
+				parseGroup(group, calcs);
 			});
 		} else {
+			if (config.columnCalcs) {
+				addCalcRow(calcs, "top");
+			}
+
 			parseRows(data);
+
+			if (config.columnCalcs) {
+				addCalcRow(calcs, "bottom");
+			}
 		}
 
 		var doc = new jsPDF(jsPDFParams); //set document to landscape, better for most tables
@@ -471,41 +614,16 @@ Download.prototype.downloaders = {
 			}
 		}
 
-		if (config.rowGroups) {
-			var createdCell = function createdCell(cell, data) {
-				if (groupRowIndexs.indexOf(data.row.index) > -1) {
-					for (var key in rowGroupStyles) {
-						cell.styles[key] = rowGroupStyles[key];
-					}
-				}
-			};
-
-			rowGroupStyles = options.rowGroupStyles || {
-				fontStyle: "bold",
-				fontSize: 12,
-				cellPadding: 6,
-				fillColor: 220
-			};
-
-			if (!autoTableParams.createdCell) {
-				autoTableParams.createdCell = createdCell;
-			} else {
-				var createdCellHolder = autoTableParams.createdCell;
-
-				autoTableParams.createdCell = function (cell, data) {
-					createdCell(cell, data);
-					createdCellHolder(cell, data);
-				};
-			}
-		}
-
 		if (title) {
 			autoTableParams.addPageContent = function (data) {
 				doc.text(title, 40, 30);
 			};
 		}
 
-		doc.autoTable(header, body, autoTableParams);
+		autoTableParams.head = header;
+		autoTableParams.body = body;
+
+		doc.autoTable(autoTableParams);
 
 		setFileContents(doc.output("arraybuffer"), "application/pdf");
 	},
@@ -514,9 +632,16 @@ Download.prototype.downloaders = {
 		var self = this,
 		    sheetName = options.sheetName || "Sheet1",
 		    workbook = { SheetNames: [], Sheets: {} },
+		    calcs = {},
 		    groupRowIndexs = [],
 		    groupColumnIndexs = [],
+		    calcRowIndexs = [],
 		    output;
+
+		if (config.columnCalcs) {
+			calcs = data.calcs;
+			data = data.data;
+		}
 
 		function generateSheet() {
 			var titles = [],
@@ -645,19 +770,37 @@ Download.prototype.downloaders = {
 			//generate each row of the table
 			function parseRows(data) {
 				data.forEach(function (row) {
-					var rowData = [];
-
-					fields.forEach(function (field) {
-						var value = self.getFieldValue(field, row);
-
-						rowData.push((typeof value === "undefined" ? "undefined" : _typeof(value)) === "object" ? JSON.stringify(value) : value);
-					});
-
-					rows.push(rowData);
+					rows.push(parseRow(row));
 				});
 			}
 
-			function parseGroup(group) {
+			function parseRow(row) {
+				var rowData = [];
+
+				fields.forEach(function (field) {
+					var value = self.getFieldValue(field, row);
+					rowData.push(!(value instanceof Date) && (typeof value === "undefined" ? "undefined" : _typeof(value)) === "object" ? JSON.stringify(value) : value);
+				});
+
+				return rowData;
+			}
+
+			function addCalcRow(calcs, selector, pos) {
+				var calcData = calcs[selector];
+
+				if (calcData) {
+					if (pos) {
+						calcData = calcData[pos];
+					}
+
+					if (Object.keys(calcData).length) {
+						calcRowIndexs.push(rows.length);
+						rows.push(parseRow(calcData));
+					}
+				}
+			}
+
+			function parseGroup(group, calcObj) {
 				var groupData = [];
 
 				groupData.push(group.key);
@@ -668,19 +811,36 @@ Download.prototype.downloaders = {
 
 				if (group.subGroups) {
 					group.subGroups.forEach(function (subGroup) {
-						parseGroup(subGroup);
+						parseGroup(subGroup, calcObj[group.key] ? calcObj[group.key].groups || {} : {});
 					});
 				} else {
+
+					if (config.columnCalcs) {
+						addCalcRow(calcObj, group.key, "top");
+					}
+
 					parseRows(group.rows);
+
+					if (config.columnCalcs) {
+						addCalcRow(calcObj, group.key, "bottom");
+					}
 				}
 			}
 
 			if (config.rowGroups) {
 				data.forEach(function (group) {
-					parseGroup(group);
+					parseGroup(group, calcs);
 				});
 			} else {
+				if (config.columnCalcs) {
+					addCalcRow(calcs, "top");
+				}
+
 				parseRows(data);
+
+				if (config.columnCalcs) {
+					addCalcRow(calcs, "bottom");
+				}
 			}
 
 			worksheet = rowsToSheet();

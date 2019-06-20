@@ -1,4 +1,4 @@
-/* Tabulator v4.1.2 (c) Oliver Folkerd */
+/* Tabulator v4.2.7 (c) Oliver Folkerd */
 
 //public group object
 var GroupComponent = function GroupComponent(group) {
@@ -47,7 +47,7 @@ GroupComponent.prototype._getSelf = function () {
 };
 
 GroupComponent.prototype.getTable = function () {
-	return this._group.table;
+	return this._group.groupManager.table;
 };
 
 //////////////////////////////////////////////////
@@ -76,6 +76,7 @@ var Group = function Group(groupManager, parent, level, key, field, generator, o
 	this.calcs = {};
 	this.initialized = false;
 	this.modules = {};
+	this.arrowElement = false;
 
 	this.visible = oldGroup ? oldGroup.visible : typeof groupManager.startOpen[level] !== "undefined" ? groupManager.startOpen[level] : groupManager.startOpen[0];
 
@@ -83,6 +84,18 @@ var Group = function Group(groupManager, parent, level, key, field, generator, o
 	this.addBindings();
 
 	this.createValueGroups();
+};
+
+Group.prototype.wipe = function () {
+	if (this.groupList.length) {
+		this.groupList.forEach(function (group) {
+			group.wipe();
+		});
+	} else {
+		this.element = false;
+		this.arrowElement = false;
+		this.elementContents = false;
+	}
 };
 
 Group.prototype.createElements = function () {
@@ -94,6 +107,11 @@ Group.prototype.createElements = function () {
 
 	this.arrowElement = document.createElement("div");
 	this.arrowElement.classList.add("tabulator-arrow");
+
+	//setup movable rows
+	if (this.groupManager.table.options.movableRows !== false && this.groupManager.table.modExists("moveRow")) {
+		this.groupManager.table.modules.moveRow.initializeGroupHeader(this);
+	}
 };
 
 Group.prototype.createValueGroups = function () {
@@ -266,6 +284,16 @@ Group.prototype.insertRow = function (row, to, after) {
 	if (this.groupManager.table.modExists("columnCalcs") && this.groupManager.table.options.columnCalcs != "table") {
 		this.groupManager.table.modules.columnCalcs.recalcGroup(this);
 	}
+
+	this.groupManager.updateGroupRows(true);
+};
+
+Group.prototype.scrollHeader = function (left) {
+	this.arrowElement.style.marginLeft = left;
+
+	this.groupList.forEach(function (child) {
+		child.scrollHeader(left);
+	});
 };
 
 Group.prototype.getRowIndex = function (row) {};
@@ -287,12 +315,13 @@ Group.prototype.conformRowData = function (data) {
 
 Group.prototype.removeRow = function (row) {
 	var index = this.rows.indexOf(row);
+	var el = row.getElement();
 
 	if (index > -1) {
 		this.rows.splice(index, 1);
 	}
 
-	if (!this.rows.length) {
+	if (!this.groupManager.table.options.groupValues && !this.rows.length) {
 		if (this.parent) {
 			this.parent.removeGroup(this);
 		} else {
@@ -301,7 +330,13 @@ Group.prototype.removeRow = function (row) {
 
 		this.groupManager.updateGroupRows(true);
 	} else {
+
+		if (el.parentNode) {
+			el.parentNode.removeChild(el);
+		}
+
 		this.generateGroupHeaderContents();
+
 		if (this.groupManager.table.modExists("columnCalcs") && this.groupManager.table.options.columnCalcs != "table") {
 			this.groupManager.table.modules.columnCalcs.recalcGroup(this);
 		}
@@ -331,7 +366,7 @@ Group.prototype.removeGroup = function (group) {
 	}
 };
 
-Group.prototype.getHeadersAndRows = function () {
+Group.prototype.getHeadersAndRows = function (noCalc) {
 	var output = [];
 
 	output.push(this);
@@ -342,17 +377,26 @@ Group.prototype.getHeadersAndRows = function () {
 
 		if (this.groupList.length) {
 			this.groupList.forEach(function (group) {
-				output = output.concat(group.getHeadersAndRows());
+				output = output.concat(group.getHeadersAndRows(noCalc));
 			});
 		} else {
-			if (this.groupManager.table.options.columnCalcs != "table" && this.groupManager.table.modExists("columnCalcs") && this.groupManager.table.modules.columnCalcs.hasTopCalcs()) {
+			if (!noCalc && this.groupManager.table.options.columnCalcs != "table" && this.groupManager.table.modExists("columnCalcs") && this.groupManager.table.modules.columnCalcs.hasTopCalcs()) {
+				if (this.calcs.top) {
+					this.calcs.top.detachElement();
+				}
+
 				this.calcs.top = this.groupManager.table.modules.columnCalcs.generateTopRow(this.rows);
 				output.push(this.calcs.top);
 			}
 
 			output = output.concat(this.rows);
 
-			if (this.groupManager.table.options.columnCalcs != "table" && this.groupManager.table.modExists("columnCalcs") && this.groupManager.table.modules.columnCalcs.hasBottomCalcs()) {
+			if (!noCalc && this.groupManager.table.options.columnCalcs != "table" && this.groupManager.table.modExists("columnCalcs") && this.groupManager.table.modules.columnCalcs.hasBottomCalcs()) {
+
+				if (this.calcs.bottom) {
+					this.calcs.bottom.detachElement();
+				}
+
 				this.calcs.bottom = this.groupManager.table.modules.columnCalcs.generateBottomRow(this.rows);
 				output.push(this.calcs.bottom);
 			}
@@ -360,12 +404,18 @@ Group.prototype.getHeadersAndRows = function () {
 	} else {
 		if (!this.groupList.length && this.groupManager.table.options.columnCalcs != "table" && this.groupManager.table.options.groupClosedShowCalcs) {
 			if (this.groupManager.table.modExists("columnCalcs")) {
-				if (this.groupManager.table.modules.columnCalcs.hasTopCalcs()) {
+				if (!noCalc && this.groupManager.table.modules.columnCalcs.hasTopCalcs()) {
+					if (this.calcs.top) {
+						this.calcs.top.detachElement();
+					}
 					this.calcs.top = this.groupManager.table.modules.columnCalcs.generateTopRow(this.rows);
 					output.push(this.calcs.top);
 				}
 
-				if (this.groupManager.table.modules.columnCalcs.hasBottomCalcs()) {
+				if (!noCalc && this.groupManager.table.modules.columnCalcs.hasBottomCalcs()) {
+					if (this.calcs.bottom) {
+						this.calcs.bottom.detachElement();
+					}
 					this.calcs.bottom = this.groupManager.table.modules.columnCalcs.generateBottomRow(this.rows);
 					output.push(this.calcs.bottom);
 				}
@@ -428,23 +478,10 @@ Group.prototype.hide = function () {
 		if (this.groupList.length) {
 			this.groupList.forEach(function (group) {
 
-				var el;
-
-				if (group.calcs.top) {
-					el = group.calcs.top.getElement();
-					el.parentNode.removeChild(el);
-				}
-
-				if (group.calcs.bottom) {
-					el = group.calcs.bottom.getElement();
-					el.parentNode.removeChild(el);
-				}
-
 				var rows = group.getHeadersAndRows();
 
 				rows.forEach(function (row) {
-					var rowEl = row.getElement();
-					rowEl.parentNode.removeChild(rowEl);
+					row.detachElement();
 				});
 			});
 		} else {
@@ -455,6 +492,8 @@ Group.prototype.hide = function () {
 		}
 
 		this.groupManager.table.rowManager.setDisplayRows(this.groupManager.updateGroupRows(), this.groupManager.getDisplayIndex());
+
+		this.groupManager.table.rowManager.checkClassicModeGroupHeaderWidth();
 	} else {
 		this.groupManager.updateGroupRows(true);
 	}
@@ -494,6 +533,8 @@ Group.prototype.show = function () {
 		}
 
 		this.groupManager.table.rowManager.setDisplayRows(this.groupManager.updateGroupRows(), this.groupManager.getDisplayIndex());
+
+		this.groupManager.table.rowManager.checkClassicModeGroupHeaderWidth();
 	} else {
 		this.groupManager.updateGroupRows(true);
 	}
@@ -588,15 +629,21 @@ Group.prototype.getElement = function () {
 		this.element.classList.remove("tabulator-group-visible");
 	}
 
-	this.element.childNodes.forEach(function (child) {
-		child.parentNode.removeChild(child);
-	});
+	for (var i = 0; i < this.element.childNodes.length; ++i) {
+		this.element.childNodes[i].parentNode.removeChild(this.element.childNodes[i]);
+	}
 
 	this.generateGroupHeaderContents();
 
 	// this.addBindings();
 
 	return this.element;
+};
+
+Group.prototype.detachElement = function () {
+	if (this.element && this.element.parentNode) {
+		this.element.parentNode.removeChild(this.element);
+	}
 };
 
 //normalize the height of elements in the row
@@ -801,6 +848,12 @@ GroupRows.prototype.getGroups = function (compoment) {
 	return groupComponents;
 };
 
+GroupRows.prototype.wipe = function () {
+	this.groupList.forEach(function (group) {
+		group.wipe();
+	});
+};
+
 GroupRows.prototype.pullGroupListData = function (groupList) {
 	var self = this;
 	var groupListData = [];
@@ -952,8 +1005,10 @@ GroupRows.prototype.updateGroupRows = function (force) {
 };
 
 GroupRows.prototype.scrollHeaders = function (left) {
+	left = left + "px";
+
 	this.groupList.forEach(function (group) {
-		group.arrowElement.style.marginLeft = left + "px";
+		group.scrollHeader(left);
 	});
 };
 

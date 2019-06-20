@@ -1,6 +1,6 @@
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-/* Tabulator v4.1.2 (c) Oliver Folkerd */
+/* Tabulator v4.2.7 (c) Oliver Folkerd */
 
 var DataTree = function DataTree(table) {
 	this.table = table;
@@ -9,6 +9,7 @@ var DataTree = function DataTree(table) {
 	this.collapseEl = null;
 	this.expandEl = null;
 	this.branchEl = null;
+	this.elementField = false;
 
 	this.startOpen = function () {};
 
@@ -17,10 +18,12 @@ var DataTree = function DataTree(table) {
 
 DataTree.prototype.initialize = function () {
 	var dummyEl = null,
+	    firstCol = this.table.columnManager.getFirstVisibileColumn(),
 	    options = this.table.options;
 
 	this.field = options.dataTreeChildField;
 	this.indent = options.dataTreeChildIndent;
+	this.elementField = options.dataTreeElementColumn || (firstCol ? firstCol.field : false);
 
 	if (options.dataTreeBranchElement) {
 
@@ -86,8 +89,10 @@ DataTree.prototype.initialize = function () {
 };
 
 DataTree.prototype.initializeRow = function (row) {
+	var childArray = row.getData()[this.field];
+	var isArray = Array.isArray(childArray);
 
-	var children = typeof row.getData()[this.field] !== "undefined";
+	var children = isArray || !isArray && (typeof childArray === "undefined" ? "undefined" : _typeof(childArray)) === "object" && childArray !== null;
 
 	row.modules.dataTree = {
 		index: 0,
@@ -100,11 +105,9 @@ DataTree.prototype.initializeRow = function (row) {
 };
 
 DataTree.prototype.layoutRow = function (row) {
-	var cell = row.getCells()[0],
+	var cell = this.elementField ? row.getCell(this.elementField) : row.getCells()[0],
 	    el = cell.getElement(),
 	    config = row.modules.dataTree;
-
-	el.style.paddingLeft = parseInt(window.getComputedStyle(el, null).getPropertyValue('padding-left')) + config.index * this.indent + "px";
 
 	if (config.branchEl) {
 		config.branchEl.parentNode.removeChild(config.branchEl);
@@ -112,10 +115,14 @@ DataTree.prototype.layoutRow = function (row) {
 
 	this.generateControlElement(row, el);
 
-	if (config.index && this.branchEl) {
-		config.branchEl = this.branchEl.cloneNode(true);
-		el.insertBefore(config.branchEl, el.firstChild);
-		el.style.paddingLeft = parseInt(el.style.paddingLeft) + (config.branchEl.offsetWidth + config.branchEl.style.marginRight) * (config.index - 1) + "px";
+	if (config.index) {
+		if (this.branchEl) {
+			config.branchEl = this.branchEl.cloneNode(true);
+			el.insertBefore(config.branchEl, el.firstChild);
+			config.branchEl.style.marginLeft = (config.branchEl.offsetWidth + config.branchEl.style.marginRight) * (config.index - 1) + config.index * this.indent + "px";
+		} else {
+			el.style.paddingLeft = parseInt(window.getComputedStyle(el, null).getPropertyValue('padding-left')) + config.index * this.indent + "px";
+		}
 	}
 };
 
@@ -168,17 +175,21 @@ DataTree.prototype.getRows = function (rows) {
 	var output = [];
 
 	rows.forEach(function (row, i) {
-		var config = row.modules.dataTree.children,
-		    children;
+		var config, children;
 
 		output.push(row);
 
-		if (!config.index && config.children !== false) {
-			children = _this2.getChildren(row);
+		if (row instanceof Row) {
 
-			children.forEach(function (child) {
-				output.push(child);
-			});
+			config = row.modules.dataTree.children;
+
+			if (!config.index && config.children !== false) {
+				children = _this2.getChildren(row);
+
+				children.forEach(function (child) {
+					output.push(child);
+				});
+			}
 		}
 	});
 
@@ -189,6 +200,7 @@ DataTree.prototype.getChildren = function (row) {
 	var _this3 = this;
 
 	var config = row.modules.dataTree,
+	    children = [],
 	    output = [];
 
 	if (config.children !== false && config.open) {
@@ -196,7 +208,17 @@ DataTree.prototype.getChildren = function (row) {
 			config.children = this.generateChildren(row);
 		}
 
-		config.children.forEach(function (child) {
+		if (this.table.modExists("filter")) {
+			children = this.table.modules.filter.filter(config.children);
+		} else {
+			children = config.children;
+		}
+
+		if (this.table.modExists("sort")) {
+			this.table.modules.sort.sort(children);
+		}
+
+		children.forEach(function (child) {
 			output.push(child);
 
 			var subChildren = _this3.getChildren(child);
@@ -215,11 +237,19 @@ DataTree.prototype.generateChildren = function (row) {
 
 	var children = [];
 
-	row.getData()[this.field].forEach(function (childData) {
+	var childArray = row.getData()[this.field];
+
+	if (!Array.isArray(childArray)) {
+		childArray = [childArray];
+	}
+
+	childArray.forEach(function (childData) {
 		var childRow = new Row(childData || {}, _this4.table.rowManager);
 		childRow.modules.dataTree.index = row.modules.dataTree.index + 1;
 		childRow.modules.dataTree.parent = row;
-		childRow.modules.dataTree.open = _this4.startOpen(row, childRow.modules.dataTree.index);
+		if (childRow.modules.dataTree.children) {
+			childRow.modules.dataTree.open = _this4.startOpen(childRow.getComponent(), childRow.modules.dataTree.index);
+		}
 		children.push(childRow);
 	});
 
@@ -296,6 +326,10 @@ DataTree.prototype.checkForRestyle = function (cell) {
 			cell.row.reinitialize();
 		}
 	}
+};
+
+DataTree.prototype.getChildField = function () {
+	return this.field;
 };
 
 Tabulator.prototype.registerModule("dataTree", DataTree);
