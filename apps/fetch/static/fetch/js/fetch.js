@@ -1,6 +1,25 @@
 ////////////////////
 // Initialization //
 ////////////////////
+
+var sortWithFixedGroup = function(e, column) {
+    e.preventDefault();
+
+	var dir = "asc";
+
+    var test = tabulatorTable.getSorters();
+	tabulatorTable.getSorters().forEach(function(sort){
+		if( column.getField() == sort.column.getField()){
+			dir = sort.dir;
+		}
+	})
+
+	tabulatorTable.setSort([
+        {column:column, dir:(dir == "asc" ? "desc" : "asc")},
+		{column:"header", dir:"asc"},
+	]);
+}
+
 var movieFiles = [],
     fileSelectClass = document.getElementsByClassName("select"),
     tabulatorTable = new Tabulator("#subtitle-table", {
@@ -15,23 +34,23 @@ var movieFiles = [],
             {title:"Enabled", field:"enabled", visible:false},
             {title:"Header", field:"header", visible:false},
             {title:"Movie file", field:"movie_filename", visible:false},
-            {title:"Added titles", field:"placeholder", formatter:"html", visible:true},
+            {title:"Added titles", field:"placeholder", formatter:"html", visible:true, headerSort:false, headerClick: sortWithFixedGroup},
             // Break
-            {title:"Movie size (bytes)", field:"file_size", width: 160, widthShrink:1, visible:true},
-            {title:"Movie hash", field:"hash", width: 160, widthShrink:1, visible:true},
-            {title:"#", field:"id", width: 1, widthShrink:1, sorter:"string", visible:false},
-            {title:"Subtitle file", field:"sub_filename", sorter:"string", widthGrow: 9, visible:false},
-            {title:"S", field:"season", width: 1, sorter:"string", widthShrink:1, visible:false},
-            {title:"E", field:"episode", width: 1, sorter:"string", widthShrink:1, visible:false},
-            {title:"Language", field:"language_name", widthGrow: 2, sorter:"string", visible:false},
-            {title:"Format", field:"format", width: 83, widthShrink:1, sorter:"string", visible:false},
-            {title:"Encoding", field:"encoding", width: 100, widthShrink:2, sorter:"string", visible:false},
-            {title:"Date added", field:"add_date", width: 150, widthShrink:3, visible:false},
-            {title:"Score", field:"score", width: 76, widthShrink:2, sorter:"number", visible:false},
-            {title:"Rating", field:"rating", width: 80, widthShrink:1, sorter:"number", visible:false},
-            {title:"Uploader rank", field:"rank", sorter:"string", widthGrow: 2, visible:false},
-            {title:"#DL", field:"num_downloads", sorter:"number", width: 65, widthShrink:2, headerTooltip:"Number of downloads on OpenSubtitles.org", visible:false},
-            {title:"Download", field:"download", formatter:"html", width: 110, widthShrink: 3, visible:false},
+            {title:"Movie size (bytes)", field:"file_size", width: 160, widthShrink:1, visible:true, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"Movie hash", field:"hash", width: 160, widthShrink:1, visible:true, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"#", field:"id", width: 1, widthShrink:1, sorter:"string", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"Subtitle file", field:"sub_filename", sorter:"string", widthGrow: 9, visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"S", field:"season", width: 1, sorter:"string", widthShrink:1, visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"E", field:"episode", width: 1, sorter:"string", widthShrink:1, visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"Language", field:"language_name", widthGrow: 2, sorter:"string", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"Format", field:"format", width: 83, widthShrink:1, sorter:"string", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"Encoding", field:"encoding", width: 100, widthShrink:2, sorter:"string", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"Date added", field:"add_date", width: 150, widthShrink:3, visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"Score", field:"score", width: 76, widthShrink:2, sorter:"number", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"Rating", field:"rating", width: 80, widthShrink:1, sorter:"number", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"Uploader rank", field:"rank", sorter:"string", widthGrow: 2, visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"#DL", field:"num_downloads", sorter:"number", width: 65, widthShrink:2, headerTooltip:"Number of downloads on OpenSubtitles.org", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"Download", field:"download", formatter:"html", width: 110, widthShrink: 3, visible:false, headerSort:false, headerClick: sortWithFixedGroup},
         ],
         rowFormatter:function(row){
             var data = row.getData();
@@ -75,7 +94,9 @@ function addTableData(tableData, statusMessage) {
 }
 
 var addMovieFilesToTable = function() {
-    var files = this.files;
+    // Sort the files per file name
+    var file_array = [].slice.call(this.files)
+    var files = file_array.sort(function(a, b){return (a.name <= b.name ? -1 : 1)});
 
     function loadFiles(startId) {
         for (i = 0; i < files.length; i++) {
@@ -142,6 +163,7 @@ function fetchAndDisplaySubtitles(onFinish) {
             tabulatorTable.getRow(i).delete();
         }
 
+        var unsortedResults = [];
         var id = 1;
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
@@ -182,6 +204,11 @@ function fetchAndDisplaySubtitles(onFinish) {
         for (i in groups) {
             groups[i].show();
         }
+
+        tabulatorTable.setSort([
+            {column:"header", dir:"asc"}, //sort by this first
+            {column:"language_name", dir:"asc"}, //then sort by this second
+        ]);
 
         redrawTable();
         onFinish();
@@ -290,6 +317,10 @@ function getHealthStatus(successStatus, maxRetries, onSuccess, onError) {
 // jQuery //
 ////////////
 $(document).ready(function(){
+    // We disable the default sort of Tabulator, so we need to add some CSS manually to mimic our sorting algo
+    $('.tabulator-col').addClass("tabulator-sortable");
+    $('.tabulator-col-content').append("<div class='tabulator-arrow'></div>");
+
     // Triggered when 'Fetch subtitles' is pressed in search panel
     $("#search-config-form").submit(function(event) {
         event.preventDefault();
