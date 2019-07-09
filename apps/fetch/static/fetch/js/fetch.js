@@ -27,7 +27,7 @@ var movieFiles = [],
         pagination:"local",
 //        paginationElement:document.getElementById("status"), //build pagination controls in this element
         paginationSize: 25,
-        paginationSizeSelector:[10, 25, 50, 100, 500],
+        paginationSizeSelector:[10, 25, 50, 100, 200],
         layout:"fitColumns",
         layoutColumnsOnNewData:true,
         columns:[
@@ -314,6 +314,26 @@ function getHealthStatus(successStatus, maxRetries, onSuccess, onError) {
     }, 10000);
 }
 
+function batchGroupState(show) {
+    var groups = tabulatorTable.getGroups();
+    var numGroups = groups.length;
+
+    // We need to temporarily set the page size to a small value, otherwise this action takes long.
+    var originalPageSize = tabulatorTable.getPageSize();
+    tabulatorTable.setPageSize(10);
+
+    for (i = 0; i < numGroups; i++) {
+        if (show) {
+            groups[i].show();
+        }
+        else {
+            groups[i].hide();
+        }
+    }
+
+    tabulatorTable.setPageSize(originalPageSize);
+}
+
 
 ////////////
 // jQuery //
@@ -360,25 +380,15 @@ $(document).ready(function(){
     });
 
     // Tabulator collapse/expand row groups
-    $('#expand-all').click(function(){
-        var groups = tabulatorTable.getGroups();
-        for (i in groups) {
-            var visible = groups[i].getVisibility();
-
-            if (!visible) {
-                groups[i].show();
-            }
-        }
+    $('#expand-all').click(function() {
+        batchGroupState(true);
     });
-    $('#collapse-all').click(function(){
-        var groups = tabulatorTable.getGroups();
-        for (i in groups) {
-            var visible = groups[i].getVisibility();
+    $('#collapse-all').click(function() {
+        batchGroupState(false);
+    });
 
-            if (visible) {
-                groups[i].hide();
-            }
-        }
+    $('.tabulator-page-size').change(function () {
+        console.log("Change page size");
     });
 
     getHealthStatus(200, 0,
