@@ -333,7 +333,9 @@
   font-weight: inherit;
   font-size: inherit;
 }
-
+.fa {
+  color: black;
+}
 .tabulator .tabulator-footer .tabulator-page-size {
   display: inline-block;
   margin: 0 5px;

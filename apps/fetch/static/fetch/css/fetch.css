@@ -111,6 +111,9 @@ body {
 #tabulator-row{
     padding-bottom: 10px;
 }
+.tabulator-cell[tabulator-field="select"]{
+    text-align: center;
+}
 #select-all{
     text-align: left;
 }
@@ -223,4 +226,8 @@ body {
   width: 40px;
   height: auto;
   animation: diving 1.5s ease-in-out infinite, diving-rotate 1.5s ease-in-out infinite;
+}
+
+.select-cell {
+  text-align: center;
 }

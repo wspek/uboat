@@ -20,14 +20,27 @@ var sortWithFixedGroup = function(e, column) {
 	]);
 }
 
+var tickToggle = function(e, cell) {
+	var value = cell.getValue();
+	cell.setValue(!value);
+
+	selectAll = null;
+}
+
 var movieFiles = [],
     fileSelectClass = document.getElementsByClassName("select"),
+    selectAll = true,
     tabulatorTable = new Tabulator("#subtitle-table", {
         placeholder:"No titles added yet",
         pagination:"local",
 //        paginationElement:document.getElementById("status"), //build pagination controls in this element
         paginationSize: 25,
         paginationSizeSelector:[10, 25, 50, 100, 200],
+        pageLoaded:function(pageno){
+            if(selectAll != null) {
+                batchSelect(selectAll);
+            }
+        },
         layout:"fitColumns",
         layoutColumnsOnNewData:true,
         columns:[
@@ -40,6 +53,10 @@ var movieFiles = [],
             {title:"Movie size (bytes)", field:"file_size", width: 160, widthShrink:1, visible:true, headerSort:false, headerClick: sortWithFixedGroup},
             {title:"Movie hash", field:"hash", width: 160, widthShrink:1, visible:true, headerSort:false, headerClick: sortWithFixedGroup},
             {title:"#", field:"id", width: 1, widthShrink:1, sorter:"string", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+            {title:"<i id='select-header' class='select-cell fas fa-check-square' select-all='checked'></i>", width: 40, widthShrink:1, headerSort:false, field:"select", visible:false, cellClick:tickToggle, formatter:"tickCross", formatterParams:{
+                tickElement:"<i class='select-cell fas fa-check-square'></i>",
+                crossElement:"<i class='select-cell far fa-square'></i>",
+            }},
             {title:"Subtitle file", field:"sub_filename", sorter:"string", widthGrow: 9, visible:false, headerSort:false, headerClick: sortWithFixedGroup},
             {title:"S", field:"season", width: 1, sorter:"string", widthShrink:1, visible:false, headerSort:false, headerClick: sortWithFixedGroup},
             {title:"E", field:"episode", width: 1, sorter:"string", widthShrink:1, visible:false, headerSort:false, headerClick: sortWithFixedGroup},
@@ -176,6 +193,7 @@ function fetchAndDisplaySubtitles(onFinish) {
 
             for (j in resultData) {
                 result = resultData[j];
+                result['select'] = true;
                 result['id'] = id;
                 result['header'] = movieName;
 
@@ -334,6 +352,21 @@ function batchGroupState(show) {
     tabulatorTable.setPageSize(originalPageSize);
 }
 
+function batchSelect(select) {
+    var cols = tabulatorTable.getColumns();
+
+    cols.forEach(function(col) {
+        if(col.getField() === "select") {
+            var cells = col.getCells();
+
+            cells.forEach(function(cell) {
+                cell.setValue(select);
+            });
+        }
+    });
+
+    selectAll = select;
+}
 
 ////////////
 // jQuery //
@@ -387,8 +420,25 @@ $(document).ready(function(){
         batchGroupState(false);
     });
 
-    $('.tabulator-page-size').change(function () {
-        console.log("Change page size");
+    // Apply additional formatting to the header with the select checkbox
+    var column_title = $('#select-header').parent()
+    var column_content = column_title.parent();
+    column_title.css('padding-right', 0);
+    column_title.css('text-align', "center");
+    column_content.find('.tabulator-arrow').remove();
+
+    $("#select-header").on("click", function() {
+        if($(this).attr("select-all") === "checked"){
+            batchSelect(false);
+
+            $(this).removeClass("fas fa-check-square").addClass("far fa-square");
+            $(this).attr("select-all", "unchecked");
+        } else {
+            batchSelect(true);
+
+            $(this).removeClass("far fa-square").addClass("fas fa-check-square");
+            $(this).attr("select-all", "checked");
+        }
     });
 
     getHealthStatus(200, 0,
