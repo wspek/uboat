@@ -53,6 +53,7 @@ var movieFiles = [],
             {title:"#DL", field:"num_downloads", sorter:"number", width: 65, widthShrink:2, headerTooltip:"Number of downloads on OpenSubtitles.org", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
             {title:"Download", field:"download", formatter:"html", width: 110, widthShrink: 3, visible:false, headerSort:false, headerClick: sortWithFixedGroup},
         ],
+        resizableColumns:false, // this option takes a boolean value (default = true)
         rowFormatter:function(row){
             var data = row.getData();
 
