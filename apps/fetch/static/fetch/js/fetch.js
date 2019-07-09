@@ -25,7 +25,7 @@ var movieFiles = [],
     tabulatorTable = new Tabulator("#subtitle-table", {
         placeholder:"No titles added yet",
         pagination:"local",
-        paginationElement:document.getElementById("status"), //build pagination controls in this element
+//        paginationElement:document.getElementById("status"), //build pagination controls in this element
         paginationSize: 25,
         paginationSizeSelector:[10, 25, 50, 100, 500],
         layout:"fitColumns",
