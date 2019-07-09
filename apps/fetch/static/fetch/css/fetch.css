@@ -159,6 +159,7 @@ body {
  /* Callout box - fixed position at the bottom of the page */
 .callout {
   position: fixed;
+  z-index: 999;
   top: 50px;
   right: -400px;
   margin-left: 0px;
