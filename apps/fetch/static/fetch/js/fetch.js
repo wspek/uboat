@@ -22,8 +22,12 @@ var sortWithFixedGroup = function(e, column) {
 
 var tickToggle = function(e, cell) {
 	var value = cell.getValue();
-	cell.setValue(!value);
 
+	if (value !== null) {
+    	cell.setValue(!value);
+	}
+
+    // Setting selectAll to null, means that there is a custom selection
 	selectAll = null;
 }
 
@@ -54,6 +58,7 @@ var movieFiles = [],
             {title:"Movie hash", field:"hash", width: 160, widthShrink:1, visible:true, headerSort:false, headerClick: sortWithFixedGroup},
             {title:"#", field:"id", width: 1, widthShrink:1, sorter:"string", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
             {title:"<i id='select-header' class='select-cell fas fa-check-square' select-all='checked'></i>", width: 40, widthShrink:1, headerSort:false, field:"select", visible:false, cellClick:tickToggle, formatter:"tickCross", formatterParams:{
+                allowEmpty:true,
                 tickElement:"<i class='select-cell fas fa-check-square'></i>",
                 crossElement:"<i class='select-cell far fa-square'></i>",
             }},
@@ -193,16 +198,17 @@ function fetchAndDisplaySubtitles(onFinish) {
 
             for (j in resultData) {
                 result = resultData[j];
-                result['select'] = true;
                 result['id'] = id;
                 result['header'] = movieName;
 
                 if (result['sub_filename']) {
+                    result['select'] = true;
                     result['download'] = "<a href='" + result['link_zip'] + "'>ZIP</a>&nbsp;&nbsp;<a href='" + result['link_gz']
                     + "'>GZ</a>&nbsp;&nbsp;<button class='btn-unzip' zip='" + result['link_zip']
                     + "' onclick='unzipAndLink(this)'>" + result['format'].toUpperCase() + "</button>";
                 }
                 else {
+                    result['select'] = null;
                     result['sub_filename'] = 'Language not found for this title';
                     result['language_name'] = this.availableLanguages[result['language_id']][0];
                     result['enabled'] = false;
@@ -360,7 +366,9 @@ function batchSelect(select) {
             var cells = col.getCells();
 
             cells.forEach(function(cell) {
-                cell.setValue(select);
+                if(cell.getValue() !== null) {   // If the cell does not have a checkbox (null) do nothing
+                    cell.setValue(select);
+                }
             });
         }
     });
