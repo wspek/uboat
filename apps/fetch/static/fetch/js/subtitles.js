@@ -71,3 +71,15 @@ function getAvailableLanguages(onSuccess) {
     });
 }
 
+function downloadSubtitleAsBlob(uri, onSuccess, onError) {
+    var req = new XMLHttpRequest();
+    req.open("GET", uri, true);
+    req.responseType = "blob";
+
+    req.onload = function (event) {
+        var blob = req.response;
+        onSuccess(blob);
+    };
+
+    req.send();
+}

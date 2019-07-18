@@ -157,10 +157,19 @@
                     <div class="card">
                       <div class="card-body">
                           <!--Collapse all - Expand all-->
-                          <span id="collapse-expand"><span><a href="#" id="expand-all">Expand all</a></span> - <span><a href="#" id="collapse-all">Collapse all</a></span></span>
+                          <span id="collapse-expand">
+                              <span><a href="#" id="expand-all">Expand all</a></span> - <span><a href="#" id="collapse-all">Collapse all</a></span>
+                          </span>
                           <!--UBoat seek throbber-->
                           <span id="seek_status" hidden>UBoat sinking...&emsp;<img id="submarine_img" src="../../static/fetch/img/submarine.svg"></span>
-                          <span id="status"></span>
+                          <span id="status">
+                              <span><a href="#" id="download-selection" class="btn btn-primary btn-sm">Download selection</a></span>
+                               <select id="zip_contents">
+                                    <option value="sub">as a zip of extracted subtitles</option>
+                                    <option value="zip">as a zip of original .zip files</option>
+                                    <option value="gz">as a zip of original .gz files</option>
+                               </select>
+                          </span>
                       </div>
                     </div>
                 </div>

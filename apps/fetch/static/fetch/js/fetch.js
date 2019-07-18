@@ -48,10 +48,11 @@ var movieFiles = [],
         layout:"fitColumns",
         layoutColumnsOnNewData:true,
         columns:[
-            // If you add a column before the break, do not forget to increment the value of i in line 163
+            // If you add a column before the break, do not forget to increment the value of i in line 226
             {title:"Enabled", field:"enabled", visible:false},
             {title:"Header", field:"header", visible:false},
-            {title:"Movie file", field:"movie_filename", visible:false},
+            {title:"link_gz", field:"link_gz", visible:false},
+            {title:"link_zip", field:"link_zip", visible:false},
             {title:"Added titles", field:"placeholder", formatter:"html", visible:true, headerSort:false, headerClick: sortWithFixedGroup},
             // Break
             {title:"Movie size (bytes)", field:"file_size", width: 160, widthShrink:1, visible:true, headerSort:false, headerClick: sortWithFixedGroup},
@@ -183,6 +184,8 @@ function fetchAndDisplaySubtitles(onFinish) {
     var onSuccess = function(subtitleData) {
         var rows = tabulatorTable.getRows();
         var numRows = tabulatorTable.getDataCount();
+        
+        // Delete the placeholder rows 
         for (var i = 1; i < numRows + 1; i++) {
             tabulatorTable.getRow(i).delete();
         }
@@ -194,10 +197,10 @@ function fetchAndDisplaySubtitles(onFinish) {
             var rowData = row.getData();
 
             var movieName = rowData['movie_filename'];
-            var resultData = subtitleData[movieName];
+            var retrievedResult = subtitleData[movieName];
 
-            for (j in resultData) {
-                result = resultData[j];
+            for (j in retrievedResult) {
+                result = retrievedResult[j];
                 result['id'] = id;
                 result['header'] = movieName;
 
@@ -222,7 +225,7 @@ function fetchAndDisplaySubtitles(onFinish) {
         // Reveal correct columns
         // TODO: This is obscure code. We should do this differently.
         var columns = tabulatorTable.getColumns();
-        for (i = 3; i < columns.length; i++) {
+        for (i = 4; i < columns.length; i++) {
             columns[i].toggle();
         }
 
@@ -298,6 +301,158 @@ function unzipAndLink(button) {
             }
         });
     });
+}
+
+function downloadFiles(files) {
+    return new Promise(function(resolve, reject) {
+        blobs = [];
+        files.forEach(function(file) {
+            downloadSubtitleAsBlob(file.link, function(blob) {
+                blob.name = file.file_name;
+                blobs.push(blob)
+
+                if(files.length == blobs.length) {
+                    resolve(blobs)
+                }
+            })
+        })
+    })
+}
+
+
+function zipOfCompressedFiles(zip_choice, onSuccess) {
+    var processed_files = {}
+    var files_to_download = [];
+
+    var rows = tabulatorTable.getRows();
+    for (i in rows) {
+        data = rows[i].getData();
+
+        if(data['select']) {
+            var file_name = data['sub_filename']    //.slice(0, -4);
+            var link = data['link_' + zip_choice]
+
+            if (processed_files.hasOwnProperty(file_name)) {
+                processed_files[file_name]++
+                file_name = file_name + ' (' + processed_files[file_name] + ')';
+            } else {
+                processed_files[file_name] = 0
+            }
+
+            files_to_download.push({
+                'file_name': file_name + '.' + zip_choice,
+                'link': link,
+            });
+        }
+    }
+
+    downloadFiles(files_to_download)
+    .then(onSuccess);
+}
+
+function zipOfSubtitles(onSuccess) {
+    var processed_files = {}
+    var blobs_to_zip = [];
+
+    var rows = tabulatorTable.getRows();
+    for (i in rows) {
+        data = rows[i].getData();
+
+        if(data['select']) {
+            var file_name = data['sub_filename'];
+            var link = data['link_zip']
+
+            if (processed_files.hasOwnProperty(file_name)) {
+                processed_files[file_name]++
+
+                var file_ext_index = data['sub_filename'].lastIndexOf('.');
+                var file_root = data['sub_filename'].slice(0, file_ext_index);
+                var ext = data['sub_filename'].slice(file_ext_index);
+                file_name = file_root + ' (' + processed_files[file_name] + ')' + ext;
+            } else {
+                processed_files[file_name] = 0
+            }
+
+            blobs_to_zip.push({
+                'file_name': file_name,
+                'format': data.format,
+                'link': link,
+            });
+        }
+    }
+
+    var blobs = [];
+    for (i in blobs_to_zip) {
+        var zipUrl = blobs_to_zip[i].link
+
+        function processFile(i) {   // We need to wrap this in a function to have an accurate reading for i later on.
+            model.getEntries(zipUrl, function(entries) { // unzip.js
+                entries.forEach(function(entry) {
+                    var file_ext = entry.filename.slice(-3);
+
+                    if (file_ext.toUpperCase() == blobs_to_zip[i].format.toUpperCase()) {
+                        function addBlobs(blobs) {
+                            return function(blob) {
+                                blob.name = blobs_to_zip[i].file_name;
+                                blobs.push(blob);
+
+                                if (blobs.length === blobs_to_zip.length) {
+                                    onSuccess(blobs)
+                                }
+                            }
+                        }
+                        downloadBlob(entry)  // unzip.js
+                        .then(addBlobs(blobs));
+                    }
+                });
+            });
+        }
+        processFile(i);
+    }
+
+}
+
+function zipSelection(zip_choice) {
+    var downloadBtn = document.getElementById('download-selection');
+
+    // Add markup to show spinner on button.
+    var node = document.createElement("i");
+    node.classList.add('fas');
+    node.classList.add('fa-circle-notch');
+    node.classList.add('fa-spin');
+    downloadBtn.innerHTML = '';
+    downloadBtn.classList.add('buttonload');
+    downloadBtn.appendChild(node);
+
+    var zipBlobs = function(blobs) {
+        zipModel.setCreationMethod("Blob");
+        zipModel.addFiles(blobs,
+        function() {
+//            console.log('init');
+        },
+        function() {
+//            console.log('add');
+        },
+        function() {
+//            console.log('progress');
+        },
+        function() {
+            zipModel.getBlobURL(function(blobUrl) {
+                var newLink = document.createElement('a');
+                newLink.appendChild(document.createTextNode("Download selection"));
+                newLink.setAttribute('href', blobUrl);
+                newLink.setAttribute('download', 'uboat_subtitles.zip');
+
+                downloadBtn.parentNode.replaceChild(newLink, downloadBtn);
+            })
+        });
+    }
+
+    if (zip_choice === 'sub') {
+        zipOfSubtitles(zipBlobs)
+    } else {
+        zipOfCompressedFiles(zip_choice, zipBlobs);
+    }
 }
 
 // On load, add the event listeners to the buttons for adding files
@@ -447,6 +602,11 @@ $(document).ready(function(){
             $(this).removeClass("far fa-square").addClass("fas fa-check-square");
             $(this).attr("select-all", "checked");
         }
+    });
+
+    $('#download-selection').click(function() {
+        var zip_choice = $('#zip_contents').val();
+        zipSelection(zip_choice)
     });
 
     getHealthStatus(200, 0,
