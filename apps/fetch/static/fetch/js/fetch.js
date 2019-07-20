@@ -26,25 +26,16 @@ var tickToggle = function(e, cell) {
 	if (value !== null) {
     	cell.setValue(!value);
 	}
-
-    // Setting selectAll to null, means that there is a custom selection
-	selectAll = null;
 }
 
 var movieFiles = [],
     fileSelectClass = document.getElementsByClassName("select"),
-    selectAll = true,
     tabulatorTable = new Tabulator("#subtitle-table", {
         placeholder:"No titles added yet",
         pagination:"local",
 //        paginationElement:document.getElementById("status"), //build pagination controls in this element
         paginationSize: 25,
         paginationSizeSelector:[10, 25, 50, 100, 200],
-        pageLoaded:function(pageno){
-            if(selectAll != null) {
-                batchSelect(selectAll);
-            }
-        },
         layout:"fitColumns",
         layoutColumnsOnNewData:true,
         columns:[
@@ -517,21 +508,17 @@ function batchGroupState(show) {
 }
 
 function batchSelect(select) {
-    var cols = tabulatorTable.getColumns();
+    var rows = tabulatorTable.getRows();
 
-    cols.forEach(function(col) {
-        if(col.getField() === "select") {
-            var cells = col.getCells();
+    updates = []
+    rows.forEach(function(row) {
+          var data = row.getData()
+          data.select = select;
 
-            cells.forEach(function(cell) {
-                if(cell.getValue() !== null) {   // If the cell does not have a checkbox (null) do nothing
-                    cell.setValue(select);
-                }
-            });
-        }
+          updates.push(data);
     });
 
-    selectAll = select;
+    tabulatorTable.updateData(updates)
 }
 
 ////////////
