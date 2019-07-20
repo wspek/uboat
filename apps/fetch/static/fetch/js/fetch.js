@@ -53,6 +53,7 @@ var movieFiles = [],
             {title:"Header", field:"header", visible:false},
             {title:"link_gz", field:"link_gz", visible:false},
             {title:"link_zip", field:"link_zip", visible:false},
+            {title:"language_id", field:"language_id", visible:false},
             {title:"Added titles", field:"placeholder", formatter:"html", visible:true, headerSort:false, headerClick: sortWithFixedGroup},
             // Break
             {title:"Movie size (bytes)", field:"file_size", width: 160, widthShrink:1, visible:true, headerSort:false, headerClick: sortWithFixedGroup},
@@ -225,7 +226,7 @@ function fetchAndDisplaySubtitles(onFinish) {
         // Reveal correct columns
         // TODO: This is obscure code. We should do this differently.
         var columns = tabulatorTable.getColumns();
-        for (i = 4; i < columns.length; i++) {
+        for (i = 5; i < columns.length; i++) {
             columns[i].toggle();
         }
 
@@ -285,6 +286,9 @@ function unzipAndLink(button) {
                     var newContent = elements.body.innerHTML + '<a href="#" id="' + aId + '">' + subtitleExtension.toUpperCase() + '</a>';
                     tabulatorTable.updateData([{id:row_id, download: newContent}])
 
+                    // Incorporate language filename in final downloaded file.
+                    entry.filename = '[' + rowData.language_id.toUpperCase() + '] ' + entry.filename;
+
                     // Get the DOM element belonging to the link and save the BLOB url. The table needs to be
                     // updated with this information, otherwise a redraw will make the link invalid.
                     var a = document.getElementById(aId);
@@ -303,23 +307,6 @@ function unzipAndLink(button) {
     });
 }
 
-function downloadFiles(files) {
-    return new Promise(function(resolve, reject) {
-        blobs = [];
-        files.forEach(function(file) {
-            downloadSubtitleAsBlob(file.link, function(blob) {
-                blob.name = file.file_name;
-                blobs.push(blob)
-
-                if(files.length == blobs.length) {
-                    resolve(blobs)
-                }
-            })
-        })
-    })
-}
-
-
 function zipOfCompressedFiles(zip_choice, onSuccess) {
     var processed_files = {}
     var files_to_download = [];
@@ -329,7 +316,7 @@ function zipOfCompressedFiles(zip_choice, onSuccess) {
         data = rows[i].getData();
 
         if(data['select']) {
-            var file_name = data['sub_filename']    //.slice(0, -4);
+            var file_name = '[' + data.language_id.toUpperCase() + '] ' + data['sub_filename']    //.slice(0, -4);
             var link = data['link_' + zip_choice]
 
             if (processed_files.hasOwnProperty(file_name)) {
@@ -350,6 +337,22 @@ function zipOfCompressedFiles(zip_choice, onSuccess) {
     .then(onSuccess);
 }
 
+function downloadFiles(files) {
+    return new Promise(function(resolve, reject) {
+        blobs = [];
+        files.forEach(function(file) {
+            downloadSubtitleAsBlob(file.link, function(blob) {
+                blob.name = file.file_name;
+                blobs.push(blob)
+
+                if(files.length == blobs.length) {
+                    resolve(blobs)
+                }
+            })
+        })
+    })
+}
+
 function zipOfSubtitles(onSuccess) {
     var processed_files = {}
     var blobs_to_zip = [];
@@ -359,15 +362,15 @@ function zipOfSubtitles(onSuccess) {
         data = rows[i].getData();
 
         if(data['select']) {
-            var file_name = data['sub_filename'];
+            var file_name = '[' + data.language_id.toUpperCase() + '] ' + data['sub_filename'];
             var link = data['link_zip']
 
             if (processed_files.hasOwnProperty(file_name)) {
                 processed_files[file_name]++
 
-                var file_ext_index = data['sub_filename'].lastIndexOf('.');
-                var file_root = data['sub_filename'].slice(0, file_ext_index);
-                var ext = data['sub_filename'].slice(file_ext_index);
+                var file_ext_index = file_name.lastIndexOf('.');
+                var file_root = file_name.slice(0, file_ext_index);
+                var ext = file_name.slice(file_ext_index);
                 file_name = file_root + ' (' + processed_files[file_name] + ')' + ext;
             } else {
                 processed_files[file_name] = 0
