@@ -154,7 +154,7 @@ body {
     text-align: left;
     flex: 1;
 }
-#status {
+#download {
     text-align: right;
     flex: 1;
 }
@@ -235,4 +235,13 @@ body {
 #download-selection {
     line-height: 1.0;
     width: 140px;
+}
+
+.ms-selection, ms-selectable {
+  border: 1px solid transparent;
+}
+
+.invalid_input {
+  border: 1px solid rgb(239, 86, 86);
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05) inset, 0px 0px 8px rgba(236, 82, 82, 0.6);
 }

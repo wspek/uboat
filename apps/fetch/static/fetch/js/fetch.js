@@ -521,6 +521,7 @@ function batchSelect(select) {
     tabulatorTable.updateData(updates)
 }
 
+
 ////////////
 // jQuery //
 ////////////
@@ -533,11 +534,20 @@ $(document).ready(function(){
     $("#search-config-form").submit(function(event) {
         event.preventDefault();
 
-        $("#seek_status").prop('hidden', false);
+        if ($('#language-select')[0].selectedOptions.length == 0) {     // If no languages are selected
+            $("#lang_error").prop('hidden', false);     // Show a message
+            $('.ms-selection').addClass('invalid_input');
+        } else {
+            $("#lang_error").prop('hidden', true);
+            $('.ms-selection').removeClass('invalid_input');
 
-        fetchAndDisplaySubtitles(function () {
-            $("#seek_status").prop('hidden', true);
-        })
+            $('#collapseOne').collapse();
+            $("#seek_status").prop('hidden', false);
+
+            fetchAndDisplaySubtitles(function () {
+                $("#seek_status").prop('hidden', true);
+            });
+        }
     });
 
     // Search panel expand/collape
@@ -553,11 +563,14 @@ $(document).ready(function(){
     $('#language-select').multiSelect({
         afterSelect: function(values){
             // Use this as a callback for when a new language is selected
+            $("#lang_error").prop('hidden', true);
+            $('.ms-selection').removeClass('invalid_input');
         },
         afterDeselect: function(values){
             // Use this as a callback for when a language is deselected
         }
     });
+
     $('#select-all').click(function(){
         $('#language-select').multiSelect('select_all');
     });

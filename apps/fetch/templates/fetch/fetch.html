@@ -136,7 +136,7 @@
                                                 <div class="col-md-4 text-right">
                                                      <div class="row h-100 align-items-end">
                                                         <div class="col-md-12">
-                                                            <input class="btn btn-success" type="submit" value="Fetch subtitles" data-toggle="collapse" data-target="#collapseOne">
+                                                            <input id="fetch-btn" class="btn btn-success" type="submit" value="Fetch subtitles">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -161,8 +161,9 @@
                               <span><a href="#" id="expand-all">Expand all</a></span> - <span><a href="#" id="collapse-all">Collapse all</a></span>
                           </span>
                           <!--UBoat seek throbber-->
+                          <span id="lang_error" hidden>Please select at least one language</span>
                           <span id="seek_status" hidden>UBoat sinking...&emsp;<img id="submarine_img" src="../../static/fetch/img/submarine.svg"></span>
-                          <span id="status">
+                          <span id="download">
                               <span><a href="#" id="download-selection" class="btn btn-primary btn-sm">Download selection</a></span>
                                <select id="zip_contents">
                                     <option value="sub">as a zip of extracted subtitles</option>
