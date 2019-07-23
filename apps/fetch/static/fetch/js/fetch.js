@@ -120,7 +120,17 @@ var addMovieFilesToTable = function() {
             var id = startId + i;
             var file = files[i];
 
-            calcFileHash(file, onHashCalculated(id));
+            titleAlreadyAdded = false;
+            for(var j = 0; j < movieFiles.length; j++) {
+                if (movieFiles[j].movie_filename == file.name) {
+                    titleAlreadyAdded = true;
+                    break;
+                }
+            }
+
+            if (!titleAlreadyAdded) {
+                calcFileHash(file, onHashCalculated(id));
+            }
         }
     }
 
@@ -144,7 +154,8 @@ var addMovieFilesToTable = function() {
         addTableData(fileData);
     }
 
-    loadFiles(1);   // next id in queue
+    nextId = tabulatorTable.getDataCount() + 1  // number of rows + 1
+    loadFiles(nextId);   // next id in queue
 };
 
 function fetchAndDisplaySubtitles(onFinish) {
@@ -449,7 +460,7 @@ function zipSelection(zip_choice) {
     }
 }
 
-// On load, add the event listeners to the buttons for adding files
+// On load, add the event listeners to the file choose buttons
 for (var i = 0; i < fileSelectClass.length; i++) {
     fileSelectClass[i].addEventListener('change', addMovieFilesToTable);
 }
