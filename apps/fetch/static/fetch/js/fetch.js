@@ -28,7 +28,13 @@ var tickToggle = function(e, cell) {
 	}
 }
 
-var movieFiles = [],
+var state,
+    StateEnum = {
+        INITIAL: 1,
+        FILES_ADDED: 2,
+        FINAL: 3,
+    },
+    movieFiles = [],
     fileSelectClass = document.getElementsByClassName("select"),
     tabulatorTable = new Tabulator("#subtitle-table", {
         placeholder:"No titles added yet",
@@ -152,6 +158,7 @@ var addMovieFilesToTable = function() {
     function addFileData(fileData) {
         movieFiles.push(fileData);
         addTableData(fileData);
+        changeState(StateEnum.FILES_ADDED)
     }
 
     nextId = tabulatorTable.getDataCount() + 1  // number of rows + 1
@@ -460,6 +467,25 @@ function zipSelection(zip_choice) {
     }
 }
 
+
+function changeState(state) {
+    switch (state) {
+        case StateEnum.INITIAL:
+            break;
+        case StateEnum.FILES_ADDED:
+            $('#fetch-btn').removeClass('disabled');
+            $('#fetch-btn').attr('aria-disabled', false);
+            break;
+        case StateEnum.FINAL:
+            $('#download-selection').removeClass('disabled');
+            $('#download-selection').attr('aria-disabled', false);
+            $("#zip_contents").prop('disabled', false);
+            break;
+        default:
+            console.log("ERROR: Reached default in switch statement");
+    }
+}
+
 // On load, add the event listeners to the file choose buttons
 for (var i = 0; i < fileSelectClass.length; i++) {
     fileSelectClass[i].addEventListener('change', addMovieFilesToTable);
@@ -557,6 +583,7 @@ $(document).ready(function(){
 
             fetchAndDisplaySubtitles(function () {
                 $("#seek_status").prop('hidden', true);
+                changeState(StateEnum.FINAL);
             });
         }
     });

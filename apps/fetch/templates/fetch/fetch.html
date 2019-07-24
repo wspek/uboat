@@ -136,7 +136,7 @@
                                                 <div class="col-md-4 text-right">
                                                      <div class="row h-100 align-items-end">
                                                         <div class="col-md-12">
-                                                            <input id="fetch-btn" class="btn btn-success" type="submit" value="Fetch subtitles">
+                                                            <input id="fetch-btn" class="btn btn-success disabled" type="submit" value="Fetch subtitles" aria-disabled="true">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -164,8 +164,8 @@
                           <span id="lang_error" hidden>Please select at least one language</span>
                           <span id="seek_status" hidden>UBoat sinking...&emsp;<img id="submarine_img" src="../../static/fetch/img/submarine.svg"></span>
                           <span id="download">
-                              <span><a href="#" id="download-selection" class="btn btn-primary btn-sm">Download selection</a></span>
-                               <select id="zip_contents">
+                              <span><a href="#" id="download-selection" class="btn btn-primary btn-sm disabled" aria-disabled="true">Download selection</a></span>
+                               <select id="zip_contents" disabled>
                                     <option value="sub">as a zip of extracted subtitles</option>
                                     <option value="zip">as a zip of original .zip files</option>
                                     <option value="gz">as a zip of original .gz files</option>
