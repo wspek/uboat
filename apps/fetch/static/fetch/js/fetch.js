@@ -550,9 +550,11 @@ function batchSelect(select) {
     updates = []
     rows.forEach(function(row) {
           var data = row.getData()
-          data.select = select;
 
-          updates.push(data);
+          if (data.select !== null) {
+              data.select = select;
+              updates.push(data);
+          }
     });
 
     tabulatorTable.updateData(updates)
