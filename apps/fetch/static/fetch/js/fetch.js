@@ -25,6 +25,8 @@ var tickToggle = function(e, cell) {
 
 	if (value !== null) {
     	cell.setValue(!value);
+
+        changeState(StateEnum.SELECTION_CHANGED)
 	}
 }
 
@@ -33,6 +35,9 @@ var state,
         INITIAL: 1,
         FILES_ADDED: 2,
         FINAL: 3,
+        SELECTION_CHANGED: 4,
+        NONE_SELECTED: 5,
+        ALL_SELECTED: 6,
     },
     movieFiles = [],
     fileSelectClass = document.getElementsByClassName("select"),
@@ -122,8 +127,9 @@ var addMovieFilesToTable = function() {
     var files = file_array.sort(function(a, b){return (a.name <= b.name ? -1 : 1)});
 
     function loadFiles(startId) {
+        var id = startId;
+
         for (i = 0; i < files.length; i++) {
-            var id = startId + i;
             var file = files[i];
 
             titleAlreadyAdded = false;
@@ -136,6 +142,7 @@ var addMovieFilesToTable = function() {
 
             if (!titleAlreadyAdded) {
                 calcFileHash(file, onHashCalculated(id));
+                id++;
             }
         }
     }
@@ -475,15 +482,64 @@ function changeState(state) {
         case StateEnum.FILES_ADDED:
             $('#fetch-btn').removeClass('disabled');
             $('#fetch-btn').attr('aria-disabled', false);
+
             break;
         case StateEnum.FINAL:
+            // Choose files button
+            $("#choose-titles-btn").prop('hidden', true);
+            $("#start-over-btn").prop('hidden', false);
+
+            // Fetch button
+            $('#fetch-btn').addClass('disabled');
+            $('#fetch-btn').attr('aria-disabled', true);
+
+            // BEWARE: no break
+        case StateEnum.SELECTION_CHANGED:
+            var languageFound = false;
+            var noneSelected = true;
+
+            var rows = tabulatorTable.getRows();
+            rows.forEach(function(row) {
+                  var data = row.getData()
+                  if (data.select !== null) {
+                      languageFound = true;
+
+                      if (data.select === true) {
+                          noneSelected = false;
+                      }
+                  }
+            });
+
+            if (languageFound && !noneSelected) {
+                // Download buttons
+                $('#download-selection').removeClass('disabled');
+                $('#download-selection').attr('aria-disabled', false);
+                $("#zip_contents").prop('disabled', false);
+            } else {
+                $('#download-selection').addClass('disabled');
+                $('#download-selection').attr('aria-disabled', true);
+                $("#zip_contents").prop('disabled', true);
+
+                $("#select-header").trigger("click");
+            }
+
+            break;
+        case StateEnum.NONE_SELECTED:
+            $('#download-selection').addClass('disabled');
+            $('#download-selection').attr('aria-disabled', true);
+            $("#zip_contents").prop('disabled', true);
+
+            break;
+        case StateEnum.ALL_SELECTED:
             $('#download-selection').removeClass('disabled');
             $('#download-selection').attr('aria-disabled', false);
             $("#zip_contents").prop('disabled', false);
+
             break;
         default:
             console.log("ERROR: Reached default in switch statement");
     }
+    state = state;
 }
 
 // On load, add the event listeners to the file choose buttons
@@ -557,7 +613,13 @@ function batchSelect(select) {
           }
     });
 
-    tabulatorTable.updateData(updates)
+    tabulatorTable.updateData(updates);
+
+    if (select) {
+        changeState(StateEnum.ALL_SELECTED);
+    } else {
+        changeState(StateEnum.NONE_SELECTED);
+    }
 }
 
 
@@ -574,7 +636,7 @@ $(document).ready(function(){
         event.preventDefault();
 
         if ($('#language-select')[0].selectedOptions.length == 0) {     // If no languages are selected
-            $("#lang_error").prop('hidden', false);     // Show a message
+            $("#lang_error").prop('hidden', false);                     // Show a message
             $('.ms-selection').addClass('invalid_input');
         } else {
             $("#lang_error").prop('hidden', true);
@@ -588,6 +650,11 @@ $(document).ready(function(){
                 changeState(StateEnum.FINAL);
             });
         }
+    });
+
+    $("#start-over-btn").click(function() {
+        location.reload(true);
+        tabulatorTable.redraw();
     });
 
     // Search panel expand/collape
