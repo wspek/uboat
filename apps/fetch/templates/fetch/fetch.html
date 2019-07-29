@@ -32,6 +32,7 @@
         <script type="text/javascript" src="{% static 'fetch/js/tabulator-tables/dist/js/tabulator.js' %}" defer></script>
         <script type="text/javascript" src="{% static 'fetch/js/zip/zip.js' %}" defer></script>
         <script type="text/javascript" src="{% static 'fetch/js/zip/zip-ext.js' %}" defer></script>
+        <script type="text/javascript" src="{% static 'fetch/js/tippy/tippy.js' %}" defer></script>
 
         <script type="text/javascript" src="{% static 'fetch/js/fetch.js' %}" defer></script>
         <script type="text/javascript" src="{% static 'fetch/js/subtitles.js' %}" defer></script>
@@ -68,11 +69,7 @@
             <div class="row align-middle">
                 <div class="col-md"></div>
                 <div class="col-md-8 pb-5 text-center">
-                    <i class='fas fa-info-circle' style='font-size:16px' data-toggle="popover" tabindex="0"
-                       data-trigger="focus" data-placement="left" title="Don't worry"
-                       data-content="You will not be uploading any files to our servers. You will
-                                     simply be selecting files so we can extract some info (client-side) to use to
-                                     retrieve your subtitles."></i>
+                    <i id="tooltip" class='fas fa-question-circle' style='font-size:16px'></i>
                     <span id="choose-titles-btn" class="btn btn-primary btn-file">Choose titles<input class="select" id="file" type="file" multiple></span>
                     <!--<b>or</b>-->
                     <span id="start-over-btn" class="btn btn-primary btn-file" hidden>Start over</span>

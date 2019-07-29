@@ -625,11 +625,19 @@ function batchSelect(select) {
     }
 }
 
-
 ////////////
 // jQuery //
 ////////////
 $(document).ready(function(){
+    tippy('#tooltip', {
+        content: "Select your movie titles. Don't worry, you will <b><i>not</i></b> be uploading any files to our servers. We only use the selection to calculate which subtitles to retrieve. This all happens client-side and blazingly fast, you'll see.",
+        placement: "left-start",
+        size: "large",
+        arrow: true,
+        arrowType: "sharp",
+        delay: [0, 0]
+    })
+
     // We disable the default sort of Tabulator, so we need to add some CSS manually to mimic our sorting algo
     $('.tabulator-col').addClass("tabulator-sortable");
     $('.tabulator-col-content').append("<div class='tabulator-arrow'></div>");
