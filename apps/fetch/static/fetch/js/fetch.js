@@ -461,8 +461,11 @@ function zipSelection(zip_choice) {
                 newLink.appendChild(document.createTextNode("Download selection"));
                 newLink.setAttribute('href', blobUrl);
                 newLink.setAttribute('download', 'uboat_subtitles.zip');
+                newLink.click();
 
-                downloadBtn.parentNode.replaceChild(newLink, downloadBtn);
+                downloadBtn.removeChild(node);
+                downloadBtn.classList.remove('buttonload');
+                downloadBtn.innerHTML = 'Download selection';
             })
         });
     }
