@@ -604,6 +604,8 @@ function batchGroupState(show) {
 }
 
 function batchSelect(select) {
+    var languageFound = false;
+
     var rows = tabulatorTable.getRows();
 
     updates = []
@@ -613,12 +615,14 @@ function batchSelect(select) {
           if (data.select !== null) {
               data.select = select;
               updates.push(data);
+
+              languageFound = true;
           }
     });
 
     tabulatorTable.updateData(updates);
 
-    if (select) {
+    if (select == true && languageFound) {
         changeState(StateEnum.ALL_SELECTED);
     } else {
         changeState(StateEnum.NONE_SELECTED);
