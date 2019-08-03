@@ -1,5 +1,6 @@
 // This is necessary for zip.js to work. See: https://gildas-lormeau.github.io/zip.js/
-zip.workerScriptsPath = '/static/fetch/js/zip/';
+//zip.workerScriptsPath = '/static/fetch/js/zip/';
+zip.useWebWorkers = false;
 
 var obj = this;
 var zipModel = (function() {
