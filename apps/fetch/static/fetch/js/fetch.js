@@ -60,7 +60,7 @@ var state,
             // Break
             {title:"Movie size (bytes)", field:"file_size", width: 160, widthShrink:1, visible:true, headerSort:false, headerClick: sortWithFixedGroup},
             {title:"Movie hash", field:"hash", width: 160, widthShrink:1, visible:true, headerSort:false, headerClick: sortWithFixedGroup},
-            {title:"#", field:"id", width: 1, widthShrink:1, sorter:"string", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
+//            {title:"#", field:"id", width: 1, widthShrink:1, sorter:"string", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
             {title:"<i id='select-header' class='select-cell fas fa-check-square' select-all='checked'></i>", width: 40, widthShrink:1, headerSort:false, field:"select", visible:false, cellClick:tickToggle, formatter:"tickCross", formatterParams:{
                 allowEmpty:true,
                 tickElement:"<i class='select-cell fas fa-check-square'></i>",
