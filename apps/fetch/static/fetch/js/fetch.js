@@ -50,7 +50,8 @@ var state,
         layout:"fitColumns",
         layoutColumnsOnNewData:true,
         columns:[
-            // If you add a column before the break, do not forget to increment the value of i in line 226
+            // If you add a column before the break, do not forget to increment the value of i in line 245
+            {title:"#", field:"id", width: 1, widthShrink:1, sorter:"string", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
             {title:"Enabled", field:"enabled", visible:false},
             {title:"Header", field:"header", visible:false},
             {title:"link_gz", field:"link_gz", visible:false},
@@ -60,7 +61,6 @@ var state,
             // Break
             {title:"Movie size (bytes)", field:"file_size", width: 160, widthShrink:1, visible:true, headerSort:false, headerClick: sortWithFixedGroup},
             {title:"Movie hash", field:"hash", width: 160, widthShrink:1, visible:true, headerSort:false, headerClick: sortWithFixedGroup},
-//            {title:"#", field:"id", width: 1, widthShrink:1, sorter:"string", visible:false, headerSort:false, headerClick: sortWithFixedGroup},
             {title:"<i id='select-header' class='select-cell fas fa-check-square' select-all='checked'></i>", width: 40, widthShrink:1, headerSort:false, field:"select", visible:false, cellClick:tickToggle, formatter:"tickCross", formatterParams:{
                 allowEmpty:true,
                 tickElement:"<i class='select-cell fas fa-check-square'></i>",
@@ -242,7 +242,7 @@ function fetchAndDisplaySubtitles(onFinish) {
         // Reveal correct columns
         // TODO: This is obscure code. We should do this differently.
         var columns = tabulatorTable.getColumns();
-        for (i = 5; i < columns.length; i++) {
+        for (i = 6; i < columns.length; i++) {
             columns[i].toggle();
         }
 
