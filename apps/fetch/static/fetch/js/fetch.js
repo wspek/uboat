@@ -110,13 +110,14 @@ function redrawTable() {
 function addTableData(tableData, statusMessage) {
     var tableId = tableData.id;
 
-    var row = tabulatorTable.getRow(tableId);
-
-    if (row) {
-        tabulatorTable.updateData([tableData]);
-    } else {
-        tabulatorTable.addRow([tableData]);
-    }
+    tabulatorTable.updateOrAddData([tableData])
+    .then(function(rows){
+        //rows - array of the row components for the rows updated or added
+        //run code after data has been updated
+    })
+    .catch(function(error){
+        //handle error updating data
+    });
 
 //    row.reformat();
 }
