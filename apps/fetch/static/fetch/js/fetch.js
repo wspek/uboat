@@ -460,9 +460,12 @@ function zipSelection(zip_choice) {
             zipModel.getBlobURL(function(blobUrl) {
                 var newLink = document.createElement('a');
                 newLink.appendChild(document.createTextNode("Download selection"));
+                newLink.style.visibility = "hidden";
                 newLink.setAttribute('href', blobUrl);
                 newLink.setAttribute('download', 'uboat_subtitles.zip');
+                document.body.appendChild(newLink);
                 newLink.click();
+                newLink.remove();
 
                 downloadBtn.removeChild(node);
                 downloadBtn.classList.remove('buttonload');
