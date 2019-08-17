@@ -2,7 +2,8 @@ import requests
 import json
 
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseServerError
+from xmlrpc.client import ProtocolError
 
 import apps.fetch.subtitles as subs
 import apps.fetch.config as config
@@ -39,6 +40,20 @@ def fetch(request):
         response['Access-Control-Allow-Headers'] = 'x-csrftoken'
 
         return response
+
+
+def test_login(request):
+    # Handle POST request
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        try:
+            token = subs.test_login(data)
+        except ProtocolError as e:
+            return HttpResponseServerError(content="Login failed: server error ({})".format(e.errcode),
+                                           status=e.errcode, reason=e.errmsg)
+
+        return HttpResponse(status=200)
 
 
 def languages(request):

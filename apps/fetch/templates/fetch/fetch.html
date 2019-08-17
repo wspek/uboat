@@ -49,7 +49,7 @@
             <div class=”row”>
                 <div class=”col-md-12”>
                     <div class="led-box">
-                        <div id="os-health" class="led-green"></div><div class="led-text"><a href="https://downforeveryoneorjustme.com/opensubtitles.org" target="_blank">OpenSubtitles.org</a></div>
+                        <div id="os-health" class="led-green"></div><div class="led-text"><a href="https://downforeveryoneorjustme.com/api.opensubtitles.org" target="_blank">OpenSubtitles.org</a></div>
                     </div>
                 </div>
             </div>
@@ -122,22 +122,35 @@
                                                     <div id="search-method-row" class="form-row">
                                                         <div class="col-md-2"></div>
                                                         <div class="col-md-8 text-left">
-                                                            <p class="font-weight-bold">Search method</p>
-                                                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                                                <label id="radio-hash" class="btn btn-primary btn-sm active">
-                                                                    <input type="radio" name="search-method" autocomplete="off" value="hash" checked> Hash
-                                                                </label>
-                                                                <label id="radio-file" class="btn btn-primary btn-sm">
-                                                                    <input type="radio" name="search-method" autocomplete="off" value="filename"> Filename
-                                                                </label>
+                                                            <div class="row">
+                                                                <p class="font-weight-bold">Search method</p>
+                                                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                                    <label id="radio-hash" class="btn btn-primary btn-sm active">
+                                                                        <input type="radio" name="search-method" autocomplete="off" value="hash" checked> Hash
+                                                                    </label>
+                                                                    <label id="radio-file" class="btn btn-primary btn-sm">
+                                                                        <input type="radio" name="search-method" autocomplete="off" value="filename"> Filename
+                                                                    </label>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-2"></div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4 text-right">
-                                                     <div class="row h-100 align-items-end">
-                                                        <div class="col-md-12">
+                                                <div class="col-md-4">
+                                                    <div class="row h-50">
+                                                        <p class="font-weight-bold">OpenSubtitles login</p>
+                                                        <input id="os-username" class="form-control form-control-sm mb-2 mr-5" type="text" placeholder="Username">
+                                                        <input id="os-password" class="form-control form-control-sm mr-5" type="password" placeholder="Password">
+                                                        <div id="test-login">
+                                                            <button type="button" id="test-login-btn" class="btn btn-primary btn-sm mt-2 mr-2">Test login</button>
+                                                            <i id="test-login-spinner" class="fas fa-circle-notch fa-spin mt-2" hidden></i>
+                                                            <i id="test-login-success" class="fa fa-check mt-2" hidden></i>
+                                                            <div id="test-login-error-msg" class="mt-2"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row h-50 align-items-end">
+                                                        <div class="col-md-12 text-right">
                                                             <input id="fetch-btn" class="btn btn-success disabled" type="submit" value="Fetch subtitles" aria-disabled="true">
                                                         </div>
                                                     </div>

@@ -633,6 +633,29 @@ function batchSelect(select) {
     }
 }
 
+
+var guiLoginClear = function() {
+    $("#test-login-spinner").prop('hidden', true);
+    $("#test-login-error-msg").prop('hidden', true);
+    $("#os-username").css('background-color','#ffffff');
+    $("#os-password").css('background-color','#ffffff');
+}
+
+var guiLoginSuccess = function() {
+    $("#test-login-spinner").prop('hidden', true);
+    $("#test-login-success").prop('hidden', false);
+    $("#os-username").css('background-color','#cdffce');
+    $("#os-password").css('background-color','#cdffce');
+}
+
+var guiLoginError = function(errorText) {
+    $("#test-login-error-msg").text(errorText);
+    $("#test-login-spinner").prop('hidden', true);
+    $("#test-login-error-msg").prop('hidden', false);
+    $("#os-username").css('background-color','#ffcaca');
+    $("#os-password").css('background-color','#ffcaca');
+}
+
 ////////////
 // jQuery //
 ////////////
@@ -674,6 +697,22 @@ $(document).ready(function(){
     $("#start-over-btn").click(function() {
         location.reload(true);
         tabulatorTable.redraw();
+    });
+
+    $("#test-login-btn").click(function() {
+        guiLoginClear();
+
+        username = $("#os-username").val();
+        password = $("#os-password").val();
+
+        if (username == "" || password == "") {
+            guiLoginError("Empty username or password");
+            return;
+        }
+
+        $("#test-login-spinner").prop('hidden', false);
+
+        testLogin(username, password, guiLoginSuccess, guiLoginError);
     });
 
     // Search panel expand/collape

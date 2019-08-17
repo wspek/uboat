@@ -7,6 +7,11 @@ import apps.fetch.config as config
 # import config     # For debugging
 
 
+def test_login(login_data):
+    opensubs = OpenSubtitles()
+    return opensubs.login(**login_data)
+
+
 def fetch_subtitles(movie_data):
     opensubs = OpenSubtitles()
     opensubs.login(config.USER, config.PASSWD)

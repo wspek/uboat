@@ -47,6 +47,9 @@ body {
 .fa-question-circle:hover {
     color: red;
 }
+#test-login-success {
+	color: green;
+}
 .jumbotron {
     padding-top: 1em;
     padding-right: inherit;
@@ -248,4 +251,15 @@ body {
 
 .disabled {
     pointer-events: none;
+}
+
+#test-login {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:1em;
+}
+
+#test-login-error-msg {
+    color: red;
 }
