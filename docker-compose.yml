@@ -6,6 +6,6 @@ services:
     command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     container_name: uboat
     volumes:
-      - .:/home/wspek/Development/python/django_projects/uboat
+      - .:/home/wspek/dev/uboat
     ports:
       - "8000:8000"
