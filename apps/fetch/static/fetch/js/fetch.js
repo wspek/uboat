@@ -30,7 +30,8 @@ var tickToggle = function(e, cell) {
 	}
 }
 
-var state,
+var loggedIn = false,
+    state,
     StateEnum = {
         INITIAL: 1,
         FILES_ADDED: 2,
@@ -200,6 +201,8 @@ function fetchAndDisplaySubtitles(onFinish) {
 
     // This function is called when we successfully retrieve the subtitle data
     var onSuccess = function(subtitleData) {
+        $('#collapseOne').collapse();
+
         var rows = tabulatorTable.getRows();
         var numRows = tabulatorTable.getDataCount();
         
@@ -260,8 +263,19 @@ function fetchAndDisplaySubtitles(onFinish) {
         redrawTable();
         onFinish();
     }
+    var onError = function(jQxhr) {
+        if (jQxhr.status == 401) {
+            changeState(StateEnum.INITIAL);
+            $("#edit-login-btn").click();
+            guiLoginError(jQxhr.responseText);
+        } else if (jQxhr.status == 403) {
+            $("#seek_status").prop('hidden', true);
+            $("#page_error").prop('hidden', false);
+            changeState(StateEnum.FINAL);
+        }
+    }
 
-    searchSubtitles(searchData, onSuccess); // subtitles.js
+    searchSubtitles(searchData, onSuccess, onError); // subtitles.js
 }
 
 function unzipAndLink(button) {
@@ -485,6 +499,8 @@ function zipSelection(zip_choice) {
 function changeState(state) {
     switch (state) {
         case StateEnum.INITIAL:
+            tabulatorTable.redraw();
+
             break;
         case StateEnum.FILES_ADDED:
             $('#fetch-btn').removeClass('disabled');
@@ -633,6 +649,64 @@ function batchSelect(select) {
     }
 }
 
+var getCookieValue = function(cookie_name) {
+    var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)test2\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+}
+
+var loadLoginData = function() {
+    var username = $.cookie('os_username');
+    var password = $.cookie('os_password');
+
+    if (username && password) {
+        $("#os-username").val(username);
+        $("#os-password").val(password);
+        guiLoginSuccess();
+    }
+    else {
+        guiLoginClear();
+    }
+}
+
+var clearCookies = function() {
+    $.removeCookie('os_username', { path: '/' });
+    $.removeCookie('os_password', { path: '/' });
+}
+
+var guiLoginClear = function() {
+    loggedIn = false;
+
+    $("#test-login-spinner").prop('hidden', true);
+    $("#test-login-error-msg").prop('hidden', true);
+    $("#test-login-success").prop('hidden', true);
+    $("#os-password").prop('disabled', false);
+    $("#os-username").prop('disabled', false);
+    $("#os-username").css('background-color','');
+    $("#os-password").css('background-color','');
+    $("#test-login-btn").prop('hidden', false);
+    $("#edit-login-btn").prop('hidden', true);
+}
+
+var guiLoginSuccess = function() {
+    loggedIn = true;
+    
+    $("#test-login-spinner").prop('hidden', true);
+    $("#test-login-success").prop('hidden', false);
+    $("#os-username").prop('disabled', true);
+    $("#os-password").prop('disabled', true);
+    $("#test-login-btn").prop('hidden', true);
+    $("#edit-login-btn").prop('hidden', false);
+}
+
+var guiLoginError = function(errorText) {
+    guiLoginClear();
+
+    $("#test-login-error-msg").text(errorText);
+    $("#test-login-error-msg").prop('hidden', false);
+    $("#os-username").css('background-color','#ffcaca');
+    $("#os-password").css('background-color','#ffcaca');
+    $("#seek_status").prop('hidden', true);
+}
+
 ////////////
 // jQuery //
 ////////////
@@ -646,6 +720,16 @@ $(document).ready(function(){
         delay: [0, 0]
     })
 
+    tippy('#info-tooltip', {
+        content: "OpenSubtitles sets a download limit per user, so you need your OpenSubtitles credentials for the request. The credentials are not stored or logged by us! If you don't have credentials, click the link to register.",
+        placement: "top",
+        size: "large",
+        arrow: true,
+        arrowType: "sharp",
+        delay: [0, 0]
+    })
+
+
     // We disable the default sort of Tabulator, so we need to add some CSS manually to mimic our sorting algo
     $('.tabulator-col').addClass("tabulator-sortable");
     $('.tabulator-col-content').append("<div class='tabulator-arrow'></div>");
@@ -657,12 +741,13 @@ $(document).ready(function(){
         if ($('#language-select')[0].selectedOptions.length == 0) {     // If no languages are selected
             $("#lang_error").prop('hidden', false);                     // Show a message
             $('.ms-selection').addClass('invalid_input');
+        } else if (loggedIn == false) {
+            guiLoginError("Please login first.");
         } else {
+            $("#seek_status").prop('hidden', false);
+
             $("#lang_error").prop('hidden', true);
             $('.ms-selection').removeClass('invalid_input');
-
-            $('#collapseOne').collapse();
-            $("#seek_status").prop('hidden', false);
 
             fetchAndDisplaySubtitles(function () {
                 $("#seek_status").prop('hidden', true);
@@ -674,6 +759,31 @@ $(document).ready(function(){
     $("#start-over-btn").click(function() {
         location.reload(true);
         tabulatorTable.redraw();
+    });
+
+    $("#test-login-btn").click(function() {
+        guiLoginClear();
+
+        username = $("#os-username").val();
+        password = $("#os-password").val();
+
+        if (username == "" || password == "") {
+            guiLoginError("Empty username or password.");
+            return;
+        }
+
+        $("#test-login-spinner").prop('hidden', false);
+
+        login(username, password, guiLoginSuccess, guiLoginError);
+    });
+
+    $("#edit-login-btn").click(function() {
+        guiLoginClear();
+
+        $("#os-username").select();
+        $("#os-password").val('');
+
+        clearCookies();
     });
 
     // Search panel expand/collape
@@ -749,6 +859,8 @@ $(document).ready(function(){
         $('#os-health').addClass('led-red');
         $(".callout").animate({right: '0px'});
     })
+
+    loadLoginData();
 });
 
 
