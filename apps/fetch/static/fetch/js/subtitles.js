@@ -1,6 +1,6 @@
 
 // refactor: this should be in its own class
-function testLogin(username, password, onSuccess, onError){
+function login(username, password, onSuccess, onError){
     var csrftoken = $.cookie('csrftoken');
 
     $.ajaxSetup({
@@ -11,9 +11,7 @@ function testLogin(username, password, onSuccess, onError){
 
     $.ajax({
         type: 'post',
-        url: 'test_login',    // /fetch/languages
-//        dataType: 'json',
-//        contentType: "application/json; charset=utf-8",
+        url: 'login',    // /fetch/login
         data: JSON.stringify({
             'username': username,
             'password': password
@@ -22,7 +20,11 @@ function testLogin(username, password, onSuccess, onError){
             onSuccess(data);
         },
         error: function(jQxhr, textStatus, errorThrown){
-            onError(jQxhr.responseText);
+            if (jQxhr.status == 403) {
+                onError('Page expired. Refresh page to continue.');
+            } else {
+                onError(jQxhr.responseText);
+            }
         }
     });
 }
@@ -45,8 +47,8 @@ function searchSubtitles(searchData, onSuccess, onError){
         success: function(subtitleData, textStatus, jQxhr) {
             onSuccess(subtitleData);
         },
-        error: function(jQxhr, textStatus, errorThrown){
-            console.log(errorThrown);
+        error: function(jQxhr, textStatus, errorThrown) {
+            onError(jQxhr);
         }
     });
 }

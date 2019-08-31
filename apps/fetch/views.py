@@ -1,38 +1,76 @@
 import requests
 import json
+import datetime
 
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse, HttpResponseServerError
+from django.http import JsonResponse, HttpResponse, HttpResponseServerError, HttpResponseBadRequest
 from xmlrpc.client import ProtocolError
 
 import apps.fetch.subtitles as subs
 import apps.fetch.config as config
 
 
-def fetch(request):
-    langs = subs.get_languages()
-
+def login(request):
     # Handle POST request
     if request.method == 'POST':
-        data = json.loads(request.body)
+        request_data = json.loads(request.body)
 
-        # Flatten the result, so we end up with a list of dictionaries
-        query_data = []
-        for movie in data['movie_files']:
-            movie.update({'sublanguageid': ','.join(data['languages']), 'search_method': data['search_method']})
-            query_data.append(movie)
+        try:
+            token, response_data = subs.login(request_data)
+        except ProtocolError as e:
+            return HttpResponseServerError(content="Login failed: server error ({}).".format(e.errcode),
+                                           status=e.errcode, reason=e.errmsg)
 
-        response = subs.fetch_subtitles(query_data)
+        if token:
+            response = HttpResponse(status=200)
 
-        json_response = JsonResponse(response)
-        json_response['Access-Control-Allow-Headers'] = 'x-csrftoken'
+            days_expire = 7
+            max_age = days_expire * 24 * 60 * 60
+            response.set_cookie('os_token', token, max_age=max_age, httponly=True, samesite='Strict')
 
-        return json_response
+            password_dummy = '*' * len(request_data['password'])
+            response.set_cookie('os_username', request_data['username'], max_age=max_age, httponly=False, samesite='Strict')
+            response.set_cookie('os_password', password_dummy, max_age=max_age, httponly=False, samesite='Strict')
+
+            return response
+        else:
+            if '401' in response_data['status']:
+                return HttpResponse('Wrong user/password combination.', status=401)
+            else:
+                return HttpResponseBadRequest(response_data['status'])
+
+
+def fetch(request):
+    # Handle POST request
+    if request.method == 'POST':
+        token = request.COOKIES.get('os_token')
+
+        if not token:
+            _ = json.loads(request.body)    # If we do not do this, for some reason we get an error on re-login
+            return HttpResponse(content='No token. Please (re)login first.', status=401)
+        else:
+            data = json.loads(request.body)
+
+            # Flatten the result, so we end up with a list of dictionaries
+            query_data = []
+            for movie in data['movie_files']:
+                movie.update({'sublanguageid': ','.join(data['languages']), 'search_method': data['search_method']})
+                query_data.append(movie)
+
+            response = subs.fetch_subtitles(query_data, token=token)
+
+            if response['status'] == 401:
+                return HttpResponse(content='Token expired. Please (re)login.', status=401)
+
+            json_response = JsonResponse(response)
+            json_response['Access-Control-Allow-Headers'] = 'x-csrftoken'
+
+            return json_response
 
     # Handle GET request
     else:
         context = {
-            'languages': langs,
+            'languages': subs.get_languages(),
         }
 
         response = render(request, 'fetch/fetch.html', context)
@@ -40,20 +78,6 @@ def fetch(request):
         response['Access-Control-Allow-Headers'] = 'x-csrftoken'
 
         return response
-
-
-def test_login(request):
-    # Handle POST request
-    if request.method == 'POST':
-        data = json.loads(request.body)
-
-        try:
-            token = subs.test_login(data)
-        except ProtocolError as e:
-            return HttpResponseServerError(content="Login failed: server error ({})".format(e.errcode),
-                                           status=e.errcode, reason=e.errmsg)
-
-        return HttpResponse(status=200)
 
 
 def languages(request):

@@ -7,14 +7,17 @@ import apps.fetch.config as config
 # import config     # For debugging
 
 
-def test_login(login_data):
-    opensubs = OpenSubtitles()
+def login(login_data):
+    opensubs = OpenSubtitles(language='en', user_agent=config.USER_AGENT, token=None)
     return opensubs.login(**login_data)
 
 
-def fetch_subtitles(movie_data):
-    opensubs = OpenSubtitles()
-    opensubs.login(config.USER, config.PASSWD)
+def fetch_subtitles(movie_data, token):
+    opensubs = OpenSubtitles(language='en', user_agent=config.USER_AGENT, token=token)
+    # opensubs.login(config.USER, config.PASSWD)
+
+    if not opensubs.no_operation():
+        return {'status': 401}
 
     # Convert the more extensive movie data to a more condensed and renamed format.
     subtitle_data = {}
@@ -32,7 +35,7 @@ def fetch_subtitles(movie_data):
                 'query': entry['movie_filename'],
             }
 
-        query_results = opensubs.search_subtitles([request_data])
+        query_results = opensubs.search_subtitles(token, [request_data])
 
         # Sort the results by language
         ordered_query_results = sorted(query_results, key=lambda i: i["LanguageName"])
@@ -91,7 +94,9 @@ def fetch_subtitles(movie_data):
             except KeyError:
                 subtitle_data[movie_name] = [new_entry]
 
-    opensubs.logout()
+    # opensubs.logout()     # Watch out, if you log out the token will expire
+
+    subtitle_data['status'] = 200
 
     return subtitle_data
 

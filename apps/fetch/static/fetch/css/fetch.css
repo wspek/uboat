@@ -253,13 +253,33 @@ body {
     pointer-events: none;
 }
 
+#os-username input[disabled] {
+    color: #DCDAD1;
+    padding: 2px;
+    margin: 0 0 0 0;
+    background-image: none;
+}
+
 #test-login {
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1em;
+}
+
+#test-login-btn, #edit-login-btn {
+    width: 50px;
 }
 
 #test-login-error-msg {
+    color: red;
+}
+
+#info-tooltip {
+    font-size: 14px;
+    padding-left: 6px;
+}
+
+#login_error, #lang_error, #page_error {
     color: red;
 }
