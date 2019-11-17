@@ -280,6 +280,14 @@ body {
     padding-left: 6px;
 }
 
-#login_error, #lang_error, #page_error {
+#login_error, #lang_error, #page_error, #download_error {
     color: red;
+}
+
+.fa-exclamation-circle:before {
+    color: red;
+}
+
+.black {
+    color: black;
 }

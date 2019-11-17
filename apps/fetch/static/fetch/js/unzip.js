@@ -63,11 +63,11 @@ var model = (function(obj) {
     var URL = obj.webkitURL || obj.mozURL || obj.URL;
 
     return {
-        getEntries : function(url, onend) {
+        getEntries : function(url, onend, onerror) {
             zip.createReader(new zip.HttpReader(url), function(zipReader) {
                 zipReader.getEntries(onend);
-            }, function(message) {
-                console.log("ERROR: " + message);
+            }, function(status, message, url) {
+                onerror(status, message, url);
             });
         },
         getEntryFile : function(entry, onend, onprogress) {

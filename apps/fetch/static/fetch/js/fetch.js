@@ -227,8 +227,8 @@ function fetchAndDisplaySubtitles(onFinish) {
 
                 if (result['sub_filename']) {
                     result['select'] = true;
-                    result['download'] = "<a href='" + result['link_zip'] + "'>ZIP</a>&nbsp;&nbsp;<a href='" + result['link_gz']
-                    + "'>GZ</a>&nbsp;&nbsp;<button class='btn-unzip' zip='" + result['link_zip']
+                    result['download'] = "<a href='" + result['link_zip'] + "' target='_blank'>ZIP</a>&nbsp;&nbsp;<a href='" + result['link_gz']
+                    + "' target='_blank'>GZ</a>&nbsp;&nbsp;<button class='btn-unzip' zip='" + result['link_zip']
                     + "' onclick='unzipAndLink(this)'>" + result['format'].toUpperCase() + "</button>";
                 }
                 else {
@@ -335,6 +335,16 @@ function unzipAndLink(button) {
                 }
             }
         });
+    }, function(status, message, url) {
+            button.classList.remove('buttonload');
+            node.classList.remove('fas');
+            node.classList.remove('fa-circle-notch');
+            node.classList.remove('fa-spin');
+            node.classList.add('fa');
+            node.classList.add('fa-exclamation-circle');
+
+            $("#manual-download").attr("href", url);
+            $("#download_error").prop('hidden', false);
     });
 }
 
@@ -384,7 +394,7 @@ function downloadFiles(files) {
     })
 }
 
-function zipOfSubtitles(onSuccess) {
+function zipOfSubtitles(onSuccess, onError) {
     var processed_files = {}
     var blobs_to_zip = [];
 
@@ -439,6 +449,8 @@ function zipOfSubtitles(onSuccess) {
                         .then(addBlobs(blobs));
                     }
                 });
+            }, function(status, message, url) {
+                onError();
             });
         }
         processFile(i);
@@ -489,7 +501,20 @@ function zipSelection(zip_choice) {
     }
 
     if (zip_choice === 'sub') {
-        zipOfSubtitles(zipBlobs)
+        zipOfSubtitles(zipBlobs, function(status) {
+            downloadBtn.classList.remove('buttonload');
+            downloadBtn.classList.remove('btn-primary');
+            downloadBtn.classList.add('btn-warning');
+            node.classList.remove('fas');
+            node.classList.remove('fa-circle-notch');
+            node.classList.remove('fa-spin');
+            node.classList.add('fa');
+            node.classList.add('fa-exclamation-circle');
+            node.classList.add('black');
+
+            $("#manual-download").removeAttr("href");
+            $("#download_error").prop('hidden', false);
+        })
     } else {
         zipOfCompressedFiles(zip_choice, zipBlobs);
     }
@@ -721,7 +746,7 @@ $(document).ready(function(){
     })
 
     tippy('#info-tooltip', {
-        content: "OpenSubtitles sets a download limit per user, so you need your OpenSubtitles credentials for the request. The credentials are not stored or logged by us! If you don't have credentials, click the link to register.",
+        content: "OpenSubtitles sets a download limit per user (200 subs/24h or 1000 subs/24h for VIPs). Therefore you need to login with your OpenSubtitles account. The credentials are not stored or logged by us! If you don't have credentials, click the link to register.",
         placement: "top",
         size: "large",
         arrow: true,

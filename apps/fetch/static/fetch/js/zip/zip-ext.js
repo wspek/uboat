@@ -80,9 +80,16 @@
 				return;
 			}
 			var request = new XMLHttpRequest();
-			request.addEventListener("load", function() {
-                getData(callback, onerror);
+			request.addEventListener("load", function(event) {
+			    var status = event.target.status;
+			    var statusText = event.target.statusText;
+			    var responseUrl = event.target.responseURL;
 
+			    if (status != 200) {
+			        onerror(status, statusText, responseUrl)
+			    } else {
+                    getData(callback, onerror);
+                }
                 // Original code. This gives us a CORS error in Chrome: Refused to get unsafe header "Content-Length"
 //				that.size = Number(request.getResponseHeader("Content-Length"));
 //				// If response header doesn't return size then prefetch the content.
