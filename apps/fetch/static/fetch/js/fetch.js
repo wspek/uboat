@@ -543,7 +543,9 @@ function changeState(state) {
                 $('#download-selection').attr('aria-disabled', true);
                 $("#zip_contents").prop('disabled', true);
 
-                $("#select-header").trigger("click");
+                if ($("#select-header").attr("select-all") === "checked") {
+                    $("#select-header").trigger("click");
+                }
             }
 
             break;
