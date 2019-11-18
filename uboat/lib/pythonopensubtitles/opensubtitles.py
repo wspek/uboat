@@ -34,7 +34,8 @@ class OpenSubtitles(object):
         self.token = token
         self.user_agent = user_agent or os.getenv('OS_USER_AGENT') or Settings.USER_AGENT
 
-        transport = Transport()
+        # transport = Transport()       # HTTP
+        transport = SafeTransport()     # HTTPS
         transport.user_agent = self.user_agent
 
         self.xmlrpc = ServerProxy(Settings.OPENSUBTITLES_SERVER,
