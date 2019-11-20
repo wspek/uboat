@@ -94,12 +94,22 @@ var loggedIn = false,
         groupStartOpen:function(value, count, data, group){
             return data[0].id == 1;
         },
-        groupVisibilityChanged:function(group, visible){
-            if (!visible) {
-                redrawTable();
-            }
+        groupClick:function(e, group){
+            // We need to do this, to later scroll to the correct position in groupVisibilityChanged.
+            // See: https://github.com/olifolkerd/tabulator/issues/1835
+            scrollPosX = window.scrollX;
+            scrollPosY = window.scrollY;
         },
-    });
+        groupVisibilityChanged:function(group, visible){
+            window.scrollTo(scrollPosX, scrollPosY);
+        },
+        pageLoaded:function(pageno){
+            window.scrollTo(scrollPosX, scrollPosY);
+            //pageno - the number of the loaded page
+        },
+    },
+    scrollPosX = 0,     // We need this for https://github.com/olifolkerd/tabulator/issues/1835
+    scrollPosY = 0);
 
 ///////////////
 // GUI logic //
@@ -813,7 +823,7 @@ $(document).ready(function(){
         clearCookies();
     });
 
-    // Search panel expand/collape
+    // Search panel expand/collapse
     $('.panel-collapse').on('show.bs.collapse', function () {
         $(this).siblings('.panel-heading').addClass('active');
     });
