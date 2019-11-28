@@ -1,6 +1,11 @@
 body {
     /*background-color: #669999;*/
 }
+a {
+    color: #0000EE;
+    text-decoration: none;
+    background-color: transparent;
+}
 .container {
     /*background-color: #0E566C;*/
 }
@@ -29,7 +34,43 @@ body {
     outline: none;
     cursor: inherit;
     display: block;
+    color: #fff;
+    background-color: #1D3B4A;
+    border-color: #1D3B4A;
 }
+.btn-success {
+    color: #fff;
+    background-color: #00ac8e;
+    border-color: #00ac8e;
+}
+.btn-success.disabled, .btn-success:disabled {
+    color: #fff;
+    background-color: #53cfba;
+    border-color: #53cfba;
+}
+.bg-primary {
+    background-color: #52A8D2!important;
+}
+
+.bg-secondary {
+    background-color: #07344A!important;
+}
+.btn-primary {
+    color: #fff;
+    background-color: #1D3B4A;
+    border-color: #1D3B4A;
+}
+.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle {
+    color: #fff;
+    background-color: #0E6996;
+    border-color: #0E6996;
+}
+.btn-primary.disabled, .btn-primary:disabled {
+    color: #fff;
+    background-color: #1abc9c;
+    border-color: #1abc9c;
+}
+
 #log {
     min-width: 100%;
     min-height: 100%;
@@ -76,7 +117,7 @@ body {
 .panel-title>a, .panel-title>a:active{
     display:block;
     padding:10px;
-    color:#555;
+    color:#1D3B4A;
     background-color: #e9e9e9;
     font-size:16px;
     font-weight:bold;

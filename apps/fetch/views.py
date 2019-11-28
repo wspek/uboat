@@ -73,7 +73,7 @@ def fetch(request):
             'languages': subs.get_languages(),
         }
 
-        response = render(request, 'fetch/fetch.html', context)
+        response = render(request, 'fetch_new/index.html', context)
         response['Access-Control-Allow-Origin'] = '*'
         response['Access-Control-Allow-Headers'] = 'x-csrftoken'
 
