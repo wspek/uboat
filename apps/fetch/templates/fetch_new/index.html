@@ -144,17 +144,15 @@
                                 <div id="search-method-row" class="form-row">
                                     <div class="col-md-2"></div>
                                     <div class="col-md-8 text-left">
-                                        <div class="row">
-                                            <p class="font-weight-bold">Search method</p>
-                                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                                <label id="radio-hash" class="btn btn-primary btn-sm active">
-                                                    <input type="radio" name="search-method" autocomplete="off" value="hash" checked> Hash
-                                                </label>
-                                                <label id="radio-file" class="btn btn-primary btn-sm">
-                                                    <input type="radio" name="search-method" autocomplete="off" value="filename"> Filename
-                                                </label>
-                                            </div>
-                                        </div>
+                                          <p class="font-weight-bold">Search method</p>
+                                          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                              <label id="radio-hash" class="btn btn-primary btn-sm active">
+                                                  <input type="radio" name="search-method" autocomplete="off" value="hash" checked> Hash
+                                              </label>
+                                              <label id="radio-file" class="btn btn-primary btn-sm">
+                                                  <input type="radio" name="search-method" autocomplete="off" value="filename"> Filename
+                                              </label>
+                                          </div>
                                     </div>
                                     <div class="col-md-2"></div>
                                 </div>
@@ -210,27 +208,35 @@
       <div class="container-fluid">
       <div id="tabulator-controls-row" class="row">
           <div class="col-md"></div>
-          <div class="col-md-10 text-center">
-              <div class="card">
-                <div class="card-body">
-                    <!--Collapse all - Expand all-->
-                    <span id="collapse-expand">
-                        <span><a href="#" id="expand-all">Expand all</a></span> - <span><a href="#" id="collapse-all">Collapse all</a></span>
-                    </span>
-                    <!--UBoat seek throbber-->
-                    <span id="login_error" hidden>Please first login to continue</span>
-                    <span id="lang_error" hidden>Please select at least one language</span>
-                    <span id="page_error" hidden>Page expired. Please refresh the complete web page to continue (F5).</span>
-                    <span id="download_error" hidden>Possibly your download limit was hit at OpenSubtitles. Try downloading <a id="manual-download" href="#" target="_blank">manually</a>.</span>
-                    <span id="seek_status" hidden>UBoat is sinking...&emsp;<img id="submarine_img" src="../../static/fetch/img/submarine.svg"></span>
-                    <span id="download">
-                         <span><a href="#" id="download-selection" class="btn btn-success btn-sm disabled" aria-disabled="true">Download selection</a></span>
-                         <select id="zip_contents" disabled>
-                              <option value="sub">as a zip of extracted subtitles</option>
-                              <option value="zip">as a zip of original .zip files</option>
-                              <option value="gz">as a zip of original .gz files</option>
-                         </select>
-                    </span>
+          <div class="col-md-10">
+              <div class="card ">
+                <div class="card-block">
+                    <div class="row">
+                        <div class="col-md-4 text-left">
+                            <!--Collapse all - Expand all-->
+                            <span id="collapse-expand">
+                            <span><a href="#" id="expand-all">Expand all</a></span> - <span><a href="#" id="collapse-all">Collapse all</a></span>
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <!--UBoat seek throbber-->
+                            <span id="login_error" hidden>Please first login to continue</span>
+                            <span id="lang_error" hidden>Please select at least one language</span>
+                            <span id="page_error" hidden>Page expired. Please refresh the complete web page to continue (F5).</span>
+                            <span id="download_error" hidden>Possibly your download limit was hit at OpenSubtitles. Try downloading <a id="manual-download" href="#" target="_blank">manually</a>.</span>
+                            <span id="seek_status" hidden>UBoat is sinking...&emsp;<img id="submarine_img" src="../../static/fetch/img/submarine.svg"></span>
+                        </div>
+                        <div class="col-md-4 text-right">
+                            <span id="download">
+                                 <a href="#" id="download-selection" class="btn btn-success btn-sm disabled" aria-disabled="true">Download selection</a>
+                                 <select id="zip_contents" disabled>
+                                      <option value="sub">as a zip of extracted subtitles</option>
+                                      <option value="zip">as a zip of original .zip files</option>
+                                      <option value="gz">as a zip of original .gz files</option>
+                                 </select>
+                            </span>
+                        </div>
+                    </div>
                 </div>
               </div>
           </div>

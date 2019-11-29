@@ -39,17 +39,17 @@ a {
     border-color: #1D3B4A;
 }
 .btn-success {
-    color: #fff;
-    background-color: #00ac8e;
-    border-color: #00ac8e;
+    color: #1D3B4A;
+    background-color: #f2b60c;
+    border-color: #f2b60c;
 }
 .btn-success.disabled, .btn-success:disabled {
     color: #fff;
-    background-color: #53cfba;
-    border-color: #53cfba;
+    background-color: #f2cc61;
+    border-color: #f2cc61;
 }
 .bg-primary {
-    background-color: #52A8D2!important;
+    background-color: #1388a3!important;
 }
 
 .bg-secondary {
@@ -113,12 +113,14 @@ a {
 .panel-heading {
     padding: 0;
     border:0;
+    color: #07344A;
+    background-color: #07344A;
 }
 .panel-title>a, .panel-title>a:active{
     display:block;
     padding:10px;
-    color:#1D3B4A;
-    background-color: #e9e9e9;
+    color:#ffffff;
+    background-color: #1D3B4A;
     font-size:16px;
     font-weight:bold;
     text-transform:uppercase;
@@ -183,24 +185,18 @@ a {
     border-bottom-width: 2px;
     border-left-width: 2px;
 }
+
+
 .card {
+    display: flex;
+    justify-content: center;
     height: 40px;
     background: rgb(229, 229, 229);
+    margin-left: 4px;
 }
-.card-body {
-    display: flex;
-    padding-top: 0.35rem;
-    padding-right: 0.35rem;
-    padding-bottom: 0.35rem;
-    padding-left: 0.35rem;
-}
-#collapse-expand {
-    text-align: left;
-    flex: 1;
-}
-#download {
-    text-align: right;
-    flex: 1;
+.card-block {
+    margin-left: 4px;
+    margin-right: 4px;
 }
 
  /* Callout box - fixed position at the bottom of the page */
@@ -278,7 +274,12 @@ a {
 
 #download-selection {
     line-height: 1.0;
-    width: 140px;
+    width: 144px;
+}
+
+#zip_contents {
+    margin-left: 4px;
+    font-size: 14px;
 }
 
 .ms-selection, ms-selectable {
