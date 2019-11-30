@@ -249,16 +249,25 @@ a {
 
 @keyframes diving-rotate {
 	0% {
-         transform:rotate(0deg);
+         transform:rotate(0deg) translateY(-4px);
 	}
-    50% {
-         transform:rotate(24deg);
+	10% {
+         transform:rotate(8deg) translateY(0px);
 	}
-    75% {
-        transform:rotate(-8deg);
+    40% {
+         transform:rotate(4deg) translateY(4px);
+	}
+	50% {
+         transform: rotate(0deg) translateY(5px);
+	}
+	60% {
+         transform:rotate(-4deg) translateY(2px);
+	}
+    90% {
+        transform:rotate(-8deg) translateY(-2px);
 	}
     100% {
-        transform:rotate(0deg);
+        transform:rotate(-2deg) translateY(-4px);
 	}
 }
 
