@@ -47,7 +47,7 @@ var loggedIn = false,
         pagination:"local",
 //        paginationElement:document.getElementById("status"), //build pagination controls in this element
         paginationSize: 25,
-        paginationSizeSelector:[10, 25, 50, 100, 200],
+        paginationSizeSelector:[10, 25, 50, 100],
         layout:"fitColumns",
         layoutColumnsOnNewData:true,
         columns:[
