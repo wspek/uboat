@@ -40,8 +40,8 @@ a {
 }
 .btn-success {
     color: #1D3B4A;
-    background-color: #f2b60c;
-    border-color: #f2b60c;
+    background-color: #f5b810;
+    border-color: #f5b810;
 }
 .btn-success.disabled, .btn-success:disabled {
     color: #fff;
@@ -191,7 +191,7 @@ a {
     display: flex;
     justify-content: center;
     height: 40px;
-    background: rgb(229, 229, 229);
+    background: #f8f9fa;
     margin-left: 4px;
 }
 .card-block {

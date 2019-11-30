@@ -749,7 +749,7 @@ var guiLoginError = function(errorText) {
 ////////////
 $(document).ready(function(){
     tippy('#tooltip', {
-        content: "Select your movie titles. Don't worry, you will <b><i>not</i></b> be uploading any files to our servers. We only use the selection to calculate which subtitles to retrieve. This all happens client-side and blazingly fast, you'll see.",
+        content: "Select the movie files from disk. Don't worry, you will <b><i>not</i></b> be uploading any files to our servers. We only use the selection to calculate which subtitles to retrieve. This all happens client-side and blazingly fast, you'll see.",
         placement: "left-start",
         size: "large",
         arrow: true,
