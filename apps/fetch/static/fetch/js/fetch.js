@@ -894,7 +894,7 @@ $(document).ready(function(){
     function () {
         $('#os-health').removeClass('led-green');
         $('#os-health').addClass('led-red');
-        $(".callout").animate({right: '0px'});
+        $(".callout").animate({right: '-1px'});
     })
 
     loadLoginData();

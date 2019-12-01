@@ -1,7 +1,6 @@
 .led-box {
     display : flex;
     justify-content: flex-end;
-    align-items : center;
 }
 
 .led-box p {
@@ -9,11 +8,16 @@
     text-align: center;
     margin: 1em;
 }
-
+.led-text {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: none;
+}
 .led-green {
     margin-right: 8px;
-    width: 14px;
-    height: 14px;
+    margin-top: 2px;
+    width: 12px;
+    height: 12px;
     background-color: #ABFF00;
     border-radius: 50%;
     box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #304701 0 -1px 9px, #89FF00 0 2px 12px;
@@ -30,11 +34,12 @@
 
 .led-red {
     margin-right: 8px;
-    width: 14px;
-    height: 14px;
+    margin-top: 2px;
+    width: 12px;
+    height: 12px;
     background-color: #F00;
     border-radius: 50%;
-    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 12px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 12px;
     -webkit-animation: blinkRed 0.5s infinite;
     -moz-animation: blinkRed 0.5s infinite;
     -ms-animation: blinkRed 0.5s infinite;
