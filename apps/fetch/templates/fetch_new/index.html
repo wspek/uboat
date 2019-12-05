@@ -64,22 +64,30 @@
 </head>
 
 <body id="page-top">
+  <img id="logo" src="{% static '/fetch/img/uboat-logo-plain.png' %}">
 
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
     <div class="container-fluid">
-        <div class="row">
+      <div class="row">
+        <div class="col-md-2">
+          <div>
+            <!--<img id="logo" src="{% static '/fetch/img/submarine.png' %}">-->
+          </div>
+        </div>
+        <div class="col-md-10">
+          <div class="row">
             <div class="col-md-8">
-                <a class="navbar-brand js-scroll-trigger" href="#page-top">Uboat Subtitle Retriever</a>
-                <button aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" data-target="#navbarResponsive" data-toggle="collapse"
+              <a class="navbar-brand js-scroll-trigger" href="#page-top">U-Boat Subtitle Retriever</a>
+              <button aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" data-target="#navbarResponsive" data-toggle="collapse"
                 type="button">
-                Menu
-                <i class="fas fa-bars"></i>
-              </button>
+          Menu
+          <i class="fas fa-bars"></i>
+          </button>
             </div>
             <div class="col-md-2">
-                <div class="collapse navbar-collapse" id="navbarResponsive">
-                    <ul class="navbar-nav ml-auto">
+              <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
                   <li class="nav-item mx-0 mx-lg-1">
                     <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#portfolio">Portfolio</a>
                   </li>
@@ -90,31 +98,32 @@
                     <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#contact">Contact</a>
                   </li>
                 </ul>
-                </div>
+              </div>
             </div>
             <div class="col-md-2">
-                <div class="container-fluid" id="os-health-container">
-                    <div class=”row”>
-                        <div class=”col-md-12”>
-                          <div class="led-box">
-                            <div class="led-green" id="os-health"></div>
-                            <div class="led-text"><a href="https://downforeveryoneorjustme.com/api.opensubtitles.org" target="_blank">OpenSubtitles.org</a></div>
-                          </div>
-                        </div>
-                        </div>
-                        <div class="row">
-                        <div class="callout">
-                          <div class="callout-header">Uh-oh</div>
-                          <!--<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>-->
-                          <div class="callout-container">
-                            <p>We have trouble reaching OpenSubtitles.org. It could be us, you or them. Click the link to see what's up.</p>
-                          </div>
-                        </div>
-                        </div>
+              <div class="container-fluid" id="os-health-container">
+                <div class=”row”>
+                  <div class=”col-md-12”>
+                    <div class="led-box">
+                      <div class="led-green" id="os-health"></div>
+                      <div class="led-text"><a href="https://downforeveryoneorjustme.com/api.opensubtitles.org" target="_blank">OpenSubtitles.org</a></div>
                     </div>
+                  </div>
                 </div>
+                <div class="row">
+                  <div class="callout">
+                    <div class="callout-header">Uh-oh</div>
+                    <!--<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>-->
+                    <div class="callout-container">
+                      <p>We have trouble reaching OpenSubtitles.org. It could be us, you or them. Click the link to see what's up.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
   </nav>
   <!-- Masthead -->
@@ -215,24 +224,6 @@
           </div>
         </div>
       </div>
-      <!--&lt;!&ndash; Masthead Avatar Image &ndash;&gt;-->
-      <!--<img class="masthead-avatar mb-5" src="{% static '/fetch/vendor/freelance_template/img/avataaars.svg' %}" alt="">-->
-
-      <!--&lt;!&ndash; Masthead Heading &ndash;&gt;-->
-      <!--<h1 class="masthead-heading text-uppercase mb-0">Start Bootstrap</h1>-->
-
-      <!--&lt;!&ndash; Icon Divider &ndash;&gt;-->
-      <!--<div class="divider-custom divider-light">-->
-      <!--<div class="divider-custom-line"></div>-->
-      <!--<div class="divider-custom-icon">-->
-      <!--<i class="fas fa-star"></i>-->
-      <!--</div>-->
-      <!--<div class="divider-custom-line"></div>-->
-      <!--</div>-->
-
-      <!--&lt;!&ndash; Masthead Subheading &ndash;&gt;-->
-      <!--<p class="masthead-subheading font-weight-light mb-0">Graphic Artist - Web Designer - Illustrator</p>-->
-
     </div>
     <div class="container-fluid">
       <div class="row" id="tabulator-controls-row">
@@ -252,18 +243,18 @@
                   <span hidden id="login_error">Please first login to continue</span>
                   <span hidden id="lang_error">Please select at least one language</span>
                   <span hidden id="page_error">Page expired. Please refresh the complete web page to continue (F5).</span>
-                  <span hidden id="download_error">Possibly your download limit was hit at OpenSubtitles. Try downloading <a href="#" id="manual-download" target="_blank">manually</a>.</span>
+                  <span hidden id="download_error">Possibly your download limit was hit at OpenSubtitles. Try downloading one by one.</span>
                   <span hidden id="seek_status">UBoat is sinking...&emsp;<img id="submarine_img" src="../../static/fetch/img/submarine.svg"></span>
                 </div>
                 <div class="col-md-4 text-right">
                   <span id="download">
-                                 <a aria-disabled="true" class="btn btn-success btn-sm disabled" href="#" id="download-selection">Download selection</a>
-                                 <select disabled id="zip_contents">
-                                      <option value="sub">as a zip of extracted subtitles</option>
-                                      <option value="zip">as a zip of original .zip files</option>
-                                      <option value="gz">as a zip of original .gz files</option>
-                                 </select>
-                            </span>
+                       <a aria-disabled="true" class="btn btn-success btn-sm disabled" href="#" id="download-selection">Download selection</a>
+                       <select disabled id="zip_contents">
+                            <option value="sub">as a zip of extracted subtitles</option>
+                            <option value="zip">as a zip of original .zip files</option>
+                            <option value="gz">as a zip of original .gz files</option>
+                       </select>
+                  </span>
                 </div>
               </div>
             </div>

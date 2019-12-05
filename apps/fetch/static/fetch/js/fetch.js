@@ -748,6 +748,23 @@ var guiLoginError = function(errorText) {
 // jQuery //
 ////////////
 $(document).ready(function(){
+    // Collapse Navbar
+    var logoCollapse = function() {
+        if ($(document).scrollTop() > 100) {
+            $("#logo").addClass("logo-shrink");
+            $("#logo").removeClass("logo-grow");
+        } else {
+            $("#logo").addClass("logo-grow");
+            $("#logo").removeClass("logo-shrink");
+        }
+    };
+
+    // Collapse now if page is not at top
+    logoCollapse();
+
+    // Collapse the navbar when page is scrolled
+    $(window).scroll(logoCollapse);
+
     tippy('#tooltip', {
         content: "Select the movie files from disk. Don't worry, you will <b><i>not</i></b> be uploading any files to our servers. We only use the selection to calculate which subtitles to retrieve. This all happens client-side and blazingly fast, you'll see.",
         placement: "left-start",
