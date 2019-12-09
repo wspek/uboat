@@ -1,8 +1,13 @@
-.led-box {
+#ledbox-column {
     display : flex;
-    justify-content: flex-end;
+    align-items: end;
 }
-
+.led-box {
+    position: fixed;
+    display : flex;
+    top: 5px;
+    right: 5px;
+}
 .led-box p {
     font-size: 12px;
     text-align: center;

@@ -11,6 +11,20 @@ body {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
 }
+#mainNav .navbar-nav li.nav-item a.nav-link:hover {
+    color: #f5b810;
+}
+#mainNav .navbar-nav > li.nav-item > a.nav-link.active {
+    color: #1D3B4A;
+    background: #f5b810;
+}
+#mainNav .navbar-nav > li.nav-item > a.nav-link.active:active, #mainNav .navbar-nav > li.nav-item > a.nav-link.active:focus, #mainNav .navbar-nav > li.nav-item > a.nav-link.active:hover {
+    color: #1D3B4A;
+    background: #f5b810;
+}
+a.navbar-brand:hover {
+    color: #f5b810;
+}
 #logo {
     width: 230px;
     margin: 20px;
@@ -26,6 +40,10 @@ body {
 #logo.logo-grow {
     transition: transform 300ms ease-in-out;
     transform:  translate(0px, 0px);
+}
+#page-title {
+    display: flex;
+    align-items: center;
 }
 a {
     color: #007bff;
@@ -240,7 +258,7 @@ a {
 .callout {
   position: fixed;
   z-index: 999;
-  top: 70px;
+  top: 80px;
   right: -400px;
   margin-left: 0px;
   max-width: 400px;

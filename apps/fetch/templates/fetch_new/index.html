@@ -36,7 +36,7 @@
   <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
 
   <!-- CSS -->
-  <link href="{% static '/fetch/vendor/freelance_template/css/freelancer.min.css' %}" rel="stylesheet">
+  <link href="{% static '/fetch/vendor/freelance_template/css/freelancer.css' %}" rel="stylesheet">
 
   <link href="{% static '/fetch/img/submarine-icon.png' %}" rel="shortcut icon" type="image/png" />
 
@@ -65,34 +65,35 @@
 
 <body id="page-top">
   <img id="logo" src="{% static '/fetch/img/uboat-logo-plain.png' %}">
-
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
     <div class="container-fluid">
+      <row>
+        <div class="col-md12">
+        </div>
+      </row>
       <div class="row">
         <div class="col-md-2">
           <div>
-            <!--<img id="logo" src="{% static '/fetch/img/submarine.png' %}">-->
           </div>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-8">
           <div class="row">
-            <div class="col-md-8">
+            <div id="page-title" class="col-md-8">
               <a class="navbar-brand js-scroll-trigger" href="#page-top">U-Boat Subtitle Retriever</a>
-              <button aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" data-target="#navbarResponsive" data-toggle="collapse"
-                type="button">
-          Menu
-          <i class="fas fa-bars"></i>
+              <button aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" data-target="#navbarResponsive" data-toggle="collapse" type="button">
+              Menu
+              <i class="fas fa-bars"></i>
           </button>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
               <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
                   <li class="nav-item mx-0 mx-lg-1">
-                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#portfolio">Portfolio</a>
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">About</a>
                   </li>
                   <li class="nav-item mx-0 mx-lg-1">
-                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">About</a>
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#portfolio">Credits</a>
                   </li>
                   <li class="nav-item mx-0 mx-lg-1">
                     <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#contact">Contact</a>
@@ -100,24 +101,24 @@
                 </ul>
               </div>
             </div>
-            <div class="col-md-2">
-              <div class="container-fluid" id="os-health-container">
-                <div class=”row”>
-                  <div class=”col-md-12”>
-                    <div class="led-box">
-                      <div class="led-green" id="os-health"></div>
-                      <div class="led-text"><a href="https://downforeveryoneorjustme.com/api.opensubtitles.org" target="_blank">OpenSubtitles.org</a></div>
-                    </div>
-                  </div>
+          </div>
+        </div>
+        <div class="col-md-2" id="ledbox-column">
+          <div class="container-fluid" id="os-health-container">
+            <div class=”row”>
+              <div class=”col-md-12”>
+                <div class="led-box">
+                  <div class="led-green" id="os-health"></div>
+                  <div class="led-text"><a href="https://downforeveryoneorjustme.com/api.opensubtitles.org" target="_blank">OpenSubtitles.org</a></div>
                 </div>
-                <div class="row">
-                  <div class="callout">
-                    <div class="callout-header">Uh-oh</div>
-                    <!--<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>-->
-                    <div class="callout-container">
-                      <p>We have trouble reaching OpenSubtitles.org. It could be us, you or them. Click the link to see what's up.</p>
-                    </div>
-                  </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="callout">
+                <div class="callout-header">Uh-oh</div>
+                <!--<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>-->
+                <div class="callout-container">
+                  <p>We have trouble reaching OpenSubtitles.org. It could be us, you or them. Click the link to see what's up.</p>
                 </div>
               </div>
             </div>
@@ -273,15 +274,52 @@
     </div>
   </header>
 
-  <!-- Portfolio Section -->
-  <section class="page-section portfolio" id="portfolio">
+  <!-- About Section -->
+  <section class="page-section mb-0" id="about">
     <div class="container">
 
-      <!-- Portfolio Section Heading -->
-      <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Portfolio</h2>
+      <!-- About Section Heading -->
+      <h2 class="page-section-heading text-center text-uppercase text-secondary">About</h2>
 
       <!-- Icon Divider -->
       <div class="divider-custom">
+        <div class="divider-custom-line"></div>
+        <div class="divider-custom-icon">
+          <i class="fas fa-star"></i>
+        </div>
+        <div class="divider-custom-line"></div>
+      </div>
+
+      <!-- About Section Content -->
+      <div class="row">
+        <div class="col-lg-4 ml-auto">
+          <p class="lead">Use U-Boat to easily retrieve subtitles for your series and movies, by simply selecting the files on your hard disk. Currently only <a href="https://www.opensubtitles.org" target="_blank">OpenSubtitles.org</a> is supported. You will need an account there to use this application.</p>
+        </div>
+        <div class="col-lg-4 mr-auto">
+          <p class="lead">We are still in a beta phase. Some unforeseen issues might pop up. Please let us know if you find bugs or things to improve through the channels in the <a href="#contact">CONTACT</a> section.</p>
+        </div>
+      </div>
+
+      <!--&lt;!&ndash; About Section Button &ndash;&gt;-->
+      <!--<div class="text-center mt-4">-->
+        <!--<a class="btn btn-xl btn-outline-light" href="https://startbootstrap.com/themes/freelancer/">-->
+          <!--<i class="fas fa-download mr-2"></i>-->
+          <!--Free Download!-->
+        <!--</a>-->
+      <!--</div>-->
+
+    </div>
+  </section>
+
+    <!-- Portfolio Section -->
+  <section class="page-section portfolio bg-primary text-white" id="portfolio">
+    <div class="container">
+
+      <!-- Portfolio Section Heading -->
+      <h2 class="page-section-heading text-center text-uppercase mb-0">Credits</h2>
+
+      <!-- Icon Divider -->
+      <div class="divider-custom divider-light">
         <div class="divider-custom-line"></div>
         <div class="divider-custom-icon">
           <i class="fas fa-star"></i>
@@ -370,49 +408,12 @@
     </div>
   </section>
 
-  <!-- About Section -->
-  <section class="page-section bg-primary text-white mb-0" id="about">
-    <div class="container">
-
-      <!-- About Section Heading -->
-      <h2 class="page-section-heading text-center text-uppercase text-white">About</h2>
-
-      <!-- Icon Divider -->
-      <div class="divider-custom divider-light">
-        <div class="divider-custom-line"></div>
-        <div class="divider-custom-icon">
-          <i class="fas fa-star"></i>
-        </div>
-        <div class="divider-custom-line"></div>
-      </div>
-
-      <!-- About Section Content -->
-      <div class="row">
-        <div class="col-lg-4 ml-auto">
-          <p class="lead">Freelancer is a free bootstrap theme created by Start Bootstrap. The download includes the complete source files including HTML, CSS, and JavaScript as well as optional SASS stylesheets for easy customization.</p>
-        </div>
-        <div class="col-lg-4 mr-auto">
-          <p class="lead">You can create your own custom avatar for the masthead, change the icon in the dividers, and add your email address to the contact form to make it fully functional!</p>
-        </div>
-      </div>
-
-      <!-- About Section Button -->
-      <div class="text-center mt-4">
-        <a class="btn btn-xl btn-outline-light" href="https://startbootstrap.com/themes/freelancer/">
-          <i class="fas fa-download mr-2"></i>
-          Free Download!
-        </a>
-      </div>
-
-    </div>
-  </section>
-
   <!-- Contact Section -->
   <section class="page-section" id="contact">
     <div class="container">
 
       <!-- Contact Section Heading -->
-      <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Contact Me</h2>
+      <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Contact</h2>
 
       <!-- Icon Divider -->
       <div class="divider-custom">
@@ -473,15 +474,15 @@
     <div class="container">
       <div class="row">
 
-        <!-- Footer Location -->
-        <div class="col-lg-4 mb-5 mb-lg-0">
-          <h4 class="text-uppercase mb-4">Location</h4>
-          <p class="lead mb-0">2215 John Daniel Drive
-            <br>Clark, MO 65243</p>
-        </div>
+        <!--&lt;!&ndash; Footer Location &ndash;&gt;-->
+        <!--<div class="col-lg-4 mb-5 mb-lg-0">-->
+          <!--<h4 class="text-uppercase mb-4">Location</h4>-->
+          <!--<p class="lead mb-0">2215 John Daniel Drive-->
+            <!--<br>Clark, MO 65243</p>-->
+        <!--</div>-->
 
         <!-- Footer Social Icons -->
-        <div class="col-lg-4 mb-5 mb-lg-0">
+        <div class="col-lg-12 mb-5 mb-lg-0">
           <h4 class="text-uppercase mb-4">Around the Web</h4>
           <a class="btn btn-outline-light btn-social mx-1" href="#">
             <i class="fab fa-fw fa-facebook-f"></i>
@@ -497,12 +498,12 @@
           </a>
         </div>
 
-        <!-- Footer About Text -->
-        <div class="col-lg-4">
-          <h4 class="text-uppercase mb-4">About Freelancer</h4>
-          <p class="lead mb-0">Freelance is a free to use, MIT licensed Bootstrap theme created by
-            <a href="http://startbootstrap.com">Start Bootstrap</a>.</p>
-        </div>
+        <!--&lt;!&ndash; Footer About Text &ndash;&gt;-->
+        <!--<div class="col-lg-4">-->
+          <!--<h4 class="text-uppercase mb-4">About Freelancer</h4>-->
+          <!--<p class="lead mb-0">Freelance is a free to use, MIT licensed Bootstrap theme created by-->
+            <!--<a href="http://startbootstrap.com">Start Bootstrap</a>.</p>-->
+        <!--</div>-->
 
       </div>
     </div>
@@ -511,7 +512,7 @@
   <!-- Copyright Section -->
   <section class="copyright py-4 text-center text-white">
     <div class="container">
-      <small>Copyright &copy; Your Website 2019</small>
+      <small>Copyright &copy; U-Boat 2019</small>
     </div>
   </section>
 
