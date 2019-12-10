@@ -25,8 +25,10 @@ SECRET_KEY = '=%_-)u!=%c*o2%xl1+jzohm3w#iqf5sf%691pwx+f0lifx=$7w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['104.248.14.7']
-#ALLOWED_HOSTS = ['190.191.183.185']
+ALLOWED_HOSTS = [
+    '104.248.14.7',
+    '.u-boat.io',
+]
 
 # Application definition
 
