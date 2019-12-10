@@ -2,12 +2,17 @@ import requests
 import json
 import datetime
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse, HttpResponseServerError, HttpResponseBadRequest
 from xmlrpc.client import ProtocolError
 
 import apps.fetch.subtitles as subs
 import apps.fetch.config as config
+
+
+def redirect_to_index(request):
+    response = redirect('/fetch')
+    return response
 
 
 def login(request):
