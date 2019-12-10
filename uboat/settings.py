@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.fetch.apps.FetchConfig'
+    'apps.sink.apps.SinkConfig'
 ]
 
 MIDDLEWARE = [

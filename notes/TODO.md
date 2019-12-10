@@ -11,7 +11,7 @@
 # Refactoring
 
 * Use the JSON search instead of the XML-RPC API: https://forum.opensubtitles.org/viewtopic.php?f=8&t=16453&start=15
-* Rename everything that is named search to fetch
+* Rename everything that is named search to sink
 * Minify own Javascript
 * See which parts of the static files we can delete to avoid bloating.
     * Restructure static files folder structure.
@@ -33,7 +33,7 @@
 ## Cosmetics
 
 * When we press the Fetch button, collapse the form (accordion)
-* Rename 'search' to 'fetch'?
+* Rename 'search' to 'sink'?
 
 ## Steps for production
 

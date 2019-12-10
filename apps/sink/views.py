@@ -6,12 +6,12 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse, HttpResponseServerError, HttpResponseBadRequest
 from xmlrpc.client import ProtocolError
 
-import apps.fetch.subtitles as subs
-import apps.fetch.config as config
+import apps.sink.subtitles as subs
+import apps.sink.config as config
 
 
 def redirect_to_index(request):
-    response = redirect('/fetch')
+    response = redirect('/sink')
     return response
 
 
@@ -45,7 +45,7 @@ def login(request):
                 return HttpResponseBadRequest(response_data['status'])
 
 
-def fetch(request):
+def sink(request):
     # Handle POST request
     if request.method == 'POST':
         token = request.COOKIES.get('os_token')
@@ -78,7 +78,7 @@ def fetch(request):
             'languages': subs.get_languages(),
         }
 
-        response = render(request, 'fetch_new/index.html', context)
+        response = render(request, 'sink/index.html', context)
         response['Access-Control-Allow-Origin'] = '*'
         response['Access-Control-Allow-Headers'] = 'x-csrftoken'
 

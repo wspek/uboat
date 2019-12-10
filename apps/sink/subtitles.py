@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 from uboat.lib.pythonopensubtitles.opensubtitles import OpenSubtitles
 
-import apps.fetch.config as config
+import apps.sink.config as config
 # import config     # For debugging
 
 
