@@ -17,15 +17,12 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 from django.urls import re_path
-from django.conf import settings
-from django.conf.urls.static import static
 
 from apps.sink import views
 
 
 urlpatterns = [
     re_path(r'^$', views.redirect_to_index, name='index'),
-    path('admin/', admin.site.urls),
     path('admin/', admin.site.urls),
     path('sink/', include('apps.sink.urls')),
 ]
