@@ -610,7 +610,7 @@ for (var i = 0; i < fileSelectClass.length; i++) {
 function getHealthStatus(successStatus, maxRetries, onSuccess, onError) {
     var urls = [
         'server_health',
-        'http://api.opensubtitles.org/xml-rpc',
+        'https://api.opensubtitles.org/xml-rpc',
     ];
 
     var count = 0;
