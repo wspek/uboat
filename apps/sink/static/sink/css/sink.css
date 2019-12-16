@@ -115,6 +115,11 @@ a {
     background-color: #1D3B4A;
     border-color: #1D3B4A;
 }
+.btn-primary:hover {
+  color: #1D3B4A;
+  background-color: #f5b810;
+  border-color: #f5b810;
+}
 .btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle {
     color: #fff;
     background-color: #0E6996;
