@@ -45,6 +45,9 @@ a.navbar-brand:hover {
     display: flex;
     align-items: center;
 }
+#beta {
+    color: #ED1539;
+}
 a {
     color: #007bff;
     text-decoration: none;
