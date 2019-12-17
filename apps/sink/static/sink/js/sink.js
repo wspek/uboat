@@ -40,6 +40,7 @@ var loggedIn = false,
         NONE_SELECTED: 5,
         ALL_SELECTED: 6,
     },
+    maxFiles = 100,
     movieFiles = [],
     fileSelectClass = document.getElementsByClassName("select"),
     tabulatorTable = new Tabulator("#subtitle-table", {
@@ -141,10 +142,15 @@ var addMovieFilesToTable = function() {
     function loadFiles(startId) {
         var id = startId;
 
+        if (id + files.length > maxFiles + 1) {
+            window.alert("Sorry, you can only add a maximum of 100 titles.\nOtherwise the U-Boat may sink and not surface no more...");
+            return;
+        }
+
         for (i = 0; i < files.length; i++) {
             var file = files[i];
 
-            titleAlreadyAdded = false;
+            var titleAlreadyAdded = false;
             for(var j = 0; j < movieFiles.length; j++) {
                 if (movieFiles[j].movie_filename == file.name) {
                     titleAlreadyAdded = true;

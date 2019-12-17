@@ -56,6 +56,10 @@ def sink(request):
         else:
             data = json.loads(request.body)
 
+            if len(data['movie_files']) > config.MAX_NUM_FILES:
+                # The front end JS should prevent this, but users may get creative...
+                return HttpResponse(status=403)
+
             # Flatten the result, so we end up with a list of dictionaries
             query_data = []
             for movie in data['movie_files']:
