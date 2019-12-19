@@ -414,3 +414,11 @@ a {
 .black {
     color: black;
 }
+
+.portfolio .portfolio-item .portfolio-item-caption {
+    background-color: #f5b810;
+}
+
+.portfolio-item-caption-content {
+    color: #1D3B4A!important;
+}

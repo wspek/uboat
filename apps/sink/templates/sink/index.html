@@ -36,7 +36,7 @@
   <link href="{% static '/sink/vendor/js/tabulator-tables-4.4/css/tabulator_simple_custom.css' %}" rel="stylesheet" type="text/css">
   <link href="{% static '/sink/vendor/js/jquery/multiselect/css/multi-select.dist.css' %}" rel="stylesheet" type="text/css">
 
-  <link href="{% static '/sink/css/sink.min.css' %}" rel="stylesheet" type="text/css">
+  <link href="{% static '/sink/css/sink.css' %}" rel="stylesheet" type="text/css">
   <link href="{% static '/sink/css/led/led.min.css' %}" rel="stylesheet" type="text/css">
 
   <!-- JS -->
@@ -323,78 +323,121 @@
         <div class="divider-custom-line"></div>
       </div>
 
+            <!--&lt;!&ndash; About Section Content &ndash;&gt;-->
+      <!--<div class="row">-->
+        <!--<div class="col-lg-4 ml-auto">-->
+          <!--<p class="lead"></p>-->
+        <!--</div>-->
+        <!--<div class="col-lg-4 mr-auto">-->
+          <!--<p class="lead">This website would not exist without the use of some great open source libraries. Have a look.</p>-->
+        <!--</div>-->
+        <!--<div class="col-lg-4 mr-auto">-->
+          <!--<p class="lead"></p>-->
+        <!--</div>-->
+      <!--</div>-->
+
       <!-- Portfolio Grid Items -->
       <div class="row">
-
         <!-- Portfolio Item 1 -->
         <div class="col-md-6 col-lg-4">
-          <div class="portfolio-item mx-auto" data-target="#portfolioModal1" data-toggle="modal">
+          <div class="portfolio-item mx-auto text-center" data-target="#portfolioModal1" data-toggle="modal">
             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
               <div class="portfolio-item-caption-content text-center text-white">
-                <i class="fas fa-plus fa-3x"></i>
+                <i alt="" class="fas fa-plus fa-3x"></i>
               </div>
             </div>
-            <img alt="" class="img-fluid" src="{% static '/sink/vendor/freelance_template/img/portfolio/cabin.png' %}">
+            <img alt="Tabulator" class="img-fluid" src="{% static '/sink/img/tabulator.png' %}">
+            <h2>Tabulator</h2>
           </div>
         </div>
 
         <!-- Portfolio Item 2 -->
         <div class="col-md-6 col-lg-4">
-          <div class="portfolio-item mx-auto" data-target="#portfolioModal2" data-toggle="modal">
+          <div class="portfolio-item mx-auto text-center" data-target="#portfolioModal2" data-toggle="modal">
             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
               <div class="portfolio-item-caption-content text-center text-white">
                 <i class="fas fa-plus fa-3x"></i>
               </div>
             </div>
-            <img alt="" class="img-fluid" src="{% static '/sink/vendor/freelance_template/img/portfolio/cake.png' %}">
+            <img alt="" class="img-fluid" src="{% static '/sink/img/freelancer.png' %}">
+            <h3>Freelancer Template</h3>
           </div>
         </div>
 
         <!-- Portfolio Item 3 -->
         <div class="col-md-6 col-lg-4">
-          <div class="portfolio-item mx-auto" data-target="#portfolioModal3" data-toggle="modal">
+          <div class="portfolio-item mx-auto text-center" data-target="#portfolioModal3" data-toggle="modal">
             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
               <div class="portfolio-item-caption-content text-center text-white">
                 <i class="fas fa-plus fa-3x"></i>
               </div>
             </div>
-            <img alt="" class="img-fluid" src="{% static '/sink/vendor/freelance_template/img/portfolio/circus.png' %}">
+            <img alt="" class="img-fluid" src="{% static '/sink/img/zip.png' %}">
+            <h2>Zip.js</h2>
           </div>
         </div>
 
         <!-- Portfolio Item 4 -->
         <div class="col-md-6 col-lg-4">
-          <div class="portfolio-item mx-auto" data-target="#portfolioModal4" data-toggle="modal">
+          <div class="portfolio-item mx-auto text-center" data-target="#portfolioModal4" data-toggle="modal">
             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
               <div class="portfolio-item-caption-content text-center text-white">
                 <i class="fas fa-plus fa-3x"></i>
               </div>
             </div>
-            <img alt="" class="img-fluid" src="{% static '/sink/vendor/freelance_template/img/portfolio/game.png' %}">
+            <img alt="" class="img-fluid" src="{% static '/sink/img/python-opensubtitles.png' %}">
+            <h3>python-opensubtitles</h3>
           </div>
         </div>
 
         <!-- Portfolio Item 5 -->
         <div class="col-md-6 col-lg-4">
-          <div class="portfolio-item mx-auto" data-target="#portfolioModal5" data-toggle="modal">
+          <div class="portfolio-item mx-auto text-center" data-target="#portfolioModal5" data-toggle="modal">
             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
               <div class="portfolio-item-caption-content text-center text-white">
                 <i class="fas fa-plus fa-3x"></i>
               </div>
             </div>
-            <img alt="" class="img-fluid" src="{% static '/sink/vendor/freelance_template/img/portfolio/safe.png' %}">
+            <img alt="" class="img-fluid" src="{% static '/sink/img/tippy.png' %}">
+            <h2>Tippy.js</h2>
           </div>
         </div>
 
         <!-- Portfolio Item 6 -->
         <div class="col-md-6 col-lg-4">
-          <div class="portfolio-item mx-auto" data-target="#portfolioModal6" data-toggle="modal">
+          <div class="portfolio-item mx-auto text-center" data-target="#portfolioModal6" data-toggle="modal">
             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
               <div class="portfolio-item-caption-content text-center text-white">
                 <i class="fas fa-plus fa-3x"></i>
               </div>
             </div>
-            <img alt="" class="img-fluid" src="{% static '/sink/vendor/freelance_template/img/portfolio/submarine.png' %}">
+            <img alt="" class="img-fluid" src="{% static '/sink/img/multiselect.png' %}">
+            <h2>Multiselect</h2>
+          </div>
+        </div>
+
+        <!-- Portfolio Item 7 -->
+        <div class="col-md-6 col-lg-4">
+          <div class="portfolio-item mx-auto text-center" data-target="#portfolioModal7" data-toggle="modal">
+            <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+              <div class="portfolio-item-caption-content text-center text-white">
+                <i class="fas fa-plus fa-3x"></i>
+              </div>
+            </div>
+            <!--<img alt="" class="img-fluid" src="{% static '/sink/img/popper.png' %}">-->
+          </div>
+        </div>
+
+        <!-- Portfolio Item 8 -->
+        <div class="col-md-6 col-lg-4">
+          <div class="portfolio-item mx-auto text-center" data-target="#portfolioModal8" data-toggle="modal">
+            <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+              <div class="portfolio-item-caption-content text-center text-white">
+                <i class="fas fa-plus fa-3x"></i>
+              </div>
+            </div>
+            <img alt="" class="img-fluid" src="{% static '/sink/img/popper.png' %}">
+            <h2>Popper.js</h2>
           </div>
         </div>
 
@@ -535,7 +578,7 @@
             <div class="row justify-content-center">
               <div class="col-lg-8">
                 <!-- Portfolio Modal - Title -->
-                <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0">Log Cabin</h2>
+                <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0">Tabulator</h2>
                 <!-- Icon Divider -->
                 <div class="divider-custom">
                   <div class="divider-custom-line"></div>
@@ -545,9 +588,31 @@
                   <div class="divider-custom-line"></div>
                 </div>
                 <!-- Portfolio Modal - Image -->
-                <img alt="" class="img-fluid rounded mb-5" src="{% static '/sink/vendor/freelance_template/img/portfolio/cabin.png' %}">
                 <!-- Portfolio Modal - Text -->
-                <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+                <a href="http://tabulator.info/" target="_blank">Visit website</a>
+                <pre class="mb-5 text-left">
+The MIT License (MIT)
+
+Copyright (c) 2015-2019 Oli Folkerd
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+                </pre>
                 <button class="btn btn-primary" data-dismiss="modal" href="#">
                   <i class="fas fa-times fa-fw"></i>
                   Close Window
@@ -574,7 +639,7 @@
             <div class="row justify-content-center">
               <div class="col-lg-8">
                 <!-- Portfolio Modal - Title -->
-                <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0">Tasty Cake</h2>
+                <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0">Freelancer</h2>
                 <!-- Icon Divider -->
                 <div class="divider-custom">
                   <div class="divider-custom-line"></div>
@@ -584,9 +649,31 @@
                   <div class="divider-custom-line"></div>
                 </div>
                 <!-- Portfolio Modal - Image -->
-                <img alt="" class="img-fluid rounded mb-5" src="{% static '/sink/vendor/freelance_template/img/portfolio/cake.png' %}">
                 <!-- Portfolio Modal - Text -->
-                <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+                <a href="https://startbootstrap.com/previews/freelancer/" target="_blank">Visit website</a>
+                <pre class="mb-5 text-left">
+The MIT License (MIT)
+
+Copyright (c) 2013-2019 Blackrock Digital LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+                </pre>
                 <button class="btn btn-primary" data-dismiss="modal" href="#">
                   <i class="fas fa-times fa-fw"></i>
                   Close Window
@@ -613,7 +700,7 @@
             <div class="row justify-content-center">
               <div class="col-lg-8">
                 <!-- Portfolio Modal - Title -->
-                <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0">Circus Tent</h2>
+                <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0">Zip.js</h2>
                 <!-- Icon Divider -->
                 <div class="divider-custom">
                   <div class="divider-custom-line"></div>
@@ -623,9 +710,36 @@
                   <div class="divider-custom-line"></div>
                 </div>
                 <!-- Portfolio Modal - Image -->
-                <img alt="" class="img-fluid rounded mb-5" src="{% static '/sink/vendor/freelance_template/img/portfolio/circus.png' %}">
                 <!-- Portfolio Modal - Text -->
-                <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+                <a href="http://gildas-lormeau.github.io/zip.js/" target="_blank">Visit website</a>
+                <pre class="mb-5 text-left">
+
+ Copyright (c) 2013 Gildas Lormeau. All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+
+ 2. Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in
+ the documentation and/or other materials provided with the distribution.
+
+ 3. The names of the authors may not be used to endorse or promote products
+ derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
+ INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JCRAFT,
+ INC. OR ANY CONTRIBUTORS TO THIS SOFTWARE BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+                </pre>
                 <button class="btn btn-primary" data-dismiss="modal" href="#">
                   <i class="fas fa-times fa-fw"></i>
                   Close Window
@@ -652,7 +766,7 @@
             <div class="row justify-content-center">
               <div class="col-lg-8">
                 <!-- Portfolio Modal - Title -->
-                <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0">Controller</h2>
+                <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0">python-opensubtitles</h2>
                 <!-- Icon Divider -->
                 <div class="divider-custom">
                   <div class="divider-custom-line"></div>
@@ -662,9 +776,24 @@
                   <div class="divider-custom-line"></div>
                 </div>
                 <!-- Portfolio Modal - Image -->
-                <img alt="" class="img-fluid rounded mb-5" src="{% static '/sink/vendor/freelance_template/img/portfolio/game.png' %}">
                 <!-- Portfolio Modal - Text -->
-                <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+                <a href="https://github.com/agonzalezro/python-opensubtitles" target="_blank">Visit website</a>
+                <pre class="mb-5 text-left">
+
+Copyright (c) 2015, Alexandre González Rodríguez
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+                </pre>
                 <button class="btn btn-primary" data-dismiss="modal" href="#">
                   <i class="fas fa-times fa-fw"></i>
                   Close Window
@@ -691,7 +820,7 @@
             <div class="row justify-content-center">
               <div class="col-lg-8">
                 <!-- Portfolio Modal - Title -->
-                <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0">Locked Safe</h2>
+                <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0">Tippy.js</h2>
                 <!-- Icon Divider -->
                 <div class="divider-custom">
                   <div class="divider-custom-line"></div>
@@ -701,9 +830,31 @@
                   <div class="divider-custom-line"></div>
                 </div>
                 <!-- Portfolio Modal - Image -->
-                <img alt="" class="img-fluid rounded mb-5" src="{% static '/sink/vendor/freelance_template/img/portfolio/safe.png' %}">
                 <!-- Portfolio Modal - Text -->
-                <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+                <a href="https://atomiks.github.io/tippyjs/" target="_blank">Visit website</a>
+                <pre class="mb-5 text-left">
+MIT License
+
+Copyright (c) 2017-present atomiks
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+                </pre>
                 <button class="btn btn-primary" data-dismiss="modal" href="#">
                   <i class="fas fa-times fa-fw"></i>
                   Close Window
@@ -730,7 +881,7 @@
             <div class="row justify-content-center">
               <div class="col-lg-8">
                 <!-- Portfolio Modal - Title -->
-                <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0">Submarine</h2>
+                <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0">Multiselect</h2>
                 <!-- Icon Divider -->
                 <div class="divider-custom">
                   <div class="divider-custom-line"></div>
@@ -740,9 +891,92 @@
                   <div class="divider-custom-line"></div>
                 </div>
                 <!-- Portfolio Modal - Image -->
-                <img alt="" class="img-fluid rounded mb-5" src="{% static '/sink/vendor/freelance_template/img/portfolio/submarine.png' %}">
                 <!-- Portfolio Modal - Text -->
-                <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+                <a href="https://crlcu.github.io/multiselect/" target="_blank">Visit website</a>
+                <pre class="mb-5 text-left">
+The MIT License (MIT)
+
+Copyright (c) 2014 Adrian Crisan (adrian.crisan88@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+                </pre>
+                <button class="btn btn-primary" data-dismiss="modal" href="#">
+                  <i class="fas fa-times fa-fw"></i>
+                  Close Window
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Portfolio Modal 8 -->
+  <div aria-hidden="true" aria-labelledby="portfolioModal6Label" class="portfolio-modal modal fade" id="portfolioModal8" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+          <span aria-hidden="true">
+            <i class="fas fa-times"></i>
+          </span>
+        </button>
+        <div class="modal-body text-center">
+          <div class="container">
+            <div class="row justify-content-center">
+              <div class="col-lg-8">
+                <!-- Portfolio Modal - Title -->
+                <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0">Popper.js</h2>
+                <!-- Icon Divider -->
+                <div class="divider-custom">
+                  <div class="divider-custom-line"></div>
+                  <div class="divider-custom-icon">
+                    <i class="fas fa-star"></i>
+                  </div>
+                  <div class="divider-custom-line"></div>
+                </div>
+                <!-- Portfolio Modal - Image -->
+                <!-- Portfolio Modal - Text -->
+                <a href="https://popper.js.org/" target="_blank">Visit website</a>
+                <pre class="mb-5 text-left">
+
+Copyright © 2016 Federico Zivolo and contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+                </pre>
                 <button class="btn btn-primary" data-dismiss="modal" href="#">
                   <i class="fas fa-times fa-fw"></i>
                   Close Window
