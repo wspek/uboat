@@ -56,7 +56,7 @@
   <script defer src="{% static 'sink/js/hash.min.js' %}" type="application/javascript"></script>
   <script defer src="{% static 'sink/js/unzip.min.js' %}" type="application/javascript"></script>
 
-  <link href="{% static '/sink/img/submarine-icon.png' %}" rel="shortcut icon" type="image/png" />
+  <link href="{% static '/sink/img/submarine-icon-4.png' %}" rel="shortcut icon" type="image/png" /
 </head>
 
 <body id="page-top">
@@ -241,7 +241,7 @@
                   <span hidden id="lang_error">Please select at least one language</span>
                   <span hidden id="page_error">Page expired. Please refresh the complete web page to continue (CTRL + F5)</span>
                   <span hidden id="download_error">Possibly your download limit was hit at OpenSubtitles. Try downloading one by one.</span>
-                  <span hidden id="seek_status">UBoat is sinking...&emsp;<img id="submarine_img" src="../../static/sink/img/submarine.svg"></span>
+                  <span hidden id="seek_status">UBoat is sinking...&emsp;<img id="submarine_img" src="{% static '/sink/img/submarine.svg' %}"></span>
                 </div>
                 <div class="col-md-3 text-right">
                   <span id="download">
@@ -551,7 +551,8 @@
   <!-- Copyright Section -->
   <section class="copyright py-4 text-center text-white">
     <div class="container">
-      <small>Copyright &copy; U-Boat 2019</small>
+      <small>Copyright &copy; U-Boat 2019</small></br>
+      <small><a target="_blank" href="{% static '/sink/img/submarine-icon-4.png' %}">Submarine</a> favicon by <a target="_blank" href="https://icons8.com">Icons8</a></small>
     </div>
   </section>
 
