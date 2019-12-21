@@ -56,7 +56,7 @@ def sink(request):
         else:
             data = json.loads(request.body)
 
-            if len(data['movie_files']) > config.MAX_NUM_FILES:
+            if len(data['movie_files']) > config.MAX_NUM_FILES or len(data['languages']) > config.MAX_NUM_LANG:
                 # The front end JS should prevent this, but users may get creative...
                 return HttpResponse(status=403)
 

@@ -159,19 +159,19 @@
                           <div class="text-left">
                             <p class="font-weight-bold">Select languages</p>
                             <div>
-                              <span><a class="select-text" href='#' id='select-all'>Select all</a><a class="select-text" href='#' id='deselect-all'>Deselect all</a></span>
+                              <!--<span><a class="select-text" href='#' id='select-all'>Select all</a><a class="select-text" href='#' id='deselect-all'>Deselect all</a></span>-->
                               <div style="clear: both;"></div>
                             </div>
                             <div class="text-center">
                               <select id="language-select" multiple="multiple">
-                                            {% for key,value in languages.items %}
-                                                {% if value.1 == '1' %}
-                                                    <option selected="selected" value="{{ key }}">{{ value.0 }}</option>
-                                                {% else %}
-                                                    <option value="{{ key }}">{{ value.0 }}</option>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
+                                  {% for key,value in languages.items %}
+                                      {% if value.1 == '1' %}
+                                          <option selected="selected" value="{{ key }}">{{ value.0 }}</option>
+                                      {% else %}
+                                          <option value="{{ key }}">{{ value.0 }}</option>
+                                      {% endif %}
+                                  {% endfor %}
+                              </select>
                             </div>
                           </div>
                         </div>

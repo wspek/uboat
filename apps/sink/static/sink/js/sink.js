@@ -41,6 +41,7 @@ var loggedIn = false,
         ALL_SELECTED: 6,
     },
     maxFiles = 100,
+    maxLanguages = 5,
     movieFiles = [],
     fileSelectClass = document.getElementsByClassName("select"),
     tabulatorTable = new Tabulator("#subtitle-table", {
@@ -861,6 +862,11 @@ $(document).ready(function(){
             // Use this as a callback for when a new language is selected
             $("#lang_error").prop('hidden', true);
             $('.ms-selection').removeClass('invalid_input');
+
+            if ($('#language-select')[0].selectedOptions.length > maxLanguages) {
+                $('#language-select').multiSelect('deselect', values)
+                window.alert("Sorry, we only support a maximum of 5 languages right now in this beta phase.\n\nLet us know if you require more and we'll see what we can do.");
+            }
         },
         afterDeselect: function(values){
             // Use this as a callback for when a language is deselected
