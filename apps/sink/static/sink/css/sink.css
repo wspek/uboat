@@ -35,10 +35,18 @@ a.navbar-brand:hover {
 }
 #logo.logo-shrink {
     transition: transform 300ms ease-in-out;
+    -webkit-transform: translate(0px, -300px);
+    -moz-transform: translate(0px, -300px);
+    -o-transform: translate(0px, -300px);
+    -ms-transform: translate(0px, -300px);
     transform: translate(0px, -300px);
 }
 #logo.logo-grow {
     transition: transform 300ms ease-in-out;
+    -webkit-transform: translate(0px, 0px);
+    -moz-transform: translate(0px, 0px);
+    -o-transform: translate(0px, 0px);
+    -ms-transform: translate(0px, 0px);
     transform:  translate(0px, 0px);
 }
 #page-title {
