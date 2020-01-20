@@ -430,3 +430,7 @@ a {
 .portfolio-item-caption-content {
     color: #1D3B4A!important;
 }
+
+.not-visible {
+  display: none;
+}

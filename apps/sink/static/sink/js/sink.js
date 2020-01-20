@@ -726,8 +726,8 @@ var guiLoginClear = function() {
     $("#os-username").prop('disabled', false);
     $("#os-username").css('background-color','');
     $("#os-password").css('background-color','');
-    $("#test-login-btn").prop('hidden', false);
-    $("#edit-login-btn").prop('hidden', true);
+    $("#test-login-btn").removeClass('not-visible')
+    $("#edit-login-btn").addClass('not-visible')
 }
 
 var guiLoginSuccess = function() {
@@ -737,8 +737,8 @@ var guiLoginSuccess = function() {
     $("#test-login-success").prop('hidden', false);
     $("#os-username").prop('disabled', true);
     $("#os-password").prop('disabled', true);
-    $("#test-login-btn").prop('hidden', true);
-    $("#edit-login-btn").prop('hidden', false);
+    $("#test-login-btn").addClass('not-visible')
+    $("#edit-login-btn").removeClass('not-visible')
 }
 
 var guiLoginError = function(errorText) {
