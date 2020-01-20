@@ -46,7 +46,7 @@
   <link href="{% static '/sink/vendor/js/tabulator-tables-4.4/css/tabulator_simple_custom.css' %}" rel="stylesheet" type="text/css">
   <link href="{% static '/sink/vendor/js/jquery/multiselect/css/multi-select.dist.css' %}" rel="stylesheet" type="text/css">
 
-  <link href="{% static '/sink/css/sink.min.css' %}" rel="stylesheet" type="text/css">
+  <link href="{% static '/sink/css/sink.css' %}" rel="stylesheet" type="text/css">
   <link href="{% static '/sink/css/led/led.min.css' %}" rel="stylesheet" type="text/css">
 
   <!-- JS -->
@@ -61,7 +61,7 @@
   <script defer src="{% static 'sink/vendor/js/popper/popper.min.js' %}" type="application/javascript"></script>
   <script defer src="{% static 'sink/vendor/js/tippy/tippy.js' %}" type="application/javascript"></script>
 
-  <script defer src="{% static 'sink/js/sink.min.js' %}" type="application/javascript"></script>
+  <script defer src="{% static 'sink/js/sink.js' %}" type="application/javascript"></script>
   <script defer src="{% static 'sink/js/subtitles.min.js' %}" type="application/javascript"></script>
   <script defer src="{% static 'sink/js/hash.min.js' %}" type="application/javascript"></script>
   <script defer src="{% static 'sink/js/unzip.min.js' %}" type="application/javascript"></script>
@@ -209,8 +209,8 @@
                             <input class="form-control form-control-sm mb-2 mr-5" id="os-username" placeholder="Username" type="text">
                             <input class="form-control form-control-sm mr-5" id="os-password" placeholder="Password" type="password">
                             <div id="test-login">
-                              <button class="btn btn-primary btn-sm mt-2 mr-2" hidden id="test-login-btn" type="button">Login</button>
-                              <button class="btn btn-primary btn-sm mt-2 mr-2" hidden id="edit-login-btn" type="button">Edit</button>
+                              <button class="btn btn-primary btn-sm mt-2 mr-2" id="test-login-btn" type="button">Login</button>
+                              <button class="btn btn-primary btn-sm mt-2 mr-2 not-visible" id="edit-login-btn" type="button">Edit</button>
                               <i class="fas fa-circle-notch fa-spin mt-2" hidden id="test-login-spinner"></i>
                               <i class="fa fa-check mt-2" hidden id="test-login-success"></i>
                               <div class="mt-2" id="test-login-error-msg"></div>
