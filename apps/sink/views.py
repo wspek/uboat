@@ -1,6 +1,5 @@
 import requests
 import json
-import datetime
 
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse, HttpResponseServerError, HttpResponseBadRequest
@@ -48,33 +47,27 @@ def login(request):
 def sink(request):
     # Handle POST request
     if request.method == 'POST':
-        token = request.COOKIES.get('os_token')
+        data = json.loads(request.body)
 
-        if not token:
-            _ = json.loads(request.body)    # If we do not do this, for some reason we get an error on re-login
-            return HttpResponse(content='No token. Please (re)login first.', status=401)
-        else:
-            data = json.loads(request.body)
+        if len(data['movie_files']) > config.MAX_NUM_FILES or len(data['languages']) > config.MAX_NUM_LANG:
+            # The front end JS should prevent this, but users may get creative...
+            return HttpResponse(status=403)
 
-            if len(data['movie_files']) > config.MAX_NUM_FILES or len(data['languages']) > config.MAX_NUM_LANG:
-                # The front end JS should prevent this, but users may get creative...
-                return HttpResponse(status=403)
+        # Flatten the result, so we end up with a list of dictionaries
+        query_data = []
+        for movie in data['movie_files']:
+            movie.update({'sublanguageid': ','.join(data['languages']), 'search_method': data['search_method']})
+            query_data.append(movie)
 
-            # Flatten the result, so we end up with a list of dictionaries
-            query_data = []
-            for movie in data['movie_files']:
-                movie.update({'sublanguageid': ','.join(data['languages']), 'search_method': data['search_method']})
-                query_data.append(movie)
+        response = subs.fetch_subtitles(query_data)
 
-            response = subs.fetch_subtitles(query_data, token=token)
+        if response['status'] == 401:
+            return HttpResponse(content='Token expired. Please (re)login.', status=401)
 
-            if response['status'] == 401:
-                return HttpResponse(content='Token expired. Please (re)login.', status=401)
+        json_response = JsonResponse(response)
+        json_response['Access-Control-Allow-Headers'] = 'x-csrftoken'
 
-            json_response = JsonResponse(response)
-            json_response['Access-Control-Allow-Headers'] = 'x-csrftoken'
-
-            return json_response
+        return json_response
 
     # Handle GET request
     else:

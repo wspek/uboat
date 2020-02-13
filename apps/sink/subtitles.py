@@ -6,18 +6,32 @@ from uboat.lib.pythonopensubtitles.opensubtitles import OpenSubtitles
 import apps.sink.config as config
 # import config     # For debugging
 
+# Global Object Pattern, so we can use the tokens for all sessions of all users.
+_TOKENS = {
+    'opensubtitles': None
+}
 
-def login(login_data):
+
+def login(username, password):
     opensubs = OpenSubtitles(language='en', user_agent=config.USER_AGENT, token=None)
-    return opensubs.login(**login_data)
+    return opensubs.login(username=username, password=password)
 
 
-def fetch_subtitles(movie_data, token):
-    opensubs = OpenSubtitles(language='en', user_agent=config.USER_AGENT, token=token)
-    # opensubs.login(config.USER, config.PASSWD)
+def fetch_subtitles(movie_data):
+    opensubs = OpenSubtitles(language='en', user_agent=config.USER_AGENT)
+
+    # We need to do this, otherwise the no_operation function does not return the desired result.
+    opensubs.token = _TOKENS['opensubtitles']
 
     if not opensubs.no_operation():
-        return {'status': 401}
+        # Token not valid (None, or expired)
+        try:
+            _TOKENS['opensubtitles'], data = opensubs.login(config.USER, config.PASSWD)
+        except:
+            return {'status': 401}
+
+    # TODO: Replace for proper log statement
+    print('Using token: {}'.format(_TOKENS['opensubtitles']))
 
     # Convert the more extensive movie data to a more condensed and renamed format.
     subtitle_data = {}
@@ -35,7 +49,7 @@ def fetch_subtitles(movie_data, token):
                 'query': entry['movie_filename'],
             }
 
-        query_results = opensubs.search_subtitles(token, [request_data])
+        query_results = opensubs.search_subtitles(_TOKENS['opensubtitles'], [request_data])
 
         # Sort the results by language
         ordered_query_results = sorted(query_results, key=lambda i: i["LanguageName"])
