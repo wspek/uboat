@@ -30,7 +30,7 @@ var tickToggle = function(e, cell) {
 	}
 }
 
-var loggedIn = false,
+var loggedIn = true,
     state,
     StateEnum = {
         INITIAL: 1,
@@ -926,7 +926,7 @@ $(document).ready(function(){
         $(".callout").animate({right: '-1px'});
     })
 
-    loadLoginData();
+    clearCookies();     // TODO: Legacy. Remove at some point.
 });
 
 
