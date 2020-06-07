@@ -30,9 +30,6 @@ def fetch_subtitles(movie_data):
         except:
             return {'status': 401}
 
-    # TODO: Replace for proper log statement
-    print('Using token: {}'.format(_TOKENS['opensubtitles']))
-
     # Convert the more extensive movie data to a more condensed and renamed format.
     subtitle_data = {}
     request_data = None
