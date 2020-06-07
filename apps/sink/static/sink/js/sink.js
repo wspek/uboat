@@ -199,7 +199,7 @@ function fetchAndDisplaySubtitles(onFinish) {
 
     // Get selected languages
     langSelectElement = $('#language-select');
-    if (langSelectElement[0].selectedOptions.length == langSelectElement[0].length) {   // All languages are selected
+    if (langSelectElement.children("option:selected").length == langSelectElement[0].length) {   // All languages are selected
         searchData["languages"] = ['all'];
     }
     else {
@@ -799,8 +799,8 @@ $(document).ready(function(){
     $("#search-config-form").submit(function(event) {
         event.preventDefault();
 
-        if ($('#language-select')[0].selectedOptions.length == 0) {     // If no languages are selected
-            $("#lang_error").prop('hidden', false);                     // Show a message
+        if ($('#language-select').children("option:selected").length == 0) {     // If no languages are selected
+            $("#lang_error").prop('hidden', false);                              // Show a message
             $('.ms-selection').addClass('invalid_input');
         } else if (loggedIn == false) {
             guiLoginError("Please login first.");
@@ -863,7 +863,7 @@ $(document).ready(function(){
             $("#lang_error").prop('hidden', true);
             $('.ms-selection').removeClass('invalid_input');
 
-            if ($('#language-select')[0].selectedOptions.length > maxLanguages) {
+            if ($('#language-select').children("option:selected").length > maxLanguages) {
                 $('#language-select').multiSelect('deselect', values)
                 window.alert("Sorry, we only support a maximum of 5 languages right now in this beta phase.\n\nLet us know if you require more and we'll see what we can do.");
             }

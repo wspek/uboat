@@ -6,7 +6,14 @@ function calcFileHash (file, onProcessed) {
     function read(start, end, callback) {
         var reader = new FileReader();
         reader.onload = function(e) {
-            callback.call(reader, process(e.target.result));
+            // ADDED CODE
+            if (!e) {
+                var data = reader.content;
+            }
+            else {
+                var data = e.target.result;
+            }
+            callback.call(reader, process(data));
         };
 
         if (end === undefined) {
