@@ -199,7 +199,7 @@ function fetchAndDisplaySubtitles(onFinish) {
 
     // Get selected languages
     langSelectElement = $('#language-select');
-    if (langSelectElement[0].selectedOptions.length == langSelectElement[0].length) {   // All languages are selected
+    if (langSelectElement.children("option:selected").length == langSelectElement[0].length) {   // All languages are selected
         searchData["languages"] = ['all'];
     }
     else {
@@ -327,7 +327,7 @@ function unzipAndLink(button) {
                     var parser = new DOMParser();
                     var elements = parser.parseFromString(markup, "text/html");
                     var buttonElem = elements.getElementsByTagName("button")[0];
-                    buttonElem.remove();
+                    buttonElem.parentNode.removeChild(buttonElem);
 
                     // Construct the new markup with the link and update the table cell. The button is replaced.
                     var aId = subtitleExtension + '_' + row_id;
@@ -342,6 +342,10 @@ function unzipAndLink(button) {
                     var a = document.getElementById(aId);
                     download(entry, a)  // unzip.js
                     .then(function() {
+                        if(navigator.msSaveOrOpenBlob) {
+                            // In the case of IE, make the link disappear, since we cannot get it to work
+                            a.outerHTML = '';
+                        }
                         newContent = elements.body.innerHTML + a.outerHTML;
                         tabulatorTable.updateData([{id:row_id, download: newContent}])
                     });
@@ -500,17 +504,21 @@ function zipSelection(zip_choice) {
 //            console.log('progress');
         },
         function() {
-            zipModel.getBlobURL(function(blobUrl) {
-                var newLink = document.createElement('a');
-                newLink.appendChild(document.createTextNode("Download selection"));
-                newLink.style.visibility = "hidden";
-                newLink.setAttribute('href', blobUrl);
-                newLink.setAttribute('download', 'uboat_subtitles.zip');
-                document.body.appendChild(newLink);
-                newLink.click();
-                newLink.remove();
+            zipModel.getBlobURL(function(blobUrl, blob) {
+                if (navigator.msSaveOrOpenBlob) {
+                    navigator.msSaveOrOpenBlob(blob, 'uboat_subtitles.zip');
+                } else {
+                    var newLink = document.createElement('a');
+                    newLink.appendChild(document.createTextNode("Download selection"));
+                    newLink.style.visibility = "hidden";
+                    newLink.setAttribute('href', blobUrl);
+                    newLink.setAttribute('download', 'uboat_subtitles.zip');
+                    document.body.appendChild(newLink);
+                    newLink.click();
+                    newLink.remove();
 
-                downloadBtn.removeChild(node);
+                    downloadBtn.removeChild(node);
+                }
                 downloadBtn.classList.remove('buttonload');
                 downloadBtn.innerHTML = 'Download selection';
             })
@@ -799,8 +807,8 @@ $(document).ready(function(){
     $("#search-config-form").submit(function(event) {
         event.preventDefault();
 
-        if ($('#language-select')[0].selectedOptions.length == 0) {     // If no languages are selected
-            $("#lang_error").prop('hidden', false);                     // Show a message
+        if ($('#language-select').children("option:selected").length == 0) {     // If no languages are selected
+            $("#lang_error").prop('hidden', false);                              // Show a message
             $('.ms-selection').addClass('invalid_input');
         } else if (loggedIn == false) {
             guiLoginError("Please login first.");
@@ -863,7 +871,7 @@ $(document).ready(function(){
             $("#lang_error").prop('hidden', true);
             $('.ms-selection').removeClass('invalid_input');
 
-            if ($('#language-select')[0].selectedOptions.length > maxLanguages) {
+            if ($('#language-select').children("option:selected").length > maxLanguages) {
                 $('#language-select').multiSelect('deselect', values)
                 window.alert("Sorry, we only support a maximum of 5 languages right now in this beta phase.\n\nLet us know if you require more and we'll see what we can do.");
             }
