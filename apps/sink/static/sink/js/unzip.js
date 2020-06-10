@@ -49,7 +49,7 @@ var zipModel = (function() {
         getBlobURL : function(callback) {
             zipWriter.close(function(blob) {
                 var blobURL = creationMethod == "Blob" ? URL.createObjectURL(blob) : zipFileEntry.toURL();
-                callback(blobURL);
+                callback(blobURL, blob);
                 zipWriter = null;
             });
         },
@@ -76,7 +76,7 @@ var model = (function(obj) {
             function getData() {
                 entry.getData(writer, function(blob) {
                     var blobURL = URL.createObjectURL(blob);
-                    onend(blobURL);
+                    onend(blobURL, blob);
                 }, onprogress);
             }
 
@@ -124,11 +124,16 @@ function download(entry, a) {
     }
 
     return new Promise(function(resolve, reject) {
-        model.getEntryFile(entry, function(blobURL) {
+        model.getEntryFile(entry, function(blobURL, blob) {
             unzipProgress.value = 0;
             unzipProgress.max = 0;
-            a.href = blobURL;
-            a.download = entry.filename;
+
+            if(navigator.msSaveOrOpenBlob) {
+                navigator.msSaveOrOpenBlob(blob, entry.filename);
+            } else {
+                a.href = blobURL;
+                a.download = entry.filename;
+            }
 
             // Uncomment this to immediately trigger the Download/File save dialog
             // var clickEvent = document.createEvent("MouseEvent");

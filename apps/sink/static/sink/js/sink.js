@@ -327,7 +327,7 @@ function unzipAndLink(button) {
                     var parser = new DOMParser();
                     var elements = parser.parseFromString(markup, "text/html");
                     var buttonElem = elements.getElementsByTagName("button")[0];
-                    buttonElem.remove();
+                    buttonElem.parentNode.removeChild(buttonElem);
 
                     // Construct the new markup with the link and update the table cell. The button is replaced.
                     var aId = subtitleExtension + '_' + row_id;
@@ -342,6 +342,10 @@ function unzipAndLink(button) {
                     var a = document.getElementById(aId);
                     download(entry, a)  // unzip.js
                     .then(function() {
+                        if(navigator.msSaveOrOpenBlob) {
+                            // In the case of IE, make the link disappear, since we cannot get it to work
+                            a.outerHTML = '';
+                        }
                         newContent = elements.body.innerHTML + a.outerHTML;
                         tabulatorTable.updateData([{id:row_id, download: newContent}])
                     });
@@ -500,17 +504,21 @@ function zipSelection(zip_choice) {
 //            console.log('progress');
         },
         function() {
-            zipModel.getBlobURL(function(blobUrl) {
-                var newLink = document.createElement('a');
-                newLink.appendChild(document.createTextNode("Download selection"));
-                newLink.style.visibility = "hidden";
-                newLink.setAttribute('href', blobUrl);
-                newLink.setAttribute('download', 'uboat_subtitles.zip');
-                document.body.appendChild(newLink);
-                newLink.click();
-                newLink.remove();
+            zipModel.getBlobURL(function(blobUrl, blob) {
+                if (navigator.msSaveOrOpenBlob) {
+                    navigator.msSaveOrOpenBlob(blob, 'uboat_subtitles.zip');
+                } else {
+                    var newLink = document.createElement('a');
+                    newLink.appendChild(document.createTextNode("Download selection"));
+                    newLink.style.visibility = "hidden";
+                    newLink.setAttribute('href', blobUrl);
+                    newLink.setAttribute('download', 'uboat_subtitles.zip');
+                    document.body.appendChild(newLink);
+                    newLink.click();
+                    newLink.remove();
 
-                downloadBtn.removeChild(node);
+                    downloadBtn.removeChild(node);
+                }
                 downloadBtn.classList.remove('buttonload');
                 downloadBtn.innerHTML = 'Download selection';
             })
