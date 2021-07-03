@@ -1,5 +1,6 @@
-import requests
 import json
+import requests
+import structlog
 
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse, HttpResponseServerError, HttpResponseBadRequest
@@ -7,6 +8,9 @@ from xmlrpc.client import ProtocolError
 
 import apps.sink.subtitles as subs
 import apps.sink.config as config
+
+
+logger = structlog.get_logger('django_structlog')
 
 
 def redirect_to_index(request):
@@ -49,6 +53,8 @@ def sink(request):
     if request.method == 'POST':
         data = json.loads(request.body)
 
+        logger.info(type="movie_request", data=data)
+
         if len(data['movie_files']) > config.MAX_NUM_FILES or len(data['languages']) > config.MAX_NUM_LANG:
             # The front end JS should prevent this, but users may get creative...
             return HttpResponse(status=403)
@@ -60,6 +66,8 @@ def sink(request):
             query_data.append(movie)
 
         response = subs.fetch_subtitles(query_data)
+
+        logger.info(type="movie_response", data=response)
 
         if response['status'] == 401:
             return HttpResponse(content='Token expired. Please (re)login.', status=401)

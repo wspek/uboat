@@ -24,6 +24,7 @@ from apps.sink import views
 urlpatterns = [
     re_path(r'^$', views.redirect_to_index, name='index'),
     path('admin/', admin.site.urls),
+    path('admin/log_viewer/', include('log_viewer.urls')),
     path('sink/', include('apps.sink.urls')),
 ]
 # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
