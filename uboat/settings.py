@@ -58,7 +58,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_structlog.middlewares.RequestMiddleware',
-    'csp.middleware.CSPMiddleware',
+    #'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'uboat.urls'
@@ -96,11 +96,12 @@ DATABASES = {
     }
 }
 
-# CSP_DEFAULT_SRC = ["'self'"]
-CSP_REPORT_ONLY = True
+#CSP_DEFAULT_SRC = ["'self'; script-src-elem 'self' googletagmanager.com jquery.com cloudflare.com; style-src-elem googleapis.com cloudflare.com; font-src gstatic.com"]
+#CSP_REPORT_ONLY = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_HSTS_SECONDS = 15768000
 SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
