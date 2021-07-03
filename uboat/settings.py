@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_structlog.middlewares.RequestMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'uboat.urls'
@@ -91,6 +92,13 @@ DATABASES = {
     }
 }
 
+# CSP_DEFAULT_SRC = ["'self'"]
+CSP_REPORT_ONLY = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_HSTS_SECONDS = 3600
+SESSION_COOKIE_SECURE = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
